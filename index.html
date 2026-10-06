@@ -188,6 +188,7 @@
     <label>Servicio</label>
     <div class="opciones" id="mantServicio">
       <label><input type="radio" name="mantServicio" value="Menor"> Menor <span id="mantCadaMenor"></span></label>
+      <label id="mantOpcionIntermedio" class="oculto"><input type="radio" name="mantServicio" value="Intermedio"> Intermedio <span id="mantCadaIntermedio"></span></label>
       <label><input type="radio" name="mantServicio" value="Mayor"> Mayor <span id="mantCadaMayor"></span></label>
       <label><input type="radio" name="mantServicio" value="Otro"> Otro <span>(reparación, llantas, frenos…)</span></label>
     </div>
@@ -1749,30 +1750,63 @@
   // ------------------------------------------------------------ mantenimiento
   /** Mantenimiento de la placa con un km más nuevo que el que usó el servidor (el que el piloto acaba de anotar). */
   function mantConKm(m, km) {
-    if (!m || m.km == null || km == null || (m.kmActual != null && km <= m.kmActual)) return m;
-    var faltan = m.km - km;
-    var estado = faltan <= 0 ? 'vencido' : (m.aviso != null && faltan <= m.aviso ? 'proximo' : 'ok');
+    // "Revisar datos" o sin historial: la app no recalcula nada (los km anotados no son confiables o no hay base).
+    if (!m || m.km == null || m.estado === 'revisar' || m.estado === 'sin_registro') return m;
+    var nuevo = km != null && (m.kmActual == null || km > m.kmActual);
+    var faltan = nuevo ? m.km - km : m.faltan;
+    var porKm = faltan == null ? 'ok' : (faltan <= 0 ? 'vencido' : (m.aviso != null && faltan <= m.aviso ? 'proximo' : 'ok'));
+    // El límite por tiempo no depende del km: se recalcula con la fecha de hoy (la copia del teléfono puede ser de otro día).
+    var tiempo = estadoPorTiempo(m);
+    var orden = { ok: 0, proximo: 1, vencido: 2 };
+    var porTiempo = Boolean(tiempo) && orden[tiempo] > orden[porKm];
+    var estado = porTiempo ? tiempo : porKm;
     if (estado === 'ok' && m.estado === 'por_confirmar') estado = 'por_confirmar';
-    return { estado: estado, servicio: m.servicio, km: m.km, faltan: faltan, kmActual: km, aviso: m.aviso, porConfirmar: m.porConfirmar };
+    return { estado: estado, servicio: m.servicio, km: m.km, faltan: faltan, kmActual: nuevo ? km : m.kmActual, aviso: m.aviso,
+             porConfirmar: m.porConfirmar, fechaLimite: m.fechaLimite || '', tiempo: tiempo, porTiempo: porTiempo };
+  }
+  /** 'vencido', 'proximo' u 'ok' según la fecha límite por tiempo y la fecha de hoy; '' si el servidor no la mandó. */
+  function estadoPorTiempo(m) {
+    if (!m || !m.fechaLimite) return (m && m.tiempo) || '';
+    var hoy = hoyISO();
+    if (hoy >= m.fechaLimite) return 'vencido';
+    var aviso = config.mantenimiento && config.mantenimiento.tiempo ? config.mantenimiento.tiempo.aviso : 15;
+    var a = hoy.split('-'), b = m.fechaLimite.split('-');
+    var dias = Math.round((Date.UTC(b[0], b[1] - 1, b[2]) - Date.UTC(a[0], a[1] - 1, a[2])) / 86400000);
+    return dias <= aviso ? 'proximo' : 'ok';
   }
   /** Próximo mantenimiento para el piloto: rojo si ya pasó, ámbar si se acerca, una línea gris si falta. '' sin datos. */
   function avisoMant(m) {
+    if (m && m.estado === 'revisar') {
+      return '<div class="aviso ambar mant"><b>Mantenimiento:</b> la oficina está revisando los datos de esta placa. Pregunte a la oficina cuándo le toca.</div>';
+    }
     if (!m || !m.servicio || m.km == null) return '';
     var nombre = 'mantenimiento ' + m.servicio.toLowerCase();
     // Un mantenimiento anotado desde la app no cambia el estado hasta que la oficina lo confirma con la factura del taller.
     var cola = m.porConfirmar ? ' Ya hay un mantenimiento anotado: la oficina todavía no lo confirma.' : ' Avise a la oficina.';
+    var meses = config.mantenimiento && config.mantenimiento.tiempo ? config.mantenimiento.tiempo.meses : 3;
+    var limite = m.fechaLimite ? fmtFecha(m.fechaLimite) : '';
     if (m.estado === 'vencido') {
+      // Por tiempo: pasaron los meses del programa desde el último mantenimiento, aunque no haya llegado al km.
+      if (m.porTiempo) {
+        return '<div class="aviso error mant"><b>Le toca el ' + nombre + ':</b> pasaron ' + meses + ' meses desde el último (vencía el ' + limite +
+          '), aunque no haya llegado a los ' + fmtKm(m.km) + ' km.' + cola + '</div>';
+      }
       return '<div class="aviso error mant"><b>Le toca el ' + nombre + ':</b> era a los ' + fmtKm(m.km) + ' km' +
         (m.faltan < 0 ? ' (lleva ' + fmtKm(-m.faltan) + ' km de más)' : '') + '.' + cola + '</div>';
     }
     if (m.estado === 'proximo') {
+      if (m.porTiempo) {
+        return '<div class="aviso ambar mant"><b>Se acerca el ' + nombre + ':</b> el ' + limite + ' se cumplen ' + meses +
+          ' meses desde el último (o a los ' + fmtKm(m.km) + ' km, lo que llegue primero).' + cola + '</div>';
+      }
       return '<div class="aviso ambar mant"><b>Se acerca el ' + nombre + ':</b> a los ' + fmtKm(m.km) + ' km (faltan ' + fmtKm(m.faltan) +
         ' km).' + cola + '</div>';
     }
-    return '<div class="ayuda mant">Próximo ' + nombre + ': a los ' + fmtKm(m.km) + ' km' +
+    return '<div class="ayuda mant">Próximo ' + nombre + ': a los ' + fmtKm(m.km) + ' km' + (limite ? ' o el ' + limite + ', lo que llegue primero' : '') +
       (m.estado === 'por_confirmar' ? ' (la oficina todavía no confirma el último mantenimiento)' : '') + '.</div>';
   }
   window.avisoMant = avisoMant;
+  window.mantConKm = mantConKm;
   /** En la salida de bodega, bajo la placa (con el km de salida si es más nuevo que el último registro). */
   function pintarMantPlaca() {
     var p = datosPlaca($('selPlaca').value);
@@ -1785,8 +1819,13 @@
   var mantKmAuto = null, mantKmConfirmado = null;
   function prepararMant() {
     var aj = config.mantenimiento;
+    // El intermedio solo con un servidor que lo conoce (versión 8): uno anterior no lo aceptaría.
+    var conIntermedio = config.version >= 8;
+    var cada = function (x) { return aj && aj[x] ? 'cada ' + fmtKm(aj[x].cada) + ' km; ' : ''; };
+    $('mantOpcionIntermedio').classList.toggle('oculto', !conIntermedio);
     $('mantCadaMenor').textContent = aj ? '(cada ' + fmtKm(aj.menor.cada) + ' km)' : '';
-    $('mantCadaMayor').textContent = aj ? '(cada ' + fmtKm(aj.mayor.cada) + ' km; incluye el menor)' : '(incluye el menor)';
+    $('mantCadaIntermedio').textContent = '(' + cada('intermedio') + 'incluye el menor)';
+    $('mantCadaMayor').textContent = '(' + cada('mayor') + (conIntermedio ? 'incluye el intermedio y el menor)' : 'incluye el menor)');
     var placa = $('mantSelPlaca').value;
     $('mantSelPlaca').innerHTML = '<option value="">Seleccione…</option>' + config.placas.map(function (p) {
       return '<option value="' + esc(p.placa) + '">' + esc(p.placa) + '</option>';
@@ -1842,7 +1881,7 @@
   }
   function mantPlacaCambio() {
     var placa = $('mantSelPlaca').value, p = datosPlaca(placa);
-    $('mantEstado').innerHTML = !p ? '' : (avisoMant(p.mant) || '<div class="ayuda mant">Esta placa todavía no tiene mantenimientos anotados.</div>');
+    $('mantEstado').innerHTML = !p ? '' : (avisoMant(mantConKm(p.mant, null)) || '<div class="ayuda mant">Esta placa todavía no tiene mantenimientos anotados.</div>');
     var actual = num($('mantKm').value);
     if (actual == null || actual === mantKmAuto) {
       var ref = kmReferenciaMant(placa);
@@ -1876,16 +1915,16 @@
     var costo = $('mantCosto').value.trim();
     var errores = [];
     if (!placa) errores.push('Seleccione la placa.');
-    if (!servicio) errores.push('Elija el servicio: menor, mayor u otro.');
+    if (!servicio) errores.push('Elija el servicio: ' + (config.version >= 8 ? 'menor, intermedio, mayor u otro.' : 'menor, mayor u otro.'));
     if (!fecha) errores.push('Escriba la fecha.');
     else if (fecha > hoyISO()) errores.push('La fecha no puede ser de un día que no ha llegado.');
     if (servicio === 'Otro' && !$('mantNotas').value.trim()) errores.push('Escriba qué se hizo.');
     if (k == null || k <= 0 || Math.floor(k) !== k) errores.push('Escriba el kilometraje del odómetro (solo números enteros).');
     if (costo !== '' && (num(costo) == null || num(costo) < 0)) errores.push('El costo debe ser un monto en dólares.');
     if (errores.length) { aviso('errMant', 'error', errores.join('<br>')); return; }
-    // Si eligió un servicio distinto al que tocaba (por ejemplo "Mayor" cuando tocaba el menor), se pide confirmar.
+    // Si eligió un servicio distinto al que tocaba (por ejemplo "Mayor" cuando tocaba el intermedio), se pide confirmar.
     var esperado = (datosPlaca(placa) || {}).mant;
-    if (esperado && esperado.servicio && (servicio === 'Menor' || servicio === 'Mayor') && servicio !== esperado.servicio &&
+    if (esperado && esperado.servicio && (servicio === 'Menor' || servicio === 'Intermedio' || servicio === 'Mayor') && servicio !== esperado.servicio &&
         mantServicioConfirmado !== servicio) {
       aviso('errMant', 'ambar', 'Según el historial, lo que tocaba era el mantenimiento ' + esc(esperado.servicio.toLowerCase()) + '. ¿Seguro que fue ' +
         esc(servicio.toLowerCase()) + '?<br><button class="primario" type="button" id="btnConfirmarServicioMant">Sí, fue ' + esc(servicio.toLowerCase()) + '</button>');
