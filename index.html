@@ -1,0 +1,1984 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Logistik Go</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="48x48" href="iconos/favicon-48.png">
+<link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+<script>window.LOGISTIK_API = "https://script.google.com/macros/s/AKfycbxw1l1JI0jj1f62wLxNg0KiWMuMc0aJ9BVlnfKnm_4pLFU3FdGkScB3QO5kSoDOdZjZUw/exec";</script>
+<meta name="theme-color" content="#233f53">
+<style>
+  /* Identidad visual Logistik S.A. (misma paleta y componentes que los reportes de Coordinación Logística) */
+  :root {
+    --naranja: #f15923; --naranja-claro: #fdf0eb; --naranja-texto: #a8380f;
+    --acero: #233f53; --acero-claro: #e9eef2; --marino: #003163;
+    --gris: #495057; --texto: #202124; --linea: #e3e6e8; --fondo-suave: #f7f8f9; --blanco: #fff;
+    --ok: #137333; --ok-bg: #e6f4ea; --alerta: #b06000; --alerta-bg: #fef7e0;
+    --error: #c5221f; --error-bg: #fce8e6; --info: #1a73e8; --info-bg: #e8f0fe;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--fondo-suave); color: var(--texto);
+    font: 16px/1.5 "Google Sans", "Inter", -apple-system, "Segoe UI", Roboto, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
+  header { background: var(--blanco); border-bottom: 3px solid var(--naranja); position: sticky; top: 0; z-index: 5; }
+  header .marca { max-width: 560px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+  header .marca img { height: 28px; width: auto; display: block; }
+  header .marca .div { width: 1px; height: 30px; background: var(--linea); }
+  header .marca .sub { font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--gris); font-weight: 600; line-height: 1.3; }
+  header .marca .sub b { color: var(--naranja); font-size: 13px; letter-spacing: .06em; display: block; }
+  header .quien { background: var(--acero); color: #fff; font-size: 13px; }
+  header .quien:empty { display: none; }
+  header .quien div { max-width: 560px; margin: 0 auto; padding: 6px 16px; display: flex; justify-content: space-between; gap: 8px; }
+  header .quien span { opacity: .85; }
+  main { max-width: 560px; margin: 0 auto; padding: 16px 16px 120px; }
+  .tarjeta { background: var(--blanco); border: 1px solid var(--linea); border-radius: 10px; padding: 18px 16px; margin-bottom: 14px; }
+  .paso { font-size: 11px; letter-spacing: .11em; text-transform: uppercase; color: var(--naranja); font-weight: 700; margin: 0 0 2px; }
+  h2 { font-size: 20px; line-height: 1.25; margin: 0 0 12px; color: var(--acero); font-weight: 700; letter-spacing: -.01em; }
+  h3 { font-size: 15px; margin: 18px 0 8px; color: var(--acero); font-weight: 700; }
+  label { display: block; font-size: 13.5px; font-weight: 600; margin: 14px 0 5px; color: var(--acero); }
+  label .opc { font-weight: 400; color: var(--gris); }
+  input, select, textarea { width: 100%; font: inherit; font-size: 17px; padding: 11px 12px; border: 1px solid #cfd5da;
+    border-radius: 8px; background: #fff; color: var(--texto); }
+  input:focus, select:focus, textarea:focus { outline: 3px solid rgba(241, 89, 35, .28); border-color: var(--naranja); }
+  input.autollenado, select.autollenado { background: var(--naranja-claro); border-color: #f6c7b3; }
+  input.falta { background: var(--alerta-bg); border-color: var(--alerta); }
+  input.codigo { font-size: 14px; letter-spacing: .01em; }
+  .aviso button { margin-top: 8px; }
+  a.boton { display: inline-block; margin-top: 8px; padding: 10px 14px; border-radius: 8px; background: var(--acero); color: #fff;
+    font-weight: 700; text-decoration: none; }
+  .fila { display: flex; gap: 8px; align-items: flex-end; }
+  .fila > * { flex: 1; min-width: 0; }
+  .fila > .angosto { flex: 0 0 auto; }
+  button { font: inherit; font-size: 15.5px; font-weight: 700; border-radius: 8px; padding: 11px 14px; border: 1px solid var(--acero);
+    background: #fff; color: var(--acero); cursor: pointer; min-height: 46px; }
+  button.primario { background: var(--acero); color: #fff; width: 100%; font-size: 17px; }
+  button.acento { background: var(--naranja); border-color: var(--naranja); color: #fff; width: 100%; font-size: 18.5px; letter-spacing: .01em; }
+  button.escanear { background: var(--naranja); border-color: var(--naranja); color: #fff; font-size: 18.5px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  button.peligro { color: var(--error); border-color: var(--error); }
+  button.chico { min-height: 38px; padding: 6px 12px; font-size: 14px; }
+  button:disabled { opacity: .5; cursor: default; }
+  button:active:not(:disabled) { transform: translateY(1px); }
+  .ayuda { font-size: 13px; color: var(--gris); margin-top: 5px; }
+  .aviso { border: 1px solid var(--linea); border-left-width: 4px; border-radius: 8px; padding: 10px 12px; margin: 10px 0; font-size: 14px; }
+  .aviso.error { background: var(--error-bg); color: var(--error); border-color: #f5c6c2; border-left-color: var(--error); }
+  .aviso.ok { background: var(--ok-bg); color: var(--ok); border-color: #c6e7d0; border-left-color: var(--ok); }
+  .aviso.ambar { background: var(--alerta-bg); color: var(--alerta); border-color: #f5e3b3; border-left-color: var(--alerta); }
+  .aviso.info { background: var(--naranja-claro); color: var(--naranja-texto); border-color: #f6d5c7; border-left-color: var(--naranja); }
+  .aviso.neutro { background: var(--fondo-suave); color: var(--gris); border-left-color: var(--gris); }
+  .oculto { display: none !important; }
+  .parada { border: 1px solid var(--linea); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; background: #fff; }
+  .parada .titulo { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; font-weight: 700; color: var(--acero); }
+  .parada .num { font-family: "Roboto Mono", ui-monospace, Menlo, monospace; font-size: 11px; font-weight: 700; color: #fff;
+    background: var(--acero); border-radius: 5px; padding: 2px 7px; margin-right: 6px; }
+  .parada .det { font-size: 13.5px; color: var(--gris); margin-top: 4px; }
+  .chip { display: inline-block; border-radius: 9999px; padding: 3px 10px; font-size: 11px; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; white-space: nowrap; background: var(--ok-bg); color: var(--ok); margin: 6px 4px 0 0; }
+  .chip.falta { background: var(--alerta-bg); color: var(--alerta); }
+  .chip.neutro { background: var(--fondo-suave); color: var(--gris); }
+  .chip.fallida { background: #fce5cd; color: #a14d00; }
+  .chip.devolucion { background: #e9e2f5; color: #5b3d99; }
+  .estados { display: flex; gap: 6px; margin: 10px 0 2px; }
+  .estados button { flex: 1; min-height: 40px; padding: 6px 4px; font-size: 14px; border-color: #cfd5da; color: var(--gris); }
+  .estados button.sel[data-estado="Exitosa"] { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
+  .estados button.sel[data-estado="Fallida"] { background: #fce5cd; border-color: #c26100; color: #a14d00; }
+  .estados button.sel[data-estado="Devolución"] { background: #e9e2f5; border-color: #6c4ab6; color: #5b3d99; }
+  .factura { border: 1px solid var(--linea); border-left: 4px solid var(--naranja); border-radius: 8px; padding: 12px; margin-top: 10px; background: #fff; }
+  .factura .cab { display: flex; justify-content: space-between; align-items: center; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; font-weight: 700; color: var(--naranja-texto); }
+  .codigo { font-family: "Roboto Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px; word-break: break-all; }
+  .resumen { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 14px; }
+  .resumen div { border: 1px solid var(--linea); border-radius: 10px; padding: 11px 13px; background: var(--fondo-suave);
+    font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--gris); font-weight: 700; }
+  .resumen b { display: block; font-size: 26px; color: var(--acero); letter-spacing: -.02em; text-transform: none; line-height: 1.15; }
+  .resumen div:first-child b { color: var(--naranja); }
+  .barra { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-top: 1px solid var(--linea);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); z-index: 6; box-shadow: 0 -4px 12px rgba(35, 63, 83, .06); }
+  .barra .dentro { max-width: 560px; margin: 0 auto; display: flex; gap: 8px; }
+  .barra .dentro > * { flex: 1; }
+  #escaner { position: fixed; inset: 0; background: rgba(0, 49, 99, .96); z-index: 20; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 16px; color: #fff; gap: 12px; text-align: center; }
+  #escaner { font-size: 17px; font-weight: 600; }
+  #escaner .girador { border-color: rgba(255, 255, 255, .25); border-top-color: var(--naranja); }
+  #escaner button { background: transparent; color: #fff; border: 2px solid rgba(255, 255, 255, .6); margin-top: 8px; }
+  .cargando { text-align: center; padding: 48px 0; color: var(--gris); }
+  .girador { width: 34px; height: 34px; border-radius: 50%; border: 4px solid var(--acero-claro); border-top-color: var(--naranja);
+    animation: girar .9s linear infinite; margin: 0 auto 12px; }
+  @keyframes girar { to { transform: rotate(360deg); } }
+  .pendientes { cursor: pointer; }
+  footer.pie { text-align: center; font-size: 10.5px; color: var(--gris); letter-spacing: .04em; padding: 6px 16px 0; }
+  .opciones label { display: flex; align-items: center; gap: 10px; font-weight: 600; margin: 6px 0; padding: 10px 12px;
+    border: 1px solid #cfd5da; border-radius: 8px; background: #fff; }
+  .opciones label span { font-weight: 400; color: var(--gris); font-size: 13px; }
+  .opciones input { width: auto; margin: 0; }
+  button.secundario { width: 100%; }
+  .mant { font-size: 13.5px; margin-top: 6px; }
+  #toast { position: fixed; left: 16px; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 30; max-width: 528px; margin: 0 auto;
+    background: var(--acero); color: #fff; border-radius: 8px; padding: 12px 14px; font-size: 14.5px; box-shadow: 0 4px 16px rgba(0, 0, 0, .2); }
+  /* App instalada: sin "jalar para recargar" ni rebote que saque al piloto de lo que está haciendo. */
+  html, body { overscroll-behavior: none; }
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">
+    <img src="data:image/png;base64,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" alt="Logistik S.A.">
+    <div class="div"></div>
+    <div class="sub"><b>Logistik Go</b>Bitácora de rutas · El Salvador</div>
+  </div>
+  <div class="quien" id="quien"></div>
+</header>
+
+<main>
+  <div id="appNueva"></div>
+  <div id="mensajeGlobal"></div>
+  <div id="pendientes" class="aviso ambar pendientes oculto"></div>
+  <div id="rechazados" class="aviso error oculto"></div>
+
+  <!-- Paso 0: cargando -->
+  <section id="pCargando" class="cargando"><div class="girador"></div>Cargando Logistik Go…</section>
+
+  <!-- Paso 1: identificarse -->
+  <section id="pIngreso" class="tarjeta oculto">
+    <p class="paso">Ingreso</p>
+    <h2>¿Quién maneja hoy?</h2>
+    <label for="selPiloto">Piloto</label>
+    <select id="selPiloto"></select>
+    <label for="txtPin">PIN <span class="opc">(si le asignaron uno)</span></label>
+    <input id="txtPin" type="password" inputmode="numeric" autocomplete="off" maxlength="8">
+    <div id="errIngreso"></div>
+    <p></p>
+    <button class="primario" id="btnIngresar">Continuar</button>
+  </section>
+
+  <!-- Paso 2: inicio del día -->
+  <section id="pInicio" class="tarjeta oculto">
+    <p class="paso">Paso 1 de 3</p>
+    <h2>Salida de bodega</h2>
+    <label for="txtFecha">Fecha</label>
+    <input id="txtFecha" type="date">
+    <label for="selPlaca">Placa del vehículo</label>
+    <select id="selPlaca"></select>
+    <div class="ayuda" id="ayudaPlaca"></div>
+    <div id="mantPlaca"></div>
+    <label for="txtAuxiliar">Auxiliar <span class="opc">(opcional)</span></label>
+    <input id="txtAuxiliar" type="text" autocomplete="off">
+    <label for="txtKmSalida">Kilometraje al salir</label>
+    <input id="txtKmSalida" type="number" inputmode="numeric" min="0" step="1">
+    <div id="avisoKmSalida"></div>
+    <label for="txtHoraSalida">Hora de salida</label>
+    <div class="fila">
+      <input id="txtHoraSalida" type="time">
+      <button class="angosto" data-ahora="txtHoraSalida">Ahora</button>
+    </div>
+    <div id="errInicio"></div>
+    <p></p>
+    <button class="primario" id="btnIniciar">Iniciar ruta</button>
+  </section>
+  <button class="secundario oculto" id="btnIrMant">Registrar un mantenimiento</button>
+
+  <!-- Mantenimiento: lo registra el piloto cuando el vehículo sale del taller -->
+  <section id="pMant" class="tarjeta oculto">
+    <p class="paso">Mantenimiento</p>
+    <h2>Registrar un mantenimiento</h2>
+    <p class="ayuda">Anótelo cuando el vehículo salga del taller. La oficina lo ve en la pestaña «Historial mantenimiento».</p>
+    <label for="mantSelPlaca">Placa del vehículo</label>
+    <select id="mantSelPlaca"></select>
+    <div id="mantEstado"></div>
+    <label>Servicio</label>
+    <div class="opciones" id="mantServicio">
+      <label><input type="radio" name="mantServicio" value="Menor"> Menor <span id="mantCadaMenor"></span></label>
+      <label><input type="radio" name="mantServicio" value="Mayor"> Mayor <span id="mantCadaMayor"></span></label>
+      <label><input type="radio" name="mantServicio" value="Otro"> Otro <span>(reparación, llantas, frenos…)</span></label>
+    </div>
+    <label for="mantFecha">Fecha</label>
+    <input id="mantFecha" type="date">
+    <label for="mantKm">Kilometraje del odómetro</label>
+    <input id="mantKm" type="number" inputmode="numeric" min="0" step="1">
+    <div id="mantAvisoKm"></div>
+    <label for="mantTaller">Taller o lugar <span class="opc">(opcional)</span></label>
+    <input id="mantTaller" type="text" autocomplete="off" maxlength="120">
+    <label for="mantCosto">Costo $ <span class="opc">(opcional)</span></label>
+    <input id="mantCosto" type="number" inputmode="decimal" min="0" step="0.01">
+    <label for="mantNotas">Qué se hizo <span class="opc">(opcional)</span></label>
+    <textarea id="mantNotas" rows="2" maxlength="500"></textarea>
+    <div id="errMant"></div>
+    <p></p>
+    <button class="primario" id="btnGuardarMant">Guardar mantenimiento</button>
+    <p></p>
+    <button class="secundario" id="btnVolverMant">Volver</button>
+  </section>
+
+  <!-- Paso 3: ruta -->
+  <section id="pRuta" class="oculto">
+    <div class="tarjeta">
+      <p class="paso">Paso 2 de 3 · Entregas</p>
+      <h2 id="rutaTitulo">Ruta</h2>
+      <div class="ayuda" id="rutaSub"></div>
+      <div class="ayuda" id="estadoAvance"></div>
+      <div class="resumen">
+        <div>Entregas<b id="resParadas">0</b></div>
+        <div>Facturas<b id="resFacturas">0</b></div>
+      </div>
+      <div id="listaParadas"></div>
+      <button class="primario" id="btnNuevaParada">+ Agregar parada</button>
+      <p class="ayuda">Agregue una parada por cada lugar donde se detuvo. Si entregó varias facturas en el mismo lugar, agréguelas dentro de la misma parada.</p>
+    </div>
+    <button class="peligro chico" id="btnEditarSalida">Corregir datos de salida</button>
+  </section>
+
+  <!-- Formulario de parada -->
+  <section id="pParada" class="tarjeta oculto">
+    <p class="paso">Entrega</p>
+    <h2 id="paradaTitulo">Nueva parada</h2>
+    <button class="escanear" id="btnEscanearFactura" type="button">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9Zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>
+      Escanear factura
+    </button>
+    <p class="ayuda">Tome una foto de la factura completa, derecha y con el código QR visible. La app llena el número de control, el monto, el código de vendedor, el cliente y la dirección; revise y corrija si hace falta.</p>
+    <div id="avisoLectura"></div>
+    <label for="txtCliente">Cliente (destinatario)</label>
+    <input id="txtCliente" type="text" autocomplete="off" placeholder="Ej.: Ferretería El Centro">
+    <label for="txtDireccion">Dirección del cliente <span class="opc">(sale de la factura)</span></label>
+    <input id="txtDireccion" type="text" autocomplete="off" placeholder="Ej.: Barrio El Centro, Santa Rosa de Lima">
+    <label for="selDepto">Departamento</label>
+    <select id="selDepto"></select>
+    <label for="selMunicipio">Municipio</label>
+    <select id="selMunicipio"></select>
+    <div id="ayudaMunicipio"></div>
+    <datalist id="listaMotivos">
+      <option value="Cliente cerrado"><option value="No estaba quien recibe"><option value="No tenía el pago">
+      <option value="Rechazó la mercadería"><option value="Dirección no encontrada"><option value="Fuera de horario de recepción">
+      <option value="Producto dañado"><option value="Producto equivocado"><option value="No hizo el pedido"><option value="Pedido incompleto">
+    </datalist>
+    <div class="fila">
+      <div>
+        <label for="txtLlegada">Hora llegada</label>
+        <input id="txtLlegada" type="time">
+      </div>
+      <button class="angosto" data-ahora="txtLlegada">Ahora</button>
+    </div>
+    <label for="txtKmParada">Kilometraje al llegar</label>
+    <input id="txtKmParada" type="number" inputmode="numeric" min="0" step="1">
+    <div id="avisoKmParada"></div>
+
+    <h3 style="margin-top:16px">Facturas entregadas aquí</h3>
+    <div id="listaFacturas"></div>
+    <button class="chico" id="btnOtraFactura" type="button">+ Agregar factura a mano</button>
+    <p class="ayuda">Varias facturas en el mismo lugar: toque "Escanear factura" una vez por cada una. Si aquí no entregó factura (gasolinera, almuerzo, bodega), deje la sección vacía.</p>
+
+    <div class="fila">
+      <div>
+        <label for="txtSalidaParada">Hora salida</label>
+        <input id="txtSalidaParada" type="time">
+      </div>
+      <button class="angosto" data-ahora="txtSalidaParada">Ahora</button>
+    </div>
+    <div id="errParada"></div>
+    <p></p>
+    <button class="primario" id="btnGuardarParada">Guardar parada</button>
+    <p></p>
+    <div class="fila">
+      <button id="btnCancelarParada">Cancelar</button>
+      <button class="peligro oculto" id="btnBorrarParada">Borrar parada</button>
+    </div>
+  </section>
+
+  <!-- Paso 4: cierre -->
+  <section id="pCierre" class="tarjeta oculto">
+    <p class="paso">Paso 3 de 3</p>
+    <h2>Retorno y cierre del día</h2>
+    <label for="txtKmRegreso">Kilometraje al regresar</label>
+    <input id="txtKmRegreso" type="number" inputmode="numeric" min="0" step="1">
+    <div id="avisoKmRegreso"></div>
+    <label for="txtHoraRegreso">Hora de regreso</label>
+    <div class="fila">
+      <input id="txtHoraRegreso" type="time">
+      <button class="angosto" data-ahora="txtHoraRegreso">Ahora</button>
+    </div>
+    <h3 style="margin-top:16px">Gasolina <span class="opc" style="font-weight:400;color:var(--gris)">(si cargó hoy)</span></h3>
+    <div class="fila">
+      <div><label for="txtGasolina">Monto $</label><input id="txtGasolina" type="number" inputmode="decimal" min="0" step="0.01"></div>
+      <div><label for="txtGalones">Galones</label><input id="txtGalones" type="number" inputmode="decimal" min="0" step="0.001"></div>
+    </div>
+    <label for="txtVale">Vale N° <span class="opc">(opcional)</span></label>
+    <input id="txtVale" type="text" autocomplete="off">
+    <label for="txtNotas">Notas <span class="opc">(opcional)</span></label>
+    <textarea id="txtNotas" rows="2"></textarea>
+    <div class="resumen">
+      <div>Km del día<b id="cierreKm">–</b></div>
+      <div>Facturas<b id="cierreFacturas">0</b></div>
+    </div>
+    <div id="avisosCierre"></div>
+    <div id="errCierre"></div>
+    <button class="acento" id="btnEnviar">Enviar día</button>
+    <p></p>
+    <button id="btnVolverRuta" style="width:100%">Volver a la ruta</button>
+  </section>
+
+  <!-- Paso 5: enviado -->
+  <section id="pListo" class="tarjeta oculto">
+    <p class="paso">Listo</p>
+    <h2>Día enviado</h2>
+    <div id="listoTexto"></div>
+    <button class="primario" id="btnNuevoDia">Registrar otro día</button>
+  </section>
+</main>
+
+<div class="barra oculto" id="barraRuta">
+  <div class="dentro">
+    <button class="acento" id="btnIrCierre">Terminar día</button>
+  </div>
+</div>
+
+<div id="escaner" class="oculto" role="status" aria-live="polite">
+  <div class="girador"></div>
+  <div id="escanerTexto">Leyendo factura…</div>
+  <button type="button" id="btnCancelarLectura">Cancelar y escribir a mano</button>
+</div>
+<input type="file" id="fotoFactura" accept="image/*" capture="environment" class="oculto">
+<canvas id="lienzo" class="oculto"></canvas>
+<div id="toast" class="oculto" role="status" aria-live="polite"></div>
+
+<script src="jsQR.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var CLAVE_BORRADOR = 'kmCelasa.borrador.v1';
+  var CLAVE_PENDIENTES = 'kmCelasa.pendientes.v1';
+  var CLAVE_PILOTO = 'kmCelasa.piloto.v1';
+  var CLAVE_PARADA = 'kmCelasa.parada.v1';        // parada abierta (por si el teléfono recarga la página al usar la cámara)
+  var CLAVE_RECHAZADOS = 'kmCelasa.rechazados.v1'; // días pendientes que el servidor rechazó (no se borran)
+  var CLAVE_CONFIG = 'kmCelasa.config.v1';         // última configuración recibida (para abrir sin señal)
+  var CLAVE_PINES = 'kmCelasa.pines.v1';           // huella (SHA-256) del PIN validado, por piloto (para ingresar sin señal)
+  var CLAVE_AVANCE = 'kmCelasa.avance.v1';         // { id, pendiente, hora }: si la oficina ya tiene el avance del día en ruta
+  var CLAVE_MANT = 'kmCelasa.mant.v1';             // formulario de mantenimiento a medio llenar
+  var CLAVE_DEPTO = 'kmCelasa.depto.v1';           // último departamento elegido (para la primera parada del día)
+
+  // Los 14 departamentos y sus 262 municipios de siempre (desde mayo de 2024, "distritos" de los 44 municipios nuevos;
+  // las facturas siguen usando estos nombres). La misma lista está en Codigo.gs: una prueba revisa que sean iguales.
+  var TERRITORIO_SV = {
+  'Ahuachapán': ['Ahuachapán', 'Apaneca', 'Atiquizaya', 'Concepción de Ataco', 'El Refugio', 'Guaymango', 'Jujutla',
+    'San Francisco Menéndez', 'San Lorenzo', 'San Pedro Puxtla', 'Tacuba', 'Turín'],
+  'Cabañas': ['Cinquera', 'Dolores', 'Guacotecti', 'Ilobasco', 'Jutiapa', 'San Isidro', 'Sensuntepeque',
+    'Tejutepeque', 'Victoria'],
+  'Chalatenango': ['Agua Caliente', 'Arcatao', 'Azacualpa', 'Chalatenango', 'Citalá', 'Comalapa',
+    'Concepción Quezaltepeque', 'Dulce Nombre de María', 'El Carrizal', 'El Paraíso', 'La Laguna', 'La Palma',
+    'La Reina', 'Las Vueltas', 'Nombre de Jesús', 'Nueva Concepción', 'Nueva Trinidad', 'Ojos de Agua', 'Potonico',
+    'San Antonio de La Cruz', 'San Antonio Los Ranchos', 'San Fernando', 'San Francisco Lempa',
+    'San Francisco Morazán', 'San Ignacio', 'San Isidro Labrador', 'San José Cancasque', 'San José Las Flores',
+    'San Luis del Carmen', 'San Miguel de Mercedes', 'San Rafael', 'Santa Rita', 'Tejutla'],
+  'Cuscatlán': ['Candelaria', 'Cojutepeque', 'El Carmen', 'El Rosario', 'Monte San Juan', 'Oratorio de Concepción',
+    'San Bartolomé Perulapía', 'San Cristóbal', 'San José Guayabal', 'San Pedro Perulapán', 'San Rafael Cedros',
+    'San Ramón', 'Santa Cruz Analquito', 'Santa Cruz Michapa', 'Suchitoto', 'Tenancingo'],
+  'La Libertad': ['Antiguo Cuscatlán', 'Chiltiupán', 'Ciudad Arce', 'Colón', 'Comasagua', 'Huizúcar', 'Jayaque',
+    'Jicalapa', 'La Libertad', 'Nuevo Cuscatlán', 'Quezaltepeque', 'Sacacoyo', 'San José Villanueva',
+    'San Juan Opico', 'San Matías', 'San Pablo Tacachico', 'Santa Tecla', 'Talnique', 'Tamanique', 'Teotepeque',
+    'Tepecoyo', 'Zaragoza'],
+  'La Paz': ['Cuyultitán', 'El Rosario', 'Jerusalén', 'Mercedes La Ceiba', 'Olocuilta', 'Paraíso de Osorio',
+    'San Antonio Masahuat', 'San Emigdio', 'San Francisco Chinameca', 'San Juan Nonualco', 'San Juan Talpa',
+    'San Juan Tepezontes', 'San Luis La Herradura', 'San Luis Talpa', 'San Miguel Tepezontes', 'San Pedro Masahuat',
+    'San Pedro Nonualco', 'San Rafael Obrajuelo', 'Santa María Ostuma', 'Santiago Nonualco', 'Tapalhuaca',
+    'Zacatecoluca'],
+  'La Unión': ['Anamorós', 'Bolívar', 'Concepción de Oriente', 'Conchagua', 'El Carmen', 'El Sauce', 'Intipucá',
+    'La Unión', 'Lislique', 'Meanguera del Golfo', 'Nueva Esparta', 'Pasaquina', 'Polorós', 'San Alejo',
+    'San José La Fuente', 'Santa Rosa de Lima', 'Yayantique', 'Yucuaiquín'],
+  'Morazán': ['Arambala', 'Cacaopera', 'Chilanga', 'Corinto', 'Delicias de Concepción', 'El Divisadero', 'El Rosario',
+    'Gualococti', 'Guatajiagua', 'Joateca', 'Jocoaitique', 'Jocoro', 'Lolotiquillo', 'Meanguera', 'Osicala',
+    'Perquín', 'San Carlos', 'San Fernando', 'San Francisco Gotera', 'San Isidro', 'San Simón', 'Sensembra',
+    'Sociedad', 'Torola', 'Yamabal', 'Yoloaiquín'],
+  'San Miguel': ['Carolina', 'Chapeltique', 'Chinameca', 'Chirilagua', 'Ciudad Barrios', 'Comacarán', 'El Tránsito',
+    'Lolotique', 'Moncagua', 'Nueva Guadalupe', 'Nuevo Edén de San Juan', 'Quelepa', 'San Antonio del Mosco',
+    'San Gerardo', 'San Jorge', 'San Luis de La Reina', 'San Miguel', 'San Rafael Oriente', 'Sesori', 'Uluazapa'],
+  'San Salvador': ['Aguilares', 'Apopa', 'Ayutuxtepeque', 'Ciudad Delgado', 'Cuscatancingo', 'El Paisnal', 'Guazapa',
+    'Ilopango', 'Mejicanos', 'Nejapa', 'Panchimalco', 'Rosario de Mora', 'San Marcos', 'San Martín', 'San Salvador',
+    'Santiago Texacuangos', 'Santo Tomás', 'Soyapango', 'Tonacatepeque'],
+  'San Vicente': ['Apastepeque', 'Guadalupe', 'San Cayetano Istepeque', 'San Esteban Catarina', 'San Ildefonso',
+    'San Lorenzo', 'San Sebastián', 'San Vicente', 'Santa Clara', 'Santo Domingo', 'Tecoluca', 'Tepetitán', 'Verapaz'],
+  'Santa Ana': ['Candelaria de la Frontera', 'Chalchuapa', 'Coatepeque', 'El Congo', 'El Porvenir', 'Masahuat',
+    'Metapán', 'San Antonio Pajonal', 'San Sebastián Salitrillo', 'Santa Ana', 'Santa Rosa Guachipilín',
+    'Santiago de La Frontera', 'Texistepeque'],
+  'Sonsonate': ['Acajutla', 'Armenia', 'Caluco', 'Cuisnahuat', 'Izalco', 'Juayúa', 'Nahuizalco', 'Nahulingo',
+    'Salcoatitán', 'San Antonio del Monte', 'San Julián', 'Santa Catarina Masahuat', 'Santa Isabel Ishuatán',
+    'Santo Domingo de Guzmán', 'Sonsonate', 'Sonzacate'],
+  'Usulután': ['Alegría', 'Berlín', 'California', 'Concepción Batres', 'El Triunfo', 'Ereguayquín', 'Estanzuelas',
+    'Jiquilisco', 'Jucuapa', 'Jucuarán', 'Mercedes Umaña', 'Nueva Granada', 'Ozatlán', 'Puerto El Triunfo',
+    'San Agustín', 'San Buenaventura', 'San Dionisio', 'San Francisco Javier', 'Santa Elena', 'Santa María',
+    'Santiago de María', 'Tecapán', 'Usulután']
+};
+
+  var config = { pilotos: [], placas: [] };
+  var dia = null;              // día en curso
+  var editando = null;         // índice de parada en edición (null = nueva)
+  var facturasForm = [];       // facturas del formulario de parada
+  var escaneoDestino = null;   // índice de factura que recibe el QR
+  var lecturaActual = 0;       // turno de la lectura en curso (una respuesta tardía de una lectura cancelada se ignora)
+  var cancelarLectura = null;
+  var guardarConFaltantes = false; // el piloto confirmó guardar la parada sin código de generación o de vendedor
+  var kmConfirmado = null;     // km de salida menor que el último registro de la placa que el piloto confirmó
+  var kmAutollenado = null;    // km de salida que puso la app (se reemplaza al cambiar placa o fecha; lo escrito, no)
+
+  // ------------------------------------------------------------ utilidades
+  function $(id) { return document.getElementById(id); }
+  function mostrar(id) {
+    ['pCargando', 'pIngreso', 'pInicio', 'pRuta', 'pParada', 'pCierre', 'pListo', 'pMant'].forEach(function (s) {
+      $(s).classList.toggle('oculto', s !== id);
+    });
+    $('barraRuta').classList.toggle('oculto', id !== 'pRuta');
+    // Registrar mantenimiento: desde la salida de bodega, si el servidor ya lo sabe hacer.
+    $('btnIrMant').classList.toggle('oculto', id !== 'pInicio' || !(config.version >= 5));
+    window.scrollTo(0, 0);
+  }
+  function aviso(id, tipo, texto) {
+    $(id).innerHTML = texto ? '<div class="aviso ' + tipo + '">' + texto + '</div>' : '';
+  }
+  function esc(t) {
+    return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function hoyISO(fecha) {
+    var d = fecha || new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function ahora() {
+    var d = new Date();
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+  function num(v) { return v === '' || v == null || isNaN(Number(v)) ? null : Number(v); }
+  function fmtKm(n) { return n == null ? '–' : Number(n).toLocaleString('es-SV'); }
+  function fmtFecha(iso) { var p = String(iso).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; }
+  function nuevoId() {
+    return 'app-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  }
+  function guardarBorrador() {
+    try { localStorage.setItem(CLAVE_BORRADOR, JSON.stringify(dia)); } catch (e) {}
+  }
+  function leerJSON(clave, defecto) {
+    try { var v = localStorage.getItem(clave); return v ? JSON.parse(v) : defecto; } catch (e) { return defecto; }
+  }
+  function escribirJSON(clave, valor) {
+    try { localStorage.setItem(clave, JSON.stringify(valor)); } catch (e) {}
+  }
+  /**
+   * Llama una función del servidor (Codigo.gs). Abierta desde el enlace de script.google.com, con google.script.run.
+   * Instalada (desde su propia página), con fetch a la URL del servidor (window.LOGISTIK_API), que responde con doPost.
+   */
+  function servidor(fn) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    if (window.google && google.script && google.script.run) {
+      return new Promise(function (resolve, reject) {
+        var r = google.script.run.withSuccessHandler(resolve).withFailureHandler(function (e) {
+          reject(e instanceof Error ? e : new Error(e && e.message ? e.message : String(e)));
+        });
+        r[fn].apply(r, args);
+      });
+    }
+    if (!window.LOGISTIK_API) return Promise.reject(new Error('Sin conexión con el servidor (network).'));
+    return llamarApi(fn, args);
+  }
+  /**
+   * fetch al servidor de Apps Script. Cuerpo de texto (sin encabezados propios), así el navegador no hace una consulta
+   * previa (CORS) que Apps Script no contesta. Respuesta: { ok, valor } o { ok: false, error }.
+   * Sin señal, si tarda demasiado o si Google responde otra cosa (una página de error), el mensaje lleva "conexión" o
+   * "network": el día queda pendiente y se reintenta, en vez de darse por rechazado.
+   */
+  var MENSAJE_SERVIDOR = 'El servidor de la oficina no responde como debe (sin conexión con Logistik Go). Lo que registre queda ' +
+    'guardado en el teléfono. Avise a la oficina: puede que falte actualizar o publicar el servidor.';
+  /** true si Google contesta algo en la dirección del servidor (aunque sea un error); false si no hay señal. */
+  function sondearServidor() {
+    var control = window.AbortController ? new AbortController() : null;
+    var reloj = control ? setTimeout(function () { control.abort(); }, 10000) : null;
+    return fetch(window.LOGISTIK_API + '?ping=1', { mode: 'no-cors', cache: 'no-store', credentials: 'omit', signal: control ? control.signal : undefined })
+      .then(function () { return true; }, function () { return false; })
+      .then(function (x) { if (reloj) clearTimeout(reloj); return x; });
+  }
+  function llamarApi(fn, args) {
+    var control = window.AbortController ? new AbortController() : null;
+    var reloj = control ? setTimeout(function () { control.abort(); }, 150000) : null;
+    var fin = function () { if (reloj) clearTimeout(reloj); };
+    return fetch(window.LOGISTIK_API, {
+      method: 'POST', body: JSON.stringify({ fn: fn, args: args }), redirect: 'follow', cache: 'no-store', credentials: 'omit',
+      signal: control ? control.signal : undefined
+    }).then(function (res) {
+      return res.text();
+    }, function (e) {
+      fin();
+      if (e && e.name === 'AbortError') throw new Error('El servidor tardó demasiado (timeout).');
+      // fetch falla igual sin señal que cuando Google contesta con una página de error (sin permiso para leerla).
+      // Una consulta "no-cors" los distingue: si llega cualquier respuesta, hay señal y el problema es el servidor.
+      return sondearServidor().then(function (hayRespuesta) {
+        throw new Error(hayRespuesta ? MENSAJE_SERVIDOR : 'Sin conexión con el servidor (network).');
+      });
+    }).then(function (texto) {
+      fin();
+      var datos = null;
+      try { datos = JSON.parse(texto); } catch (e) { datos = null; }
+      if (!datos || typeof datos !== 'object' || typeof datos.ok !== 'boolean') throw new Error(MENSAJE_SERVIDOR);
+      if (!datos.ok) throw new Error(datos.error || 'El servidor no pudo hacerlo.');
+      return datos.valor;
+    }, function (e) {
+      fin();
+      // La señal se cortó a mitad de la respuesta (el reloj de 150 s la canceló): también es falta de conexión.
+      if (e && e.name === 'AbortError') throw new Error('El servidor tardó demasiado (timeout).');
+      throw e;
+    });
+  }
+  function datosPlaca(placa) {
+    for (var i = 0; i < config.placas.length; i++) if (config.placas[i].placa === placa) return config.placas[i];
+    return null;
+  }
+  function ultimoKmPlaca(placa) {
+    var p = datosPlaca(placa);
+    return p ? p.ultimoKm : null;
+  }
+  /** "315,105 km (04/10/2026, nombre del piloto)": último registro de la placa y de dónde sale (si el servidor lo envió). */
+  function textoUltimoRegistro(placa) {
+    var p = datosPlaca(placa);
+    if (!p || p.ultimoKm == null) return '';
+    var origen = [p.ultimoFecha ? fmtFecha(p.ultimoFecha) : '', p.ultimoPiloto || ''].filter(Boolean).join(', ');
+    return fmtKm(p.ultimoKm) + ' km' + (origen ? ' (' + origen + ')' : '');
+  }
+  function kmUltimaParada(hasta) {
+    var km = num(dia.kmSalida);
+    var lim = hasta == null ? dia.paradas.length : hasta;
+    for (var i = 0; i < lim; i++) if (num(dia.paradas[i].km) != null) km = Math.max(km, num(dia.paradas[i].km));
+    return km;
+  }
+  /** true si el error es de conexión (se guarda como pendiente); false si el servidor rechazó los datos. */
+  function esErrorDeRed(e) {
+    var msg = e && e.message ? e.message : String(e);
+    // También lo que Google rechaza por carga (muchas ejecuciones a la vez), una falla pasajera de sus servicios
+    // ("Service Spreadsheets failed…", "a server error occurred") y el bloqueo de 15 minutos por intentos con un PIN
+    // equivocado: se reintenta después.
+    return /network|conexi|HTTP 0|timeout|timed out|failed to fetch|offline|se perdió|too many times|simultaneously|server error occurred|error en el servidor|Service .* failed|Service error|Demasiados intentos/i.test(msg);
+  }
+  window.esErrorDeRed = esErrorDeRed;
+  function totalFacturas() {
+    return dia.paradas.reduce(function (s, p) { return s + p.facturas.length; }, 0);
+  }
+
+  // ------------------------------------------------------------ factura (foto → QR + texto)
+  /** Extrae código de generación (UUID) y fecha de emisión del texto de un QR de DTE. */
+  function leerQR(texto) {
+    var t = String(texto || '');
+    var res = { codigo: null, fecha: null };
+    var m = /codGen=([0-9A-Fa-f-]{36})/.exec(t) || /([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})/.exec(t);
+    if (m) res.codigo = m[1].toUpperCase();
+    var f = /fechaEmi=(\d{4}-\d{2}-\d{2})/.exec(t);
+    if (f) res.fecha = f[1];
+    return res;
+  }
+  window.leerQR = leerQR;
+
+  var FORMATO_CODIGO = /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/;
+  var FORMATO_VENDEDOR = /^[A-Z]{1,4}-?\d{1,5}$/;
+
+  /**
+   * Código de generación escrito a mano: mayúsculas, solo 0-9 y A-F (la O se toma como cero) y guiones en su lugar.
+   * Lo que sobre de 32 se deja en el último grupo, para que no pase la validación en vez de perderse sin aviso.
+   */
+  function formatearCodigo(texto) {
+    var hex = String(texto || '').toUpperCase().replace(/O/g, '0').replace(/[^0-9A-F]/g, '');
+    var partes = [hex.slice(0, 8), hex.slice(8, 12), hex.slice(12, 16), hex.slice(16, 20), hex.slice(20)];
+    while (partes.length > 1 && !partes[partes.length - 1]) partes.pop();
+    return partes.join('-');
+  }
+  window.formatearCodigo = formatearCodigo;
+
+  /** Lo que le falta a una factura para quedar completa (lo que la foto no dio y el piloto debe escribir). */
+  function faltantes(f) {
+    var r = [];
+    if (!f.control) r.push('número de control');
+    if (f.monto === '' || f.monto == null) r.push('monto');
+    if (!f.vendedor) r.push('código de vendedor');
+    if (!f.codigo) r.push('código de generación');
+    return r;
+  }
+
+  /** Entre los códigos encontrados, el de la factura electrónica (enlace de consulta de Hacienda). */
+  function elegirQR(textos) {
+    for (var i = 0; i < textos.length; i++) if (/codGen=|factura\.gob\.sv/i.test(textos[i])) return textos[i];
+    return textos[0] || null;
+  }
+
+  /** Lector de códigos del propio teléfono (Chrome en Android): lee QR pequeños mucho mejor que jsQR. */
+  function qrNativo(img) {
+    if (!('BarcodeDetector' in window)) return Promise.resolve(null);
+    try {
+      return new BarcodeDetector({ formats: ['qr_code'] }).detect(img).then(function (r) {
+        return elegirQR((r || []).map(function (c) { return c.rawValue; }));
+      }).catch(function () { return null; });
+    } catch (e) { return Promise.resolve(null); }
+  }
+
+  // Recortes donde buscar el QR con jsQR: [x0, y0, x1, y1] (fracciones de la foto) y tamaño máximo del recorte.
+  // En las facturas de Celasa el QR va arriba a la derecha; en una foto de la factura completa queda pequeño.
+  var RECORTES_QR = [[0, 0, 1, 1, 1600], [0.5, 0, 1, 0.5, 1600], [0.5, 0, 1, 0.34, 1200], [0.5, 0, 1, 0.5, 900],
+                     [0, 0, 1, 0.5, 1800], [0, 0, 1, 1, 1100]];
+
+  /** Busca el QR con jsQR, un recorte a la vez y cediendo el turno entre intentos para no congelar la pantalla. */
+  function qrJs(img, ancho, alto) {
+    if (!window.jsQR || !ancho || !alto) return Promise.resolve(null);
+    var c = $('lienzo'), k = 0;
+    function siguiente() {
+      if (k >= RECORTES_QR.length) return Promise.resolve(null);
+      var r = RECORTES_QR[k++];
+      return new Promise(function (listo) { setTimeout(listo, 0); }).then(function () {
+        var sx = r[0] * ancho, sy = r[1] * alto, sw = (r[2] - r[0]) * ancho, sh = (r[3] - r[1]) * alto;
+        var escala = Math.min(1, r[4] / Math.max(sw, sh));
+        var w = Math.max(1, Math.round(sw * escala)), h = Math.max(1, Math.round(sh * escala));
+        c.width = w; c.height = h;
+        var ctx = c.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
+        var q = jsQR(ctx.getImageData(0, 0, w, h).data, w, h, { inversionAttempts: 'dontInvert' });
+        return q && q.data ? q.data : siguiente();
+      });
+    }
+    return siguiente();
+  }
+
+  function buscarQR(img, ancho, alto) {
+    return qrNativo(img).then(function (t) { return t || qrJs(img, ancho, alto); });
+  }
+
+  /** Foto reducida (máx. 2000 px, JPEG) para mandarla al servidor sin gastar muchos datos. */
+  function fotoReducida(img, ancho, alto) {
+    var escala = Math.min(1, 2000 / Math.max(ancho, alto));
+    var c = $('lienzo');
+    c.width = Math.round(ancho * escala); c.height = Math.round(alto * escala);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.82).split(',')[1];
+  }
+
+  function procesando(texto) {
+    $('escanerTexto').textContent = texto || '';
+    $('escaner').classList.toggle('oculto', !texto);
+  }
+
+  function escanearFactura(indice) {
+    escaneoDestino = indice;
+    guardarParadaAbierta();
+    $('fotoFactura').value = '';
+    $('fotoFactura').click();
+  }
+
+  /** Índice de la factura que recibe el escaneo: la primera vacía, o una nueva. */
+  function facturaLibre() {
+    for (var j = 0; j < facturasForm.length; j++) {
+      var f = facturasForm[j];
+      if (!f.control && !f.codigo && !f.monto && !f.vendedor) return j;
+    }
+    facturasForm.push(facturaVacia());
+    return facturasForm.length - 1;
+  }
+
+  /** Llena un campo de la parada con lo leído si está vacío o si lo había llenado una lectura anterior. */
+  function llenarCampoParada(id, valor) {
+    var el = $(id);
+    if (el.value.trim() && !el.classList.contains('autollenado')) return false;
+    el.value = valor;
+    el.classList.add('autollenado');
+    return true;
+  }
+
+  /**
+   * Aplica a la factura j lo leído de una foto: datos del servidor (texto impreso) y texto del QR leído en el teléfono.
+   * motivo/tipo: por qué la lectura quedó incompleta (sin señal, cancelada...); va al inicio del aviso.
+   * Reglas: lo que el piloto escribió no se reemplaza; un QR distinto o un control distinto del leído antes es otra
+   * factura; el mismo código de generación es la misma factura aunque el control se lea distinto.
+   */
+  function aplicarLectura(j, datos, textoQr, motivo, tipoMotivo) {
+    var f = facturasForm[j];
+    if (!f) return;
+    f.auto = f.auto || {};
+    var qr = leerQR(textoQr);
+    var codigo = qr.codigo || datos.codigo || null;
+    var fuente = qr.codigo ? 'qr' : (datos.codigo ? 'texto' : null);
+    var control = datos.control ? String(datos.control) : '';
+    // Foto de cerca solo del QR: trae el código y nada más.
+    var soloCodigo = !control && datos.total == null && !datos.vendedor && !datos.cliente && !datos.direccion;
+    var pre = motivo ? motivo + ' ' : '';
+
+    // La misma factura ya está en esta parada: no se agrega dos veces.
+    for (var k = 0; k < facturasForm.length; k++) {
+      var g = facturasForm[k];
+      if (k === j) continue;
+      if ((codigo && g.codigo === codigo) || (control && String(g.control) === control)) {
+        var vacia = !f.control && !f.codigo && !f.monto && !f.vendedor && estadoDe(f) === 'Exitosa';
+        if (vacia) facturasForm.splice(j, 1);
+        dibujarFacturas();
+        aviso('avisoLectura', 'ambar', pre + 'Esta factura ya está en la parada (factura ' + (vacia && k > j ? k : k + 1) + '). No se agregó de nuevo.');
+        return;
+      }
+    }
+
+    // Mismo código de generación: es la misma factura aunque el control se lea distinto.
+    var mismaFactura = Boolean(codigo && f.codigo && codigo === f.codigo);
+    // La foto trae otro número de control que el que el piloto escribió en esta factura: no se mezclan.
+    if (!mismaFactura && control && f.control && f.auto.control === false && control !== String(f.control)) {
+      dibujarFacturas();
+      aviso('avisoLectura', 'ambar', pre + 'La foto parece de la factura ' + esc(control) + ', pero en la factura ' + (j + 1) + ' escribió ' + esc(f.control) +
+        '. Si es otra factura, agréguela con «Escanear factura» arriba. Si escribió mal el número, corríjalo y escanee de nuevo.');
+      return;
+    }
+
+    var otra = !mismaFactura && ((fuente === 'qr' && f.auto.codigo === 'qr' && f.codigo && codigo !== f.codigo) ||
+      (control && f.control && f.auto.control === true && control !== String(f.control)));
+    if (otra) {
+      // Se quita lo leído de la factura anterior; lo escrito a mano se queda (y sigue marcado como escrito).
+      var marcas = {};
+      ['control', 'monto', 'vendedor', 'codigo'].forEach(function (c) { if (f.auto[c] === false && f[c]) marcas[c] = false; else f[c] = ''; });
+      f.numeroControl = ''; f.cliente = ''; f.direccion = ''; f.avisoFecha = null;
+      f.estado = 'Exitosa'; f.motivo = '';
+      f.auto = marcas;
+    }
+
+    var llenos = [];
+    var retenido = false; // se leyó algo distinto de lo que el piloto escribió y se dejó lo escrito
+    var extra = (datos.avisos || []).map(esc);
+    function iguales(campo, valor) {
+      return campo === 'monto' ? f.monto !== '' && f.monto != null && Number(f.monto) === Number(valor) : String(f[campo] || '') === valor;
+    }
+    // Llena un campo con lo leído si está vacío o lo había llenado otra lectura; lo escrito por el piloto se respeta.
+    function aplicar(campo, valor, nombre) {
+      if (valor === '' || valor == null) return;
+      valor = String(valor);
+      if (iguales(campo, valor)) { llenos.push(nombre); return; }
+      if (f[campo] && f.auto[campo] === false) {
+        extra.push('Se leyó ' + nombre + ' ' + esc(valor) + ', distinto de lo que escribió (' + esc(f[campo]) + '): se dejó lo escrito. Revíselo.');
+        retenido = true;
+        return;
+      }
+      f[campo] = valor; f.auto[campo] = true; llenos.push(nombre);
+    }
+
+    if (codigo) {
+      var escrito = f.codigo && f.auto.codigo === false;
+      if (fuente === 'qr' || !f.codigo || f.auto.codigo === 'texto' || !FORMATO_CODIGO.test(f.codigo)) {
+        if (escrito && FORMATO_CODIGO.test(f.codigo) && codigo !== f.codigo) extra.push('El código de generación escrito no coincidía con el QR: se dejó el del QR.');
+        llenos.push('código de generación');
+        f.codigo = codigo; f.auto.codigo = fuente;
+      } else if (codigo !== f.codigo && escrito) {
+        extra.push('Del texto impreso se leyó el código ' + esc(codigo) + ', distinto del que escribió: revise cuál es el correcto.');
+        retenido = true;
+      }
+    }
+    var fecha = qr.fecha || datos.fechaEmision;
+    if (fecha) f.avisoFecha = dia && fecha !== dia.fecha ? 'La factura es del ' + fmtFecha(fecha) + '.' : null;
+    if (control && mismaFactura && f.control && f.auto.control === true && control !== String(f.control)) {
+      extra.push('Esta vez el número de control se leyó ' + esc(control) + ' (antes ' + esc(f.control) + '): revise cuál es el correcto.');
+      retenido = true;
+    } else {
+      aplicar('control', control, 'número de control');
+    }
+    if (datos.numeroControl) f.numeroControl = datos.numeroControl;
+    aplicar('monto', datos.total, 'monto');
+    aplicar('vendedor', datos.vendedor, 'código de vendedor');
+    if (datos.cliente) {
+      f.cliente = datos.cliente;
+      if (llenarCampoParada('txtCliente', datos.cliente)) llenos.push('cliente');
+    }
+    if (datos.direccion) {
+      f.direccion = datos.direccion;
+      if (llenarCampoParada('txtDireccion', datos.direccion)) llenos.push('dirección');
+      if (sugerirLugar(datos.direccion)) llenos.push('municipio');
+    }
+    f.escaneada = true;
+    // El control de la foto coincidió con el de la tarjeta o la llenó: ya se comprobó que la foto es de esta factura.
+    if (control && !motivo) f.leida = true;
+    f.error = null;
+
+    var faltan = faltantes(f);
+    if (fuente === 'texto' && f.codigo === codigo && f.auto.codigo === 'texto') extra.push('El código de generación se leyó del texto impreso (no del QR): revise que coincida.');
+    if (!f.codigo) extra.push('Para el código de generación, toque «Escanear el QR de cerca» y tome la foto solo del QR; si no se puede, escríbalo como aparece en la factura.');
+    var cola = extra.length ? '<br>' + extra.join('<br>') : '';
+    var pide = faltan.length ? ' Escriba a mano lo que falta: ' + faltan.join(', ') + '.' : '';
+    var texto, tipo;
+    if (soloCodigo && codigo && f.codigo === codigo) {
+      texto = 'Se leyó el código de generación.' + pide;
+      tipo = faltan.length || extra.length ? 'ambar' : 'ok';
+    } else if (llenos.length) {
+      texto = (faltan.length ? 'Se leyó: ' : 'Factura leída: ') + llenos.join(', ') + '.' + (faltan.length ? pide : ' Revise que los datos coincidan con la factura.');
+      tipo = faltan.length || extra.length ? 'ambar' : 'ok';
+    } else if (retenido) {
+      texto = 'Se leyó la factura, pero no se cambió nada: se dejó lo que usted escribió.' + (pide || ' La factura ya tiene todos los datos.');
+      tipo = 'ambar';
+    } else {
+      texto = (motivo ? '' : 'No se pudo leer la factura. Tome la foto más cerca, con buena luz y sin sombras.') + (pide || ' La factura ya tiene todos los datos.');
+      tipo = motivo ? 'ambar' : 'error';
+    }
+    aviso('avisoLectura', tipoMotivo || tipo, (pre + texto).trim() + cola);
+    dibujarFacturas();
+  }
+
+  $('fotoFactura').addEventListener('change', function (ev) {
+    var archivo = ev.target.files && ev.target.files[0];
+    if (!archivo) return;
+    var destino = escaneoDestino;
+    var j = destino == null ? facturaLibre() : destino;
+    var lectura = ++lecturaActual;
+    var textoQr = '';
+    var url = URL.createObjectURL(archivo);
+    function vigente() { return lectura === lecturaActual; }
+    function terminar(datos, motivo, tipo) {
+      if (!vigente()) return;
+      lecturaActual++;
+      clearTimeout(reloj);
+      try { URL.revokeObjectURL(url); } catch (e) {}
+      procesando('');
+      aplicarLectura(j, datos || {}, textoQr, motivo, tipo);
+      guardarParadaAbierta();
+    }
+    var reloj = setTimeout(function () { terminar({}, 'La lectura tardó demasiado.', 'ambar'); }, 60000);
+    cancelarLectura = function () { terminar({}, 'Lectura cancelada.', 'info'); };
+    procesando('Buscando el código QR…');
+    var img = new Image();
+    img.onerror = function () { terminar({}, 'No se pudo abrir la foto.', 'error'); };
+    img.onload = function () {
+      var ancho = img.naturalWidth, alto = img.naturalHeight;
+      buscarQR(img, ancho, alto).then(function (qr) {
+        if (!vigente()) return;
+        textoQr = qr || '';
+        // "Escanear el QR de cerca" (una foto anterior ya comprobó el control; hay monto y falta un código seguro): basta
+        // el QR y no se manda la foto. Si ninguna foto leyó todavía el control (escrita a mano, sin señal, cancelada),
+        // sí se lee la foto, para comprobar que es la misma factura.
+        var f = facturasForm[j], q = leerQR(textoQr);
+        if (destino != null && q.codigo && f && f.leida && f.control && f.monto !== '' && f.monto != null &&
+            !(f.codigo && FORMATO_CODIGO.test(f.codigo) && f.auto.codigo !== 'texto')) {
+          terminar({});
+          return;
+        }
+        var foto = fotoReducida(img, ancho, alto);
+        procesando('Leyendo número de control, monto y cliente…');
+        return servidor('leerFactura', foto, textoQr, dia.pin, dia.piloto).then(function (datos) {
+          terminar(datos);
+        }, function (e) {
+          if (esErrorDeRed(e) && !/Demasiados intentos/i.test(e.message)) terminar({}, 'Sin señal: no se pudo leer el texto de la factura.', 'ambar');
+          else terminar({}, 'No se pudo leer el texto de la factura (' + esc(e.message) + ').', 'ambar');
+        });
+      }).catch(function (e) {
+        terminar({}, 'No se pudo procesar la foto (' + esc(e && e.message ? e.message : e) + ').', 'error');
+      });
+    };
+    img.src = url;
+  });
+  $('btnCancelarLectura').addEventListener('click', function () { if (cancelarLectura) cancelarLectura(); });
+  $('btnEscanearFactura').addEventListener('click', function () { escanearFactura(null); });
+
+  // ------------------------------------------------------------ ingreso
+  /** Huella SHA-256 (hexadecimal) de piloto + PIN; null si el navegador no puede calcularla. */
+  function huellaPin(piloto, pin) {
+    if (!window.crypto || !crypto.subtle || !window.TextEncoder) return Promise.resolve(null);
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode('logistik-go|' + piloto + '|' + pin)).then(function (b) {
+      return Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    }, function () { return null; });
+  }
+  /** Guarda (o borra, si el servidor dijo que no) la huella del PIN que el servidor validó. */
+  function recordarPin(piloto, pin, ok) {
+    return huellaPin(piloto, pin).then(function (h) {
+      var pines = leerJSON(CLAVE_PINES, {});
+      if (ok && h) pines[piloto] = h; else delete pines[piloto];
+      escribirJSON(CLAVE_PINES, pines);
+    });
+  }
+  /** true o false según la huella guardada; null si no hay huella de ese piloto en este teléfono. */
+  function pinRecordado(piloto, pin) {
+    var guardada = leerJSON(CLAVE_PINES, {})[piloto];
+    if (!guardada) return Promise.resolve(null);
+    return huellaPin(piloto, pin).then(function (h) { return h === null ? null : h === guardada; });
+  }
+
+  var configGuardadaEl = null; // fecha de la configuración que se usa, si se abrió sin señal con la guardada
+  /**
+   * Guarda en el teléfono la configuración (con lo que la app ya sabe: último km de cada placa, mantenimiento) para
+   * abrir sin señal. "guardada" es cuándo vino del servidor: se conserva al anotar lo que se envió desde este teléfono.
+   */
+  function guardarConfig(nueva) {
+    var copia = leerJSON(CLAVE_CONFIG, null);
+    var guardada = nueva || !copia || !copia.guardada ? new Date().toISOString() : copia.guardada;
+    escribirJSON(CLAVE_CONFIG, { guardada: guardada, config: config });
+  }
+  function iniciarApp() {
+    servidor('obtenerConfiguracion').then(function (c) {
+      config = c;
+      guardarConfig(true);
+      arrancar(c, null);
+    }).catch(function (e) {
+      // Sin señal: si este teléfono ya abrió la app antes, abre con esos datos (pilotos, placas, últimos km) y retoma el día.
+      // Con un día en ruta en el teléfono, abre así ante cualquier error del servidor: el piloto no se queda sin su día.
+      var copia = leerJSON(CLAVE_CONFIG, null), borrador = leerJSON(CLAVE_BORRADOR, null);
+      if ((esErrorDeRed(e) || (borrador && borrador.iniciado)) && copia && copia.config && copia.config.pilotos) {
+        arrancar(copia.config, copia.guardada || 'sin fecha', esErrorDeRed(e) ? '' : e.message);
+        return;
+      }
+      $('pCargando').innerHTML = '<div class="aviso error">No se pudo conectar: ' + esc(e.message) +
+        (e.message === MENSAJE_SERVIDOR ? '' : '<br>Revise su señal y vuelva a abrir la app.') + '</div>';
+    });
+  }
+  function arrancar(c, guardadaEl, errorServidor) {
+    config = c;
+    configGuardadaEl = guardadaEl;
+    $('selPiloto').innerHTML = '<option value="">Seleccione…</option>' + c.pilotos.map(function (p) {
+      return '<option>' + esc(p) + '</option>';
+    }).join('');
+    $('selPlaca').innerHTML = '<option value="">Seleccione…</option>' + c.placas.map(function (p) {
+      return '<option value="' + esc(p.placa) + '">' + esc(p.placa) + '</option>';
+    }).join('');
+    var guardado = leerJSON(CLAVE_PILOTO, null);
+    if (guardado && c.pilotos.indexOf(guardado) >= 0) $('selPiloto').value = guardado;
+    dia = leerJSON(CLAVE_BORRADOR, null);
+    if (dia && dia.piloto && dia.iniciado) {
+      pintarQuien(); pintarRuta(); if (!recuperarParadaAbierta()) mostrar('pRuta');
+      if (!guardadaEl && avancePendiente()) mandarAvance();
+    }
+    else { dia = null; olvidarParadaAbierta(); mostrar('pIngreso'); }
+    pintarPendientes();
+    invitarAppNueva();
+    if (guardadaEl) {
+      var d = new Date(guardadaEl);
+      aviso('mensajeGlobal', 'ambar', (errorServidor ? 'El servidor no respondió como debe (' + esc(errorServidor) + ').' : 'Sin señal.') +
+        ' La app usa los datos guardados en este teléfono' +
+        (isNaN(d.getTime()) ? '' : ' (del ' + fmtFecha(hoyISO(d)) + ')') + '. Lo que registre se enviará cuando haya señal.');
+    } else {
+      reintentarPendientes();
+    }
+  }
+  /**
+   * Abierta desde el enlace viejo (script.google.com): si la app instalable ya está publicada, invita a cambiarse. El
+   * botón solo aparece cuando no queda nada en este teléfono que la app nueva no vería (días pendientes, rechazados o
+   * un día en ruta): la app nueva guarda sus datos aparte. Se vuelve a pintar cada vez que eso cambia.
+   */
+  var appNuevaPublicada = false;
+  function invitarAppNueva() {
+    if (!window.google || !google.script || !google.script.run || !config.urlApp || !/^https:\/\//.test(config.urlApp)) return;
+    fetch(config.urlApp + 'manifest.webmanifest', { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) return;
+      appNuevaPublicada = true;
+      pintarAppNueva();
+    }, function () { /* todavía no está publicada, o sin señal */ });
+  }
+  function algoEnEsteTelefono() {
+    return Boolean(leerJSON(CLAVE_PENDIENTES, []).length || leerJSON(CLAVE_RECHAZADOS, []).length || (dia && dia.iniciado));
+  }
+  function pintarAppNueva() {
+    if (!appNuevaPublicada) return;
+    $('appNueva').innerHTML = '<div class="aviso info"><b>Ya está la app nueva de Logistik Go.</b> Se instala en el teléfono y abre ' +
+      'en pantalla completa, sin la barra de Chrome ni el aviso de Google. ' + (algoEnEsteTelefono()
+        ? 'Cámbiese cuando termine y envíe su día (lo que hay en este teléfono no pasa a la app nueva).'
+        : '<br><a class="boton" href="' + esc(config.urlApp) + '" target="_blank" rel="noopener">Abrir la app nueva</a>') + '</div>';
+  }
+  $('appNueva').addEventListener('click', function (ev) {
+    if (!ev.target.closest('a') || !algoEnEsteTelefono()) return;
+    ev.preventDefault();
+    pintarAppNueva();
+  });
+  // Al volver la señal, se envían solos los días pendientes.
+  window.addEventListener('online', function () {
+    if (!config.pilotos.length) return;
+    reintentarPendientes();
+    if (avancePendiente()) mandarAvance();
+  });
+
+  $('btnIngresar').addEventListener('click', function () {
+    var piloto = $('selPiloto').value;
+    var pin = $('txtPin').value.trim();
+    if (!piloto) { aviso('errIngreso', 'error', 'Seleccione su nombre.'); return; }
+    $('btnIngresar').disabled = true;
+    servidor('verificarPin', piloto, pin).then(function (ok) {
+      recordarPin(piloto, pin, ok);
+      return ok;
+    }, function (e) {
+      // Sin señal: entra si el PIN es el mismo que el servidor aceptó la última vez en este teléfono.
+      if (!esErrorDeRed(e) || /Demasiados intentos/i.test(e.message)) throw e;
+      return pinRecordado(piloto, pin).then(function (r) {
+        if (r === null) throw new Error('Sin señal. Para entrar sin señal, antes tiene que haber entrado con señal en este teléfono.');
+        return r;
+      });
+    }).then(function (ok) {
+      $('btnIngresar').disabled = false;
+      if (!ok) { aviso('errIngreso', 'error', 'PIN incorrecto.'); return; }
+      aviso('errIngreso');
+      escribirJSON(CLAVE_PILOTO, piloto);
+      dia = { id: nuevoId(), piloto: piloto, pin: pin, fecha: hoyISO(), placa: '', auxiliar: '', kmSalida: '',
+              horaSalida: ahora(), paradas: [], iniciado: false };
+      pintarQuien();
+      prepararInicio();
+      mostrar('pInicio');
+    }).catch(function (e) { $('btnIngresar').disabled = false; aviso('errIngreso', 'error', esc(e.message)); });
+  });
+
+  function pintarQuien() {
+    $('quien').innerHTML = dia ? '<div><b>' + esc(dia.piloto) + '</b><span>' + (dia.placa ? 'Placa ' + esc(dia.placa) : '') + '</span></div>' : '';
+  }
+
+  // ------------------------------------------------------------ inicio del día
+  function prepararInicio() {
+    $('txtFecha').value = dia.fecha;
+    $('selPlaca').value = dia.placa || '';
+    $('txtAuxiliar').value = dia.auxiliar || '';
+    $('txtKmSalida').value = dia.kmSalida || '';
+    $('txtHoraSalida').value = dia.horaSalida || ahora();
+    kmAutollenado = null; // el km de un día ya iniciado lo escribió el piloto
+    actualizarPlaca();
+    // Al corregir la salida de un día ya iniciado, el km que el piloto confirmó sigue confirmado.
+    kmConfirmado = dia.iniciado ? num(dia.kmSalida) : null;
+    aviso('errInicio');
+  }
+  /**
+   * Fecha del día frente al último registro de la placa (mismo criterio que el servidor): 'antes' (el registro es
+   * posterior: no se compara), 'mismo' (otro viaje ese día: se sugiere su km, pero no se pide confirmar) o 'despues'.
+   */
+  function relacionConUltimo(p) {
+    var f = $('txtFecha').value;
+    if (!p || !p.ultimoFecha || !f) return 'despues';
+    return f < p.ultimoFecha ? 'antes' : (f === p.ultimoFecha ? 'mismo' : 'despues');
+  }
+  function actualizarPlaca() {
+    var placa = $('selPlaca').value, p = datosPlaca(placa), u = p ? p.ultimoKm : null, rel = relacionConUltimo(p);
+    $('ayudaPlaca').textContent = !u ? '' : (rel === 'antes' ? 'Hay un registro posterior de esta placa: ' : 'Último registro de esta placa: ') +
+      textoUltimoRegistro(placa) + '.';
+    // El km que puso la app se cambia con la placa o la fecha; el que escribió el piloto no se toca.
+    var actual = num($('txtKmSalida').value);
+    if (actual == null || actual === kmAutollenado) {
+      if (u && rel !== 'antes') { $('txtKmSalida').value = u; kmAutollenado = u; }
+      else if (actual != null) { $('txtKmSalida').value = ''; kmAutollenado = null; }
+    }
+    revisarKmSalida();
+  }
+  function revisarKmSalida() {
+    var placa = $('selPlaca').value, p = datosPlaca(placa), u = p ? p.ultimoKm : null, rel = relacionConUltimo(p), k = num($('txtKmSalida').value);
+    if (!u || k == null || rel === 'antes') aviso('avisoKmSalida');
+    else if (configGuardadaEl && k === u && k === kmAutollenado) {
+      aviso('avisoKmSalida', 'ambar', 'Sin conexión con la oficina: este es el último km que conoce este teléfono (' + esc(textoUltimoRegistro(placa)) +
+        '). Revise que sea lo que marca el odómetro.');
+    } else if (k < u && rel === 'mismo') {
+      aviso('avisoKmSalida', 'neutro', 'Ese mismo día hay otro viaje de esta placa que terminó en ' + fmtKm(u) + ' km. Si este viaje fue antes, está bien.');
+    } else if (k < u) {
+      aviso('avisoKmSalida', 'ambar', 'Es menor que el último registro de esta placa: ' + esc(textoUltimoRegistro(placa)) + '. Revise el odómetro; ' +
+        'si de verdad marca ' + fmtKm(k) + ' km, puede iniciar la ruta.');
+    } else if (k - u > 30) aviso('avisoKmSalida', 'ambar', 'Hay ' + fmtKm(k - u) + ' km desde el último registro de esta placa. Si es correcto, continúe.');
+    else aviso('avisoKmSalida');
+    pintarMantPlaca();
+  }
+  /** Otro km u otra placa: hay que volver a confirmar un km menor que el último registro. */
+  function olvidarKmConfirmado() {
+    kmConfirmado = null;
+    if ($('btnConfirmarKm')) aviso('errInicio');
+  }
+  $('selPlaca').addEventListener('change', function () { olvidarKmConfirmado(); actualizarPlaca(); });
+  ['input', 'change'].forEach(function (evento) {
+    $('txtFecha').addEventListener(evento, function () { olvidarKmConfirmado(); actualizarPlaca(); });
+  });
+  $('txtKmSalida').addEventListener('input', function () { kmAutollenado = null; olvidarKmConfirmado(); revisarKmSalida(); });
+
+  $('btnIniciar').addEventListener('click', function () {
+    var errores = [];
+    var placa = $('selPlaca').value;
+    var u = ultimoKmPlaca(placa), k = num($('txtKmSalida').value), rel = relacionConUltimo(datosPlaca(placa));
+    if (!$('txtFecha').value) errores.push('Escriba la fecha.');
+    if (!placa) errores.push('Seleccione la placa.');
+    if (k == null || k < 0 || Math.floor(k) !== k) errores.push('Escriba el kilometraje de salida (solo números enteros).');
+    if (!$('txtHoraSalida').value) errores.push('Escriba la hora de salida.');
+    if (errores.length) { aviso('errInicio', 'error', errores.join('<br>')); return; }
+    // Km menor que el último registro: no se bloquea (manda el odómetro; el registro anterior puede ser una prueba o un
+    // error), pero se pide confirmar el número. El servidor marca el día para que la oficina revise el registro anterior.
+    // Solo frente a un registro de un día anterior (otro viaje del mismo día, o un registro posterior, no se compara).
+    if (u && k < u && rel === 'despues' && kmConfirmado !== k) {
+      aviso('errInicio', 'ambar', 'El odómetro marca menos que el último registro de esta placa: ' + esc(textoUltimoRegistro(placa)) + '. ' +
+        'Si el odómetro de verdad marca ' + fmtKm(k) + ' km, continúe: la oficina revisará el registro anterior.' +
+        '<br><button class="chico" type="button" id="btnConfirmarKm">Continuar con ' + fmtKm(k) + ' km</button>');
+      $('btnConfirmarKm').addEventListener('click', function () { kmConfirmado = k; $('btnIniciar').click(); });
+      return;
+    }
+    aviso('errInicio');
+    dia.fecha = $('txtFecha').value;
+    dia.placa = $('selPlaca').value;
+    dia.auxiliar = $('txtAuxiliar').value.trim();
+    dia.kmSalida = k;
+    dia.horaSalida = $('txtHoraSalida').value;
+    dia.iniciado = true;
+    guardarBorrador();
+    pintarAppNueva();
+    pintarQuien();
+    pintarRuta();
+    mostrar('pRuta');
+    mandarAvance();
+  });
+  $('btnEditarSalida').addEventListener('click', function () { prepararInicio(); mostrar('pInicio'); });
+
+  // ------------------------------------------------------------ ruta
+  function pintarRuta() {
+    $('rutaTitulo').textContent = 'Ruta del ' + fmtFecha(dia.fecha);
+    $('rutaSub').textContent = 'Salida ' + dia.horaSalida + ' · km ' + fmtKm(dia.kmSalida) + (dia.auxiliar ? ' · Auxiliar: ' + dia.auxiliar : '');
+    $('resParadas').textContent = dia.paradas.length;
+    $('resFacturas').textContent = totalFacturas();
+    pintarEstadoAvance();
+    if (!dia.paradas.length) {
+      $('listaParadas').innerHTML = '<p class="ayuda">Todavía no hay paradas.</p>';
+      return;
+    }
+    $('listaParadas').innerHTML = dia.paradas.map(function (p, i) {
+      var chips = p.facturas.map(function (f) {
+        var falta = !f.codigo || !f.vendedor, estado = estadoDe(f);
+        var clase = estado === 'Fallida' ? ' fallida' : (estado === 'Devolución' ? ' devolucion' : (falta ? ' falta' : ''));
+        return '<span class="chip' + clase + '">' + esc(f.control || 's/control') + (f.monto !== '' && f.monto != null ? ' · $' + esc(Number(f.monto).toFixed(2)) : '') +
+          (estado !== 'Exitosa' ? ' · ' + esc(estado) : '') + (f.codigo ? ' · QR ✓' : ' · sin QR') + (f.vendedor ? '' : ' · sin vendedor') + '</span>';
+      }).join('') || '<span class="chip neutro">sin factura</span>';
+      return '<div class="parada"><div class="titulo"><span><span class="num">' + (i + 1) + '</span>' + esc(p.cliente || 'Sin nombre') + '</span>' +
+        '<button class="chico" data-editar="' + i + '">Editar</button></div>' +
+        '<div class="det">' + [p.municipio !== undefined ? esc(p.municipio || p.direccion || '') : esc(p.direccion || ''),
+          p.horaLlegada ? 'llegó ' + esc(p.horaLlegada) : '', p.horaSalida ? 'salió ' + esc(p.horaSalida) : '',
+          p.km != null ? 'km ' + fmtKm(p.km) : 'sin km'].filter(Boolean).join(' · ') +
+        '</div><div>' + chips + '</div></div>';
+    }).join('');
+  }
+  $('listaParadas').addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-editar]');
+    if (b) abrirParada(Number(b.getAttribute('data-editar')));
+  });
+  $('btnNuevaParada').addEventListener('click', function () { abrirParada(null); });
+  $('btnIrCierre').addEventListener('click', function () { prepararCierre(); mostrar('pCierre'); });
+
+  // ------------------------------------------------------------ departamento y municipio
+  /** Nombre de un lugar para compararlo: mayúsculas, sin tildes ni Ñ, solo letras y números (como en el servidor). */
+  function claveLugar(t) {
+    return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, ' ').trim();
+  }
+  var DEPARTAMENTOS_SV = Object.keys(TERRITORIO_SV);
+  /** El departamento como está en la lista ("la union" → "La Unión"); '' si no es uno de los 14. */
+  function departamentoOficial(nombre) {
+    var c = claveLugar(nombre);
+    return c ? DEPARTAMENTOS_SV.filter(function (d) { return claveLugar(d) === c; })[0] || '' : '';
+  }
+  /** Dónde está un municipio con ese nombre: [{ departamento, municipio }] (hay nombres en más de un departamento). */
+  function buscarMunicipio(nombre) {
+    var c = claveLugar(nombre), res = [];
+    if (!c) return res;
+    DEPARTAMENTOS_SV.forEach(function (d) {
+      TERRITORIO_SV[d].forEach(function (m) { if (claveLugar(m) === c) res.push({ departamento: d, municipio: m }); });
+    });
+    return res;
+  }
+  function pintarMunicipios(municipio) {
+    var depto = $('selDepto').value, lista = TERRITORIO_SV[depto] || [];
+    $('selMunicipio').innerHTML = '<option value="">' + (depto ? 'Seleccione…' : 'Elija primero el departamento') + '</option>' +
+      lista.map(function (m) { return '<option>' + esc(m) + '</option>'; }).join('');
+    $('selMunicipio').disabled = !depto;
+    $('selMunicipio').value = lista.indexOf(municipio) >= 0 ? municipio : '';
+  }
+  /** Pone departamento y municipio en la parada. auto: los puso la app (quedan marcados para que el piloto los revise). */
+  function ponerLugar(depto, municipio, auto) {
+    if (!$('selDepto').options.length) {
+      $('selDepto').innerHTML = '<option value="">Seleccione…</option>' + DEPARTAMENTOS_SV.map(function (d) { return '<option>' + esc(d) + '</option>'; }).join('');
+    }
+    $('selDepto').value = depto || '';
+    pintarMunicipios(municipio);
+    $('selDepto').classList.toggle('autollenado', Boolean(auto && depto));
+    $('selMunicipio').classList.toggle('autollenado', Boolean(auto && municipio));
+  }
+  /**
+   * Departamento y municipio de una parada ya guardada. Las paradas anotadas antes de la lista traen el municipio
+   * escrito a mano: si el nombre es de la lista y no hay duda del departamento, se elige; si no, se pide elegirlo.
+   */
+  function ponerLugarGuardado(texto, deptoGuardado) {
+    var depto = departamentoOficial(deptoGuardado);
+    var opciones = buscarMunicipio(texto).filter(function (x) { return !depto || x.departamento === depto; });
+    aviso('ayudaMunicipio');
+    if (opciones.length === 1) { ponerLugar(opciones[0].departamento, opciones[0].municipio, false); return; }
+    ponerLugar(depto, '', false);
+    if (texto) aviso('ayudaMunicipio', 'ambar', 'Antes se escribió «' + esc(texto) + '». Elija el municipio de la lista.');
+  }
+  /**
+   * Municipio que se lee en una dirección ("BARRIO EL CENTRO, SANTA ROSA DE LIMA, LA UNION"), solo si no hay duda.
+   * Un nombre que está en varios departamentos se decide por el departamento escrito en la dirección o por el elegido;
+   * si aun así hay más de uno, no se elige nada. deptoElegido: el departamento que ya está en la parada.
+   */
+  function municipioEnDireccion(direccion, deptoElegido) {
+    var t = ' ' + claveLugar(direccion) + ' ';
+    if (!t.trim()) return null;
+    var hallados = [];
+    DEPARTAMENTOS_SV.forEach(function (d) {
+      TERRITORIO_SV[d].forEach(function (m) {
+        var c = ' ' + claveLugar(m) + ' ', i = t.lastIndexOf(c);
+        if (i >= 0) hallados.push({ departamento: d, municipio: m, ini: i, fin: i + c.length });
+      });
+    });
+    // Un nombre dentro de otro más largo ("San Miguel" en "San Miguel de Mercedes") no cuenta.
+    hallados = hallados.filter(function (a) {
+      return !hallados.some(function (b) { return b.ini <= a.ini && b.fin >= a.fin && b.fin - b.ini > a.fin - a.ini; });
+    });
+    // En "..., SANTA ROSA DE LIMA, LA UNION", "La Unión" es el departamento, no el municipio.
+    hallados = hallados.filter(function (a) {
+      return !(departamentoOficial(a.municipio) === a.departamento &&
+        hallados.some(function (b) { return b !== a && b.departamento === a.departamento; }));
+    });
+    var mencionados = DEPARTAMENTOS_SV.filter(function (d) { return t.indexOf(' ' + claveLugar(d) + ' ') >= 0; });
+    var conDepto = hallados.filter(function (a) { return mencionados.indexOf(a.departamento) >= 0; });
+    if (hallados.length > 1 && conDepto.length) hallados = conDepto;
+    var enElegido = hallados.filter(function (a) { return a.departamento === deptoElegido; });
+    if (hallados.length > 1 && enElegido.length) hallados = enElegido;
+    return hallados.length === 1 ? { departamento: hallados[0].departamento, municipio: hallados[0].municipio } : null;
+  }
+  window.municipioEnDireccion = municipioEnDireccion;
+  /** Con la dirección (leída de la factura o escrita), elige departamento y municipio si el piloto no eligió el municipio. */
+  function sugerirLugar(direccion) {
+    var sel = $('selMunicipio');
+    if (sel.value && !sel.classList.contains('autollenado')) return false;
+    var r = municipioEnDireccion(direccion, $('selDepto').value);
+    if (!r || (r.departamento === $('selDepto').value && r.municipio === sel.value)) return false;
+    ponerLugar(r.departamento, r.municipio, true);
+    aviso('ayudaMunicipio');
+    return true;
+  }
+
+  // ------------------------------------------------------------ parada
+  function abrirParada(i) {
+    editando = i;
+    guardarConFaltantes = false;
+    var p = i == null ? { cliente: '', direccion: '', departamento: '', municipio: '', horaLlegada: ahora(), km: '', horaSalida: '', facturas: [] } : dia.paradas[i];
+    $('paradaTitulo').textContent = i == null ? 'Parada ' + (dia.paradas.length + 1) : 'Editar parada ' + (i + 1);
+    $('txtCliente').value = p.cliente;
+    $('txtDireccion').value = p.municipio !== undefined ? (p.direccion || '') : '';
+    ['txtCliente', 'txtDireccion'].forEach(function (id) { $(id).classList.remove('autollenado'); });
+    if (i == null) {
+      // Parada nueva: sigue en el departamento de la anterior (o del último día); el municipio lo elige el piloto.
+      var anterior = dia.paradas.length ? dia.paradas[dia.paradas.length - 1].departamento : '';
+      ponerLugar(departamentoOficial(anterior || leerJSON(CLAVE_DEPTO, '')), '', false);
+      aviso('ayudaMunicipio');
+    } else {
+      ponerLugarGuardado(p.municipio !== undefined ? (p.municipio || '') : (p.direccion || ''), p.departamento);
+    }
+    aviso('avisoLectura');
+    $('txtLlegada').value = p.horaLlegada || '';
+    $('txtKmParada').value = p.km == null ? '' : p.km;
+    $('txtSalidaParada').value = p.horaSalida || '';
+    facturasForm = JSON.parse(JSON.stringify(p.facturas)).map(function (f) { f.auto = f.auto || {}; return f; });
+    $('btnBorrarParada').classList.toggle('oculto', i == null);
+    aviso('errParada'); aviso('avisoKmParada');
+    dibujarFacturas();
+    mostrar('pParada');
+  }
+  function facturaVacia() { return { control: '', codigo: '', monto: '', vendedor: '', numeroControl: '', estado: 'Exitosa', motivo: '', auto: {} }; }
+  var ESTADOS_ENTREGA = ['Exitosa', 'Fallida', 'Devolución'];
+  /**
+   * Los estados de entrega solo se usan si el servidor ya los guarda (versión 6): uno anterior anotaría una entrega
+   * fallida como entregada. Mientras tanto, toda factura es "Exitosa" y una factura no puede repetirse en el día.
+   */
+  function conEstados() { return config.version >= 6; }
+  function estadoDe(f) { return conEstados() && ESTADOS_ENTREGA.indexOf(f.estado) >= 0 ? f.estado : 'Exitosa'; }
+
+  /** Guarda en el teléfono la parada que se está llenando: al abrir la cámara, Android a veces recarga la página. */
+  function guardarParadaAbierta() {
+    if (!dia || $('pParada').classList.contains('oculto')) return;
+    escribirJSON(CLAVE_PARADA, {
+      diaId: dia.id, editando: editando, facturas: facturasForm,
+      cliente: $('txtCliente').value, direccion: $('txtDireccion').value, departamento: $('selDepto').value, municipio: $('selMunicipio').value,
+      llegada: $('txtLlegada').value, km: $('txtKmParada').value, salida: $('txtSalidaParada').value,
+      auto: ['txtCliente', 'txtDireccion', 'selDepto', 'selMunicipio'].filter(function (id) { return $(id).classList.contains('autollenado'); })
+    });
+  }
+  function olvidarParadaAbierta() {
+    try { localStorage.removeItem(CLAVE_PARADA); } catch (e) {}
+  }
+  /** Vuelve a abrir la parada que quedó a medias, si es del mismo día. */
+  function recuperarParadaAbierta() {
+    var g = leerJSON(CLAVE_PARADA, null);
+    if (!g || !dia || g.diaId !== dia.id) { olvidarParadaAbierta(); return false; }
+    var i = g.editando != null && dia.paradas[g.editando] ? g.editando : null;
+    abrirParada(i);
+    $('txtCliente').value = g.cliente || '';
+    $('txtDireccion').value = g.direccion || '';
+    ponerLugarGuardado(g.municipio || '', g.departamento);
+    $('txtLlegada').value = g.llegada || '';
+    $('txtKmParada').value = g.km || '';
+    $('txtSalidaParada').value = g.salida || '';
+    (g.auto || []).forEach(function (id) { $(id).classList.add('autollenado'); });
+    facturasForm = (g.facturas || []).map(function (f) { f.auto = f.auto || {}; return f; });
+    dibujarFacturas();
+    aviso('avisoLectura', 'info', 'Se recuperó la parada que estaba llenando. Si estaba escaneando una factura, escanéela de nuevo.');
+    return true;
+  }
+
+  function dibujarFacturas() {
+    if (!facturasForm.length) {
+      $('listaFacturas').innerHTML = '<p class="ayuda">Sin facturas en esta parada todavía.</p>';
+      return;
+    }
+    $('listaFacturas').innerHTML = facturasForm.map(function (f, j) {
+      var auto = f.auto || {};
+      // Después de escanear, lo que la foto no dio queda marcado para que el piloto lo escriba.
+      function clase(campo, extra) {
+        var c = [extra, auto[campo] ? 'autollenado' : (f.escaneada && (f[campo] === '' || f[campo] == null) ? 'falta' : '')].filter(Boolean).join(' ');
+        return c ? ' class="' + c + '"' : '';
+      }
+      return '<div class="factura"><div class="cab"><span>Factura ' + (j + 1) + '</span>' +
+        '<button class="chico peligro" type="button" data-quitar="' + j + '">Quitar</button></div>' +
+        '<div class="fila"><div><label>Número de control</label>' +
+        '<input data-f="' + j + '" data-campo="control" type="text" inputmode="numeric" pattern="[0-9]*" value="' + esc(f.control) + '" placeholder="Ej.: 415562"' + clase('control') + '></div>' +
+        '<div style="flex:0 0 40%"><label>Monto $</label>' +
+        '<input data-f="' + j + '" data-campo="monto" type="number" inputmode="decimal" step="0.01" min="0" value="' + esc(f.monto) + '"' + clase('monto') + '></div></div>' +
+        '<div class="fila"><div style="flex:0 0 50%"><label>Código de vendedor</label>' +
+        '<input data-f="' + j + '" data-campo="vendedor" type="text" autocapitalize="characters" autocomplete="off" value="' + esc(f.vendedor || '') + '" placeholder="Ej.: VS125"' + clase('vendedor') + '></div></div>' +
+        '<label>Código de generación</label>' +
+        '<input data-f="' + j + '" data-campo="codigo" type="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="40" value="' + esc(f.codigo || '') + '" placeholder="Se llena con el QR, o escríbalo"' + clase('codigo', 'codigo') + '>' +
+        '<div class="ayuda">' + (f.codigo ? (auto.codigo === 'texto' ? 'Leído del texto impreso, no del QR: revise que coincida con la factura.' : '') :
+          (f.escaneada ? 'No se leyó el QR. Toque «Escanear el QR de cerca» y tome la foto solo del QR; si no se puede, escriba el código que dice «Código de generación» arriba de la factura. Si tampoco se lee, déjelo vacío.' : 'Se llena al escanear el QR de la factura.')) +
+        (f.numeroControl ? (f.codigo && auto.codigo !== 'texto' ? '' : '<br>') + 'Número de control DTE: <span class="codigo">' + esc(f.numeroControl) + '</span>' : '') + '</div>' +
+        (f.avisoFecha ? '<div class="aviso ambar">' + esc(f.avisoFecha) + '</div>' : '') +
+        (f.error ? '<div class="aviso error">' + esc(f.error) + '</div>' : '') +
+        // Estado de la entrega: exitosa (lo normal), fallida (no se pudo entregar) o devolución; las dos últimas piden motivo.
+        (!conEstados() ? '' : '<label>Entrega</label><div class="estados" role="group" aria-label="Estado de la entrega">' + ESTADOS_ENTREGA.map(function (e) {
+          return '<button type="button" data-fe="' + j + '" data-estado="' + e + '"' + (estadoDe(f) === e ? ' class="sel" aria-pressed="true"' : ' aria-pressed="false"') + '>' + e + '</button>';
+        }).join('') + '</div>') +
+        (estadoDe(f) === 'Exitosa' ? '' : '<label>Motivo de la ' + (estadoDe(f) === 'Fallida' ? 'entrega fallida' : 'devolución') + '</label>' +
+          '<input data-f="' + j + '" data-campo="motivo" type="text" list="listaMotivos" autocomplete="off" maxlength="200" value="' + esc(f.motivo || '') +
+          '" placeholder="Elija o escriba el motivo"' + (f.motivo ? '' : ' class="falta"') + '>') +
+        '<div style="margin-top:8px"><button class="chico" type="button" data-qr="' + j + '">' +
+        (f.codigo ? 'Escanear de nuevo' : (f.escaneada ? 'Escanear el QR de cerca' : 'Escanear esta factura')) + '</button></div></div>';
+    }).join('');
+  }
+  $('listaFacturas').addEventListener('input', function (ev) {
+    var j = ev.target.getAttribute('data-f');
+    if (j == null) return;
+    var campo = ev.target.getAttribute('data-campo');
+    var v = ev.target.value;
+    if (campo === 'control') { v = v.replace(/\D/g, ''); if (v !== ev.target.value) ev.target.value = v; }
+    if (campo === 'vendedor') { v = v.toUpperCase().replace(/\s+/g, ''); if (v !== ev.target.value) ev.target.value = v; }
+    if (campo === 'codigo') {
+      var alFinal = ev.target.selectionStart === ev.target.value.length;
+      v = formatearCodigo(v);
+      if (v !== ev.target.value && alFinal) ev.target.value = v;
+    }
+    facturasForm[Number(j)][campo] = v;
+    if (facturasForm[Number(j)].auto) facturasForm[Number(j)].auto[campo] = false;
+    ev.target.classList.remove('autollenado');
+    ev.target.classList.toggle('falta', Boolean(facturasForm[Number(j)].escaneada) && v === '');
+    guardarConFaltantes = false;
+    guardarParadaAbierta();
+  });
+  // Si el piloto corrigió el código en medio del texto, se le da formato al salir del campo.
+  $('listaFacturas').addEventListener('change', function (ev) {
+    var j = ev.target.getAttribute('data-f');
+    if (j != null && ev.target.getAttribute('data-campo') === 'codigo') ev.target.value = facturasForm[Number(j)].codigo || '';
+  });
+  $('listaFacturas').addEventListener('click', function (ev) {
+    var q = ev.target.closest('[data-qr]'), x = ev.target.closest('[data-quitar]'), e = ev.target.closest('[data-estado]');
+    if (e) {
+      var fe = facturasForm[Number(e.getAttribute('data-fe'))];
+      if (fe) { fe.estado = e.getAttribute('data-estado'); guardarConFaltantes = false; dibujarFacturas(); guardarParadaAbierta(); }
+      return;
+    }
+    if (q) escanearFactura(Number(q.getAttribute('data-qr')));
+    if (x) { facturasForm.splice(Number(x.getAttribute('data-quitar')), 1); dibujarFacturas(); guardarParadaAbierta(); }
+  });
+  $('btnOtraFactura').addEventListener('click', function () {
+    facturasForm.push(facturaVacia());
+    dibujarFacturas();
+    guardarParadaAbierta();
+  });
+  ['txtCliente', 'txtDireccion'].forEach(function (id) { $(id).addEventListener('input', function () { $(id).classList.remove('autollenado'); }); });
+  ['txtCliente', 'txtLlegada', 'txtKmParada', 'txtSalidaParada'].forEach(function (id) {
+    $(id).addEventListener('change', guardarParadaAbierta);
+  });
+  // Dirección escrita a mano: si el municipio todavía no se eligió, se busca en ella.
+  $('txtDireccion').addEventListener('change', function () { sugerirLugar($('txtDireccion').value); guardarParadaAbierta(); });
+  $('selDepto').addEventListener('change', function () {
+    pintarMunicipios('');
+    $('selDepto').classList.remove('autollenado');
+    $('selMunicipio').classList.remove('autollenado');
+    aviso('ayudaMunicipio');
+    guardarParadaAbierta();
+  });
+  $('selMunicipio').addEventListener('change', function () {
+    $('selMunicipio').classList.remove('autollenado');
+    aviso('ayudaMunicipio');
+    guardarParadaAbierta();
+  });
+  $('txtKmParada').addEventListener('input', function () {
+    var k = num($('txtKmParada').value), prev = kmUltimaParada(editando == null ? null : editando);
+    if (k != null && k < prev) aviso('avisoKmParada', 'error', 'Es menor que el km anterior (' + fmtKm(prev) + ').');
+    else if (k != null && k - prev > 400) aviso('avisoKmParada', 'ambar', 'Son ' + fmtKm(k - prev) + ' km desde la parada anterior. Revise si es correcto.');
+    else aviso('avisoKmParada');
+  });
+  $('btnGuardarParada').addEventListener('click', function () {
+    var errores = [];
+    var k = num($('txtKmParada').value);
+    var prev = kmUltimaParada(editando == null ? null : editando);
+    if (!$('txtCliente').value.trim()) errores.push('Escriba el cliente o lugar.');
+    if (!$('selDepto').value) errores.push('Elija el departamento.');
+    else if (!$('selMunicipio').value) errores.push('Elija el municipio.');
+    if ($('txtKmParada').value !== '' && (k == null || k < 0 || Math.floor(k) !== k)) errores.push('El kilometraje debe ser un número entero.');
+    if (k != null && k < prev) errores.push('El kilometraje es menor que el anterior (' + fmtKm(prev) + ').');
+    // Facturas con algún dato (las tarjetas vacías se ignoran); "Factura N" es el número de la tarjeta.
+    var conDatos = [];
+    facturasForm.forEach(function (f, j) {
+      if (f.control || f.codigo || f.monto || f.vendedor || estadoDe(f) !== 'Exitosa') conDatos.push({ f: f, n: j + 1 });
+      else if (f.escaneada) errores.push('Factura ' + (j + 1) + ': se escaneó pero no se leyó nada. Escriba los datos o toque «Quitar».');
+    });
+    var facturas = conDatos.map(function (x) { return x.f; });
+    var porCompletar = [];
+    var vistosControl = {}, vistosCodigo = {};
+    conDatos.forEach(function (x) {
+      var f = x.f, n = 'Factura ' + x.n + ': ';
+      if (!f.control) errores.push(n + 'escriba el número de control.');
+      else if (!/^\d{4,9}$/.test(f.control)) errores.push(n + 'el número de control solo lleva números.');
+      else if (vistosControl[f.control]) errores.push(n + 'el control ' + f.control + ' está repetido en esta parada.');
+      if (f.monto === '' || f.monto == null) errores.push(n + 'escriba el monto (total a pagar).');
+      else if (isNaN(Number(f.monto)) || Number(f.monto) < 0) errores.push(n + 'el monto no es válido.');
+      if (f.codigo && !FORMATO_CODIGO.test(f.codigo)) {
+        errores.push(n + (f.codigo.replace(/-/g, '').length > 32 ? 'al código de generación le sobran letras o números' : 'el código de generación está incompleto') +
+          ': son 32 (8-4-4-4-12). Si no se puede leer completo, bórrelo y toque «Guardar parada»: se guarda sin código y la oficina lo completa.');
+      }
+      else if (f.codigo && vistosCodigo[f.codigo]) errores.push(n + 'esta factura ya se escaneó en esta parada.');
+      if (f.vendedor && !FORMATO_VENDEDOR.test(f.vendedor)) errores.push(n + 'el código de vendedor se escribe como VS125.');
+      if (estadoDe(f) !== 'Exitosa' && !String(f.motivo || '').trim()) {
+        errores.push(n + 'escriba el motivo de la ' + (estadoDe(f) === 'Fallida' ? 'entrega fallida' : 'devolución') + '.');
+      }
+      var falta = [];
+      if (!f.vendedor) falta.push('código de vendedor');
+      if (!f.codigo) falta.push('código de generación');
+      if (falta.length) porCompletar.push(n + 'falta ' + falta.join(' y ') + '.');
+      if (f.control) vistosControl[f.control] = true;
+      if (f.codigo) vistosCodigo[f.codigo] = true;
+    });
+    // La misma factura en otra parada: error, salvo que una de las dos no se haya entregado (otro intento el mismo día).
+    dia.paradas.forEach(function (p, i) {
+      if (i === editando) return;
+      p.facturas.forEach(function (f) {
+        facturas.forEach(function (g) {
+          var misma = (f.control && String(f.control) === String(g.control)) || (f.codigo && f.codigo === g.codigo);
+          if (!misma || estadoDe(f) !== 'Exitosa' || estadoDe(g) !== 'Exitosa') return;
+          var texto = f.control && String(f.control) === String(g.control) ? 'El control ' + f.control + ' ya está en la parada ' + (i + 1) + '.' :
+            'Una de estas facturas ya está en la parada ' + (i + 1) + ' (mismo código de generación).';
+          if (errores.indexOf(texto) < 0) errores.push(texto);
+        });
+      });
+    });
+    if (errores.length) { guardarConFaltantes = false; aviso('errParada', 'error', errores.join('<br>')); return; }
+    // Lo que la foto no dio y el piloto no escribió: se pide confirmar; la fila queda marcada para la oficina.
+    if (porCompletar.length && !guardarConFaltantes) {
+      aviso('errParada', 'ambar', porCompletar.join('<br>') + '<br>Escríbalo en la factura de arriba. Si la factura no lo trae o no se puede leer, toque «Guardar así»: ' +
+        'la fila quedará marcada en Registros para que la oficina lo complete.' +
+        '<br><button class="chico" type="button" id="btnGuardarAsi">Guardar así</button>');
+      $('btnGuardarAsi').addEventListener('click', function () { guardarConFaltantes = true; $('btnGuardarParada').click(); });
+      return;
+    }
+    guardarConFaltantes = false;
+    var p = {
+      cliente: $('txtCliente').value.trim(), direccion: $('txtDireccion').value.trim(),
+      departamento: $('selDepto').value, municipio: $('selMunicipio').value,
+      horaLlegada: $('txtLlegada').value, horaSalida: $('txtSalidaParada').value,
+      km: k, facturas: facturas.map(function (f) {
+        return { control: f.control, codigo: String(f.codigo || '').toUpperCase(), monto: f.monto === '' ? '' : Number(f.monto),
+                 vendedor: String(f.vendedor || '').toUpperCase(), numeroControl: f.numeroControl || '',
+                 estado: estadoDe(f), motivo: estadoDe(f) === 'Exitosa' ? '' : String(f.motivo || '').trim(),
+                 cliente: f.cliente || '', direccion: f.direccion || '', auto: f.auto || {} };
+      })
+    };
+    if (editando == null) dia.paradas.push(p); else dia.paradas[editando] = p;
+    escribirJSON(CLAVE_DEPTO, p.departamento);
+    guardarBorrador();
+    olvidarParadaAbierta();
+    pintarRuta();
+    mostrar('pRuta');
+    mandarAvance();
+  });
+  $('btnCancelarParada').addEventListener('click', function () { olvidarParadaAbierta(); mostrar('pRuta'); });
+  $('btnBorrarParada').addEventListener('click', function () {
+    if (editando == null) return;
+    if (!confirm('¿Borrar esta parada?')) return;
+    dia.paradas.splice(editando, 1);
+    guardarBorrador();
+    olvidarParadaAbierta();
+    pintarRuta();
+    mostrar('pRuta');
+    mandarAvance();
+  });
+
+  // ------------------------------------------------------------ cierre
+  function prepararCierre() {
+    $('txtKmRegreso').value = dia.kmRegreso != null ? dia.kmRegreso : '';
+    $('txtHoraRegreso').value = dia.horaRegreso || ahora();
+    $('txtGasolina').value = dia.gasolina || '';
+    $('txtGalones').value = dia.galones || '';
+    $('txtVale').value = dia.vale || '';
+    $('txtNotas').value = dia.notas || '';
+    $('cierreFacturas').textContent = totalFacturas();
+    var porCompletar = 0, fallidas = 0, devoluciones = 0;
+    dia.paradas.forEach(function (p) {
+      p.facturas.forEach(function (f) {
+        if (!f.codigo || !f.vendedor) porCompletar++;
+        if (estadoDe(f) === 'Fallida') fallidas++;
+        if (estadoDe(f) === 'Devolución') devoluciones++;
+      });
+    });
+    var textos = [];
+    if (fallidas || devoluciones) {
+      textos.push('<div class="aviso info">' + [fallidas ? fallidas + ' entrega(s) fallida(s)' : '', devoluciones ? devoluciones + ' devolución(es)' : '']
+        .filter(Boolean).join(' y ') + ' en el día.</div>');
+    }
+    if (porCompletar) textos.push('<div class="aviso ambar">' + porCompletar + ' factura(s) sin código de generación o sin código de vendedor. Se pueden enviar; quedarán marcadas en Registros para que la oficina las complete.</div>');
+    $('avisosCierre').innerHTML = textos.join('');
+    aviso('errCierre');
+    calcularCierre();
+  }
+  function calcularCierre() {
+    var k = num($('txtKmRegreso').value), ult = kmUltimaParada();
+    $('cierreKm').textContent = k != null && k >= dia.kmSalida ? fmtKm(k - dia.kmSalida) : '–';
+    if (k != null && k < ult) aviso('avisoKmRegreso', 'error', 'Es menor que el último km de la ruta (' + fmtKm(ult) + ').');
+    else aviso('avisoKmRegreso');
+  }
+  $('txtKmRegreso').addEventListener('input', calcularCierre);
+  $('btnVolverRuta').addEventListener('click', function () { leerCierre(); guardarBorrador(); mostrar('pRuta'); });
+  function leerCierre() {
+    dia.kmRegreso = num($('txtKmRegreso').value);
+    dia.horaRegreso = $('txtHoraRegreso').value;
+    dia.gasolina = $('txtGasolina').value;
+    dia.galones = $('txtGalones').value;
+    dia.vale = $('txtVale').value.trim();
+    dia.notas = $('txtNotas').value.trim();
+  }
+  $('btnEnviar').addEventListener('click', function () {
+    leerCierre();
+    var errores = [];
+    var k = dia.kmRegreso, ult = kmUltimaParada();
+    if (k == null || Math.floor(k) !== k) errores.push('Escriba el kilometraje de regreso.');
+    else if (k < ult) errores.push('El kilometraje de regreso es menor que el último de la ruta (' + fmtKm(ult) + ').');
+    else if (k - num(dia.kmSalida) > 1500) errores.push('Son ' + fmtKm(k - num(dia.kmSalida)) + ' km en el día (más de 1,500). Revise el kilometraje de regreso.');
+    if (!dia.horaRegreso) errores.push('Escriba la hora de regreso.');
+    if (errores.length) { aviso('errCierre', 'error', errores.join('<br>')); return; }
+    guardarBorrador();
+    var envio = JSON.parse(JSON.stringify(dia));
+    delete envio.iniciado;
+    $('btnEnviar').disabled = true;
+    $('btnEnviar').textContent = 'Enviando…';
+    servidor('enviarDia', envio).then(function (r) {
+      terminarEnvio(r, envio);
+    }).catch(function (e) {
+      var msg = e && e.message ? e.message : String(e);
+      // Errores de datos: el piloto debe corregir. Errores de red: se guarda como pendiente.
+      if (!esErrorDeRed(e)) {
+        aviso('errCierre', 'error', esc(msg));
+      } else {
+        var pend = leerJSON(CLAVE_PENDIENTES, []);
+        pend.push(envio);
+        escribirJSON(CLAVE_PENDIENTES, pend);
+        terminarEnvio({ ok: true, pendiente: true }, envio);
+      }
+    }).then(function () {
+      $('btnEnviar').disabled = false;
+      $('btnEnviar').textContent = 'Enviar día';
+    });
+  });
+  function terminarEnvio(r, envio) {
+    try { localStorage.removeItem(CLAVE_BORRADOR); localStorage.removeItem(CLAVE_AVANCE); } catch (e) {}
+    var km = envio.kmRegreso - envio.kmSalida;
+    var html;
+    if (r.pendiente) {
+      html = '<div class="aviso ambar">No hay señal. El día quedó guardado en este teléfono y se enviará solo cuando vuelva a abrir la app con internet.</div>';
+    } else if (r.anulado) {
+      // La oficina anuló el día (quizá mientras estaba en ruta): no entra en Registros, pero el servidor guarda lo que
+      // llegó en "Envíos app" para que la oficina lo recupere si fue un error.
+      html = '<div class="aviso ambar">' + esc(r.mensaje) + ' Lo que envió quedó guardado para la oficina. Avise a la oficina si el día no debía anularse.</div>';
+    } else if (r.duplicado) {
+      html = '<div class="aviso info">' + esc(r.mensaje) + '</div>';
+    } else {
+      html = '<div class="aviso ok">Se guardaron ' + r.filas + ' fila(s) en Registros. Km del día: ' + fmtKm(km) + '.</div>';
+      if (r.avisos && r.avisos.length) html += '<div class="aviso ambar"><b>Para revisión de oficina:</b><br>' + r.avisos.map(esc).join('<br>') + '</div>';
+    }
+    if (!r.anulado) {
+      anotarUltimoRegistro(envio);
+      // Mantenimiento de la placa con el km de regreso: lo que dijo el servidor o, sin señal, la cuenta de la app.
+      var p = datosPlaca(envio.placa);
+      if (p && r.mant) p.mant = r.mant;
+      guardarConfig();
+      var m = r.mant || (p ? mantConKm(p.mant, envio.kmRegreso) : null);
+      if (m && (m.estado === 'proximo' || m.estado === 'vencido')) html += avisoMant(m);
+    }
+    $('listoTexto').innerHTML = html;
+    dia = null;
+    pintarQuien();
+    pintarPendientes();
+    mostrar('pListo');
+  }
+  /**
+   * El último registro de la placa pasa a ser este día, aunque su km sea menor que el anterior (mismo criterio que el
+   * servidor: manda el día más reciente; del mismo día, el mayor km). No se usa para un día que la oficina anuló.
+   */
+  function anotarUltimoRegistro(envio) {
+    config.placas.forEach(function (p) {
+      if (p.placa !== envio.placa) return;
+      if (p.ultimoFecha && (envio.fecha < p.ultimoFecha || (envio.fecha === p.ultimoFecha && envio.kmRegreso < p.ultimoKm))) return;
+      p.ultimoKm = envio.kmRegreso;
+      p.ultimoFecha = envio.fecha;
+      p.ultimoPiloto = envio.piloto;
+    });
+  }
+  $('btnNuevoDia').addEventListener('click', function () { $('txtPin').value = ''; mostrar('pIngreso'); });
+
+  // ------------------------------------------------------------ pendientes sin señal
+  function pintarPendientes() {
+    var pend = leerJSON(CLAVE_PENDIENTES, []);
+    $('pendientes').classList.toggle('oculto', !pend.length);
+    $('pendientes').textContent = pend.length ? pend.length + ' día(s) sin enviar por falta de señal. Toque aquí para reintentar.' : '';
+    // Días que el servidor rechazó: quedan guardados en el teléfono y el aviso no se va hasta que la oficina los recupere.
+    var rech = leerJSON(CLAVE_RECHAZADOS, []);
+    $('rechazados').classList.toggle('oculto', !rech.length);
+    $('rechazados').textContent = rech.length ? rech.length + ' día(s) rechazados guardados en este teléfono. Avise a la oficina. Toque aquí para volver a intentar.' : '';
+    pintarAppNueva();
+  }
+  /**
+   * Manda los días que quedaron en el teléfono sin señal. Una sola vuelta a la vez (al abrir, al volver la señal o al
+   * tocar el aviso): si llega otro pedido mientras tanto, se hace otra vuelta al terminar. La lista se vuelve a leer en
+   * cada paso y solo se quita el día que ya se resolvió, así no se pierde un día que se agregó mientras tanto.
+   */
+  var reintentando = false, reintentarOtraVez = false;
+  function quitarPendiente(id) {
+    escribirJSON(CLAVE_PENDIENTES, leerJSON(CLAVE_PENDIENTES, []).filter(function (d) { return d.id !== id; }));
+  }
+  /** Un día que el servidor no aceptó: queda aparte en el teléfono (uno por ID) para reintentarlo o para la oficina. */
+  function guardarRechazado(envio, error) {
+    var rechazados = leerJSON(CLAVE_RECHAZADOS, []).filter(function (r) { return !r.envio || r.envio.id !== envio.id; });
+    rechazados.push({ envio: envio, error: error, fecha: new Date().toISOString() });
+    escribirJSON(CLAVE_RECHAZADOS, rechazados);
+  }
+  function reintentarPendientes() {
+    if (reintentando) { reintentarOtraVez = true; return; }
+    var pend = leerJSON(CLAVE_PENDIENTES, []);
+    if (!pend.length) return;
+    reintentando = true;
+    var problemas = [], enviados = 0;
+    var cadena = Promise.resolve();
+    pend.forEach(function (envio) {
+      cadena = cadena.then(function () {
+        // Otra vuelta (o la oficina, al reintentar un rechazado) ya lo resolvió.
+        if (!leerJSON(CLAVE_PENDIENTES, []).some(function (d) { return d.id === envio.id; })) return;
+        return servidor('enviarDia', envio).then(function (r) {
+          quitarPendiente(envio.id);
+          if (r && r.anulado) problemas.push('El día ' + fmtFecha(envio.fecha) + ' no se guardó: la oficina lo había anulado.');
+          else {
+            enviados++;
+            anotarUltimoRegistro(envio);
+            var p = datosPlaca(envio.placa);
+            if (p && r && r.mant) p.mant = r.mant;
+          }
+        }, function (e) {
+          var msg = e && e.message ? e.message : String(e);
+          if (esErrorDeRed(e)) return;
+          // No se borra: queda guardado aparte en el teléfono; se puede reintentar tocando el aviso.
+          guardarRechazado(envio, msg);
+          quitarPendiente(envio.id);
+          problemas.push('Un día guardado (' + fmtFecha(envio.fecha) + ') fue rechazado: ' + msg + ' Quedó guardado en este teléfono. Avise a la oficina.');
+        });
+      });
+    });
+    cadena.then(function () {
+      reintentando = false;
+      if (enviados) guardarConfig();
+      pintarPendientes();
+      if (problemas.length) aviso('mensajeGlobal', 'error', problemas.map(esc).join('<br>'));
+      else if (enviados && !leerJSON(CLAVE_PENDIENTES, []).length) aviso('mensajeGlobal', 'ok', 'Se enviaron los días que estaban pendientes.');
+      // Si la pantalla de salida está abierta, muestra el último registro ya actualizado.
+      if (enviados && !$('pInicio').classList.contains('oculto')) actualizarPlaca();
+      if (reintentarOtraVez) { reintentarOtraVez = false; reintentarPendientes(); }
+    });
+  }
+  $('pendientes').addEventListener('click', reintentarPendientes);
+  $('rechazados').addEventListener('click', function () {
+    var rech = leerJSON(CLAVE_RECHAZADOS, []);
+    if (!rech.length) return;
+    var pend = leerJSON(CLAVE_PENDIENTES, []);
+    rech.forEach(function (r) {
+      if (r.envio && !pend.some(function (d) { return d.id === r.envio.id; })) pend.push(r.envio);
+    });
+    escribirJSON(CLAVE_PENDIENTES, pend);
+    escribirJSON(CLAVE_RECHAZADOS, []);
+    pintarPendientes();
+    reintentarPendientes();
+  });
+
+  // ------------------------------------------------------------ avance del día en ruta
+  /**
+   * La oficina ve el día mientras el piloto está en ruta: al iniciar la ruta y con cada parada, la app manda el día hasta
+   * ese momento (guardarAvance). Sin señal no se pierde nada: se manda el último estado cuando vuelve la señal. Lo que
+   * vale al final es el envío del día ("Enviar día").
+   */
+  var avanceEnCurso = false, avanceOtraVez = false, relojAvance = null, errorAvance = '';
+  function estadoAvance() { var a = leerJSON(CLAVE_AVANCE, null); return a && dia && a.id === dia.id ? a : null; }
+  function avancePendiente() { var a = estadoAvance(); return Boolean(dia && dia.iniciado && (!a || a.pendiente)); }
+  function mandarAvance() {
+    if (!dia || !dia.iniciado || !(config.version >= 5)) return;
+    escribirJSON(CLAVE_AVANCE, { id: dia.id, pendiente: true, hora: (estadoAvance() || {}).hora || '' });
+    pintarEstadoAvance();
+    clearTimeout(relojAvance);
+    relojAvance = setTimeout(enviarAvanceAhora, 300);
+  }
+  function enviarAvanceAhora() {
+    relojAvance = null;
+    if (!dia || !dia.iniciado) return;
+    if (avanceEnCurso) { avanceOtraVez = true; return; }
+    avanceEnCurso = true;
+    var copia = JSON.parse(JSON.stringify(dia));
+    delete copia.iniciado;
+    servidor('guardarAvance', copia).then(function (r) {
+      errorAvance = '';
+      // Solo si no hay un cambio más nuevo esperando (en cola o en los 300 ms antes de mandarse).
+      if (dia && dia.id === copia.id && !avanceOtraVez && !relojAvance) escribirJSON(CLAVE_AVANCE, { id: copia.id, pendiente: false, hora: ahora() });
+      if (r && r.anulado) aviso('mensajeGlobal', 'error', 'La oficina anuló este día. Pregunte a la oficina antes de seguir.');
+    }, function (e) {
+      // Sin señal: queda pendiente. Datos que el servidor no acepta: se dice aquí; el envío final dirá qué corregir.
+      errorAvance = esErrorDeRed(e) ? '' : (e && e.message ? e.message : String(e));
+    }).then(function () {
+      avanceEnCurso = false;
+      pintarEstadoAvance();
+      if (avanceOtraVez) { avanceOtraVez = false; enviarAvanceAhora(); }
+    });
+  }
+  function pintarEstadoAvance() {
+    var el = $('estadoAvance');
+    if (!dia || !dia.iniciado || !(config.version >= 5)) { el.textContent = ''; return; }
+    var a = estadoAvance();
+    if (errorAvance) el.textContent = 'La oficina no está recibiendo su ruta: ' + errorAvance;
+    else if (a && !a.pendiente) el.textContent = '✓ La oficina ve su ruta (actualizada ' + a.hora + ').';
+    else if (avanceEnCurso || relojAvance) el.textContent = 'Enviando su ruta a la oficina…';
+    else el.textContent = 'Sin señal: la oficina verá sus paradas cuando vuelva la señal.';
+  }
+
+  // ------------------------------------------------------------ mantenimiento
+  /** Mantenimiento de la placa con un km más nuevo que el que usó el servidor (el que el piloto acaba de anotar). */
+  function mantConKm(m, km) {
+    if (!m || m.km == null || km == null || (m.kmActual != null && km <= m.kmActual)) return m;
+    var faltan = m.km - km;
+    var estado = faltan <= 0 ? 'vencido' : (m.aviso != null && faltan <= m.aviso ? 'proximo' : 'ok');
+    if (estado === 'ok' && m.estado === 'por_confirmar') estado = 'por_confirmar';
+    return { estado: estado, servicio: m.servicio, km: m.km, faltan: faltan, kmActual: km, aviso: m.aviso, porConfirmar: m.porConfirmar };
+  }
+  /** Próximo mantenimiento para el piloto: rojo si ya pasó, ámbar si se acerca, una línea gris si falta. '' sin datos. */
+  function avisoMant(m) {
+    if (!m || !m.servicio || m.km == null) return '';
+    var nombre = 'mantenimiento ' + m.servicio.toLowerCase();
+    // Un mantenimiento anotado desde la app no cambia el estado hasta que la oficina lo confirma con la factura del taller.
+    var cola = m.porConfirmar ? ' Ya hay un mantenimiento anotado: la oficina todavía no lo confirma.' : ' Avise a la oficina.';
+    if (m.estado === 'vencido') {
+      return '<div class="aviso error mant"><b>Le toca el ' + nombre + ':</b> era a los ' + fmtKm(m.km) + ' km' +
+        (m.faltan < 0 ? ' (lleva ' + fmtKm(-m.faltan) + ' km de más)' : '') + '.' + cola + '</div>';
+    }
+    if (m.estado === 'proximo') {
+      return '<div class="aviso ambar mant"><b>Se acerca el ' + nombre + ':</b> a los ' + fmtKm(m.km) + ' km (faltan ' + fmtKm(m.faltan) +
+        ' km).' + cola + '</div>';
+    }
+    return '<div class="ayuda mant">Próximo ' + nombre + ': a los ' + fmtKm(m.km) + ' km' +
+      (m.estado === 'por_confirmar' ? ' (la oficina todavía no confirma el último mantenimiento)' : '') + '.</div>';
+  }
+  window.avisoMant = avisoMant;
+  /** En la salida de bodega, bajo la placa (con el km de salida si es más nuevo que el último registro). */
+  function pintarMantPlaca() {
+    var p = datosPlaca($('selPlaca').value);
+    var k = relacionConUltimo(p) === 'antes' ? null : num($('txtKmSalida').value);
+    $('mantPlaca').innerHTML = p ? avisoMant(mantConKm(p.mant, k)) : '';
+  }
+
+  var mantId = null;          // ID del mantenimiento que se está anotando (el mismo en cada reintento: no se duplica)
+  var mantRestaurado = false; // el formulario viene de lo que quedó guardado: si se cambia, es otro mantenimiento
+  var mantKmAuto = null, mantKmConfirmado = null;
+  function prepararMant() {
+    var aj = config.mantenimiento;
+    $('mantCadaMenor').textContent = aj ? '(cada ' + fmtKm(aj.menor.cada) + ' km)' : '';
+    $('mantCadaMayor').textContent = aj ? '(cada ' + fmtKm(aj.mayor.cada) + ' km; incluye el menor)' : '(incluye el menor)';
+    var placa = $('mantSelPlaca').value;
+    $('mantSelPlaca').innerHTML = '<option value="">Seleccione…</option>' + config.placas.map(function (p) {
+      return '<option value="' + esc(p.placa) + '">' + esc(p.placa) + '</option>';
+    }).join('');
+    var guardado = leerJSON(CLAVE_MANT, null);
+    if (!mantId && guardado && guardado.piloto === dia.piloto) {
+      // Lo que quedó escrito (sin señal, o la app se cerró): sigue ahí, con el mismo ID para no duplicar.
+      mantId = guardado.id;
+      mantRestaurado = true;
+      placa = guardado.placa;
+      $('mantFecha').value = guardado.fecha || hoyISO();
+      $('mantKm').value = guardado.km || '';
+      $('mantTaller').value = guardado.taller || '';
+      $('mantCosto').value = guardado.costo || '';
+      $('mantNotas').value = guardado.notas || '';
+      Array.prototype.forEach.call(document.querySelectorAll('input[name=mantServicio]'), function (r) { r.checked = r.value === guardado.servicio; });
+      mantKmAuto = null; mantKmConfirmado = null;
+    } else if (!mantId) {
+      // Formulario nuevo (lo anterior se guardó o es la primera vez).
+      mantId = nuevoId();
+      mantRestaurado = false;
+      placa = $('selPlaca').value || '';
+      $('mantFecha').value = hoyISO();
+      ['mantKm', 'mantTaller', 'mantCosto', 'mantNotas'].forEach(function (id) { $(id).value = ''; });
+      Array.prototype.forEach.call(document.querySelectorAll('input[name=mantServicio]'), function (r) { r.checked = false; });
+      mantKmAuto = null; mantKmConfirmado = null;
+    }
+    $('mantSelPlaca').value = placa;
+    aviso('errMant');
+    // Registrar mantenimientos pide PIN (la oficina se lo asigna en Configuración).
+    $('btnGuardarMant').disabled = !dia.pin;
+    if (!dia.pin) aviso('errMant', 'ambar', 'Para registrar mantenimientos necesita un PIN. Pídalo a la oficina; mientras tanto, avísele del mantenimiento.');
+    mantPlacaCambio();
+    mostrar('pMant');
+  }
+  function guardarFormMant() {
+    // Lo guardado pudo haber llegado al servidor sin que el teléfono lo supiera: al cambiarlo, lleva otro ID para que no
+    // se tome como el mismo mantenimiento repetido.
+    if (mantRestaurado) { mantId = nuevoId(); mantRestaurado = false; }
+    var elegido = document.querySelector('input[name=mantServicio]:checked');
+    escribirJSON(CLAVE_MANT, { id: mantId, piloto: dia ? dia.piloto : '', placa: $('mantSelPlaca').value, fecha: $('mantFecha').value,
+      km: $('mantKm').value, servicio: elegido ? elegido.value : '', taller: $('mantTaller').value, costo: $('mantCosto').value, notas: $('mantNotas').value });
+  }
+  ['mantSelPlaca', 'mantFecha', 'mantKm', 'mantTaller', 'mantCosto', 'mantNotas'].forEach(function (id) { $(id).addEventListener('input', guardarFormMant); });
+  $('mantServicio').addEventListener('change', function () { mantServicioConfirmado = null; guardarFormMant(); });
+  var mantServicioConfirmado = null;
+  /** Km de referencia de la placa: el último registro de viajes o del taller, el más alto. */
+  function kmReferenciaMant(placa) {
+    var p = datosPlaca(placa);
+    if (!p) return null;
+    var a = p.ultimoKm, b = p.mant ? p.mant.kmActual : null;
+    return a == null ? b : (b == null ? a : Math.max(a, b));
+  }
+  function mantPlacaCambio() {
+    var placa = $('mantSelPlaca').value, p = datosPlaca(placa);
+    $('mantEstado').innerHTML = !p ? '' : (avisoMant(p.mant) || '<div class="ayuda mant">Esta placa todavía no tiene mantenimientos anotados.</div>');
+    var actual = num($('mantKm').value);
+    if (actual == null || actual === mantKmAuto) {
+      var ref = kmReferenciaMant(placa);
+      $('mantKm').value = ref == null ? '' : ref;
+      mantKmAuto = ref;
+    }
+    revisarKmMant();
+  }
+  /** Km que no cuadra con lo registrado (lo mismo que revisa el servidor): texto del aviso, o '' si está bien. */
+  function kmMantRaro(placa, fecha, k) {
+    var p = datosPlaca(placa), ref = kmReferenciaMant(placa);
+    if (!p || ref == null || k == null || (p.ultimoFecha && fecha <= p.ultimoFecha)) return '';
+    if (k < ref) return 'Es menor que el último registro de esta placa (' + fmtKm(ref) + ' km). Revise el odómetro.';
+    if (k > ref + 2000) return 'Son ' + fmtKm(k - ref) + ' km más que el último registro de esta placa (' + fmtKm(ref) + ' km). Revise el número.';
+    return '';
+  }
+  function revisarKmMant() {
+    var raro = kmMantRaro($('mantSelPlaca').value, $('mantFecha').value, num($('mantKm').value));
+    $('mantAvisoKm').innerHTML = raro ? '<div class="aviso ambar">' + esc(raro) + '</div>' : '';
+  }
+  $('btnIrMant').addEventListener('click', prepararMant);
+  $('btnVolverMant').addEventListener('click', function () { aviso('errMant'); mostrar('pInicio'); });
+  $('mantSelPlaca').addEventListener('change', function () { mantKmConfirmado = null; mantPlacaCambio(); });
+  $('mantFecha').addEventListener('change', function () { mantKmConfirmado = null; revisarKmMant(); });
+  $('mantKm').addEventListener('input', function () { mantKmAuto = null; mantKmConfirmado = null; revisarKmMant(); });
+
+  function guardarMant() {
+    var placa = $('mantSelPlaca').value, fecha = $('mantFecha').value, k = num($('mantKm').value);
+    var elegido = document.querySelector('input[name=mantServicio]:checked');
+    var servicio = elegido ? elegido.value : '';
+    var costo = $('mantCosto').value.trim();
+    var errores = [];
+    if (!placa) errores.push('Seleccione la placa.');
+    if (!servicio) errores.push('Elija el servicio: menor, mayor u otro.');
+    if (!fecha) errores.push('Escriba la fecha.');
+    else if (fecha > hoyISO()) errores.push('La fecha no puede ser de un día que no ha llegado.');
+    if (servicio === 'Otro' && !$('mantNotas').value.trim()) errores.push('Escriba qué se hizo.');
+    if (k == null || k <= 0 || Math.floor(k) !== k) errores.push('Escriba el kilometraje del odómetro (solo números enteros).');
+    if (costo !== '' && (num(costo) == null || num(costo) < 0)) errores.push('El costo debe ser un monto en dólares.');
+    if (errores.length) { aviso('errMant', 'error', errores.join('<br>')); return; }
+    // Si eligió un servicio distinto al que tocaba (por ejemplo "Mayor" cuando tocaba el menor), se pide confirmar.
+    var esperado = (datosPlaca(placa) || {}).mant;
+    if (esperado && esperado.servicio && (servicio === 'Menor' || servicio === 'Mayor') && servicio !== esperado.servicio &&
+        mantServicioConfirmado !== servicio) {
+      aviso('errMant', 'ambar', 'Según el historial, lo que tocaba era el mantenimiento ' + esc(esperado.servicio.toLowerCase()) + '. ¿Seguro que fue ' +
+        esc(servicio.toLowerCase()) + '?<br><button class="primario" type="button" id="btnConfirmarServicioMant">Sí, fue ' + esc(servicio.toLowerCase()) + '</button>');
+      $('btnConfirmarServicioMant').addEventListener('click', function () { mantServicioConfirmado = servicio; guardarMant(); });
+      return;
+    }
+    var raro = kmMantRaro(placa, fecha, k);
+    if (raro && mantKmConfirmado !== k) {
+      aviso('errMant', 'ambar', esc(raro) + ' Si el odómetro marca ' + fmtKm(k) + ' km, guárdelo así: la oficina lo revisará.' +
+        '<br><button class="primario" type="button" id="btnConfirmarKmMant">Guardar con ' + fmtKm(k) + ' km</button>');
+      $('btnConfirmarKmMant').addEventListener('click', function () { mantKmConfirmado = k; guardarMant(); });
+      return;
+    }
+    var datos = { id: mantId, piloto: dia.piloto, pin: dia.pin, placa: placa, fecha: fecha, km: k, servicio: servicio,
+                  taller: $('mantTaller').value.trim(), costo: costo, notas: $('mantNotas').value.trim() };
+    $('btnGuardarMant').disabled = true;
+    $('btnGuardarMant').textContent = 'Guardando…';
+    aviso('errMant');
+    servidor('registrarMantenimiento', datos).then(function (r) {
+      var p = datosPlaca(placa);
+      if (p && r && r.mant) { p.mant = r.mant; guardarConfig(); }
+      mantId = null;
+      mantRestaurado = false;
+      mantServicioConfirmado = null;
+      try { localStorage.removeItem(CLAVE_MANT); } catch (e) {}
+      var html = r && r.duplicado
+        ? '<div class="aviso ambar">' + esc(r.mensaje) + ' No se guardó nada nuevo. Si era otro mantenimiento, anótelo de nuevo.</div>'
+        : '<div class="aviso ok">Se guardó el mantenimiento (' + esc(servicio.toLowerCase()) + ') de la placa ' + esc(placa) + ' a los ' + fmtKm(k) + ' km.</div>';
+      if (r && r.avisos && r.avisos.length) html += '<div class="aviso ambar"><b>La oficina va a revisar:</b><br>' + r.avisos.map(esc).join('<br>') + '</div>';
+      $('mensajeGlobal').innerHTML = html;
+      // Si el piloto ya se fue a otra pantalla mientras se guardaba, no se lo saca de ahí.
+      if (pantallaActual() === 'pMant') mostrar('pInicio');
+      pintarMantPlaca();
+    }, function (e) {
+      aviso('errMant', 'error', esErrorDeRed(e) && !/Demasiados intentos/i.test(e.message) ? 'Sin señal: el mantenimiento no se guardó. Toque «Guardar» otra vez cuando tenga señal; lo escrito no se borra.' : esc(e.message));
+    }).then(function () {
+      $('btnGuardarMant').disabled = false;
+      $('btnGuardarMant').textContent = 'Guardar mantenimiento';
+    });
+  }
+  $('btnGuardarMant').addEventListener('click', guardarMant);
+
+  // ------------------------------------------------------------ app instalada: el gesto "atrás" no la cierra
+  var relojToast = null;
+  function mostrarToast(texto) {
+    $('toast').textContent = texto;
+    $('toast').classList.remove('oculto');
+    clearTimeout(relojToast);
+    relojToast = setTimeout(function () { $('toast').classList.add('oculto'); }, 4500);
+  }
+  function pantallaActual() {
+    var ids = ['pCargando', 'pIngreso', 'pInicio', 'pRuta', 'pParada', 'pCierre', 'pListo', 'pMant'];
+    for (var i = 0; i < ids.length; i++) if (!$(ids[i]).classList.contains('oculto')) return ids[i];
+    return '';
+  }
+  function hayAlgoEnCurso() {
+    var a = pantallaActual();
+    return a !== '' && a !== 'pCargando' && a !== 'pIngreso' && a !== 'pListo';
+  }
+  /**
+   * Instalada, la app no tiene botones del navegador y el gesto "atrás" de Android la cerraría a mitad del día. Mientras
+   * hay algo en curso, "atrás" no sale: en el mantenimiento vuelve a la salida de bodega y en lo demás dice cómo salir.
+   * Chrome se salta las entradas del historial agregadas sin que la persona toque la pantalla, por eso se agrega una con
+   * el siguiente toque. Si de verdad quiere salir, "atrás" otra vez sin tocar nada la cierra (el día queda guardado).
+   */
+  var instalada = Boolean(window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches));
+  window.appInstalada = instalada;
+  if (instalada && window.history && history.pushState) {
+    var guardaPuesta = false;
+    document.addEventListener('click', function () {
+      if (!guardaPuesta && hayAlgoEnCurso()) { history.pushState({ logistikGo: true }, ''); guardaPuesta = true; }
+    }, true);
+    window.addEventListener('popstate', function () {
+      guardaPuesta = false;
+      if (!hayAlgoEnCurso()) return;
+      if (pantallaActual() === 'pMant') { mostrar('pInicio'); return; }
+      mostrarToast('Para salir de la app use el botón de inicio del teléfono. Lo que lleva del día queda guardado.');
+    });
+  }
+
+  // ------------------------------------------------------------ botones "Ahora"
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-ahora]');
+    if (b) { $(b.getAttribute('data-ahora')).value = ahora(); $(b.getAttribute('data-ahora')).dispatchEvent(new Event('input')); }
+  });
+
+  iniciarApp();
+})();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+</script>
+</body>
+</html>
