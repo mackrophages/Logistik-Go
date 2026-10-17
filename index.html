@@ -463,7 +463,7 @@
     <div class="periodo-datos">
     <div class="tarjeta"><h3 style="margin-top:0">Hoy</h3><div class="kpis" id="tabHoy"></div>
       <h3 class="cap-periodo" data-titulo="">Este mes</h3><div class="kpis" id="tabMes"></div></div>
-    <!-- Efectivo a bordo (Task 13): de hoy, por piloto, lo cobrado al contado o en efectivo; en rojo el que pasa el límite
+    <!-- Efectivo a bordo (Task 13): de hoy, por piloto, lo cobrado en efectivo (el Contado se paga en caja, no cuenta); en rojo el que pasa el límite
          (LIMITE_EFECTIVO_ABORDO). Lo calcula el servidor (tablero_); sin efectivoAbordoPorPiloto (servidor anterior), no aparece. -->
     <div class="tarjeta oculto" id="tabEfectivoTarjeta">
       <h3 style="margin-top:0">Efectivo a bordo (hoy)</h3>
@@ -1724,8 +1724,8 @@
     $('tabEfectivo').innerHTML = e.length ? tabla(['Piloto', 'Facturas', 'Efectivo'], e.map(function (x) {
       return [esc(x.piloto) + (x.alerta ? '<br><span class="sobre-limite">Pasa el límite</span>' : ''), fmtKm(x.facturas),
               '<b' + (x.alerta ? ' class="sobre-limite"' : '') + '>' + fmtDinero(x.monto) + '</b>'];
-    }), [1, 2]) : '<p class="ayuda">Hoy nadie lleva facturas cobradas al contado o en efectivo.</p>';
-    $('tabEfectivoNota').textContent = 'Facturas de hoy al contado o en efectivo, también de los viajes en ruta (lo devuelto no cuenta). En rojo, el piloto que pasa de ' +
+    }), [1, 2]) : '<p class="ayuda">Hoy nadie lleva facturas cobradas en efectivo.</p>';
+    $('tabEfectivoNota').textContent = 'Facturas de hoy cobradas en efectivo (el Contado se paga en caja de Celasa, no cuenta), también de los viajes en ruta (lo devuelto no cuenta). En rojo, el piloto que pasa de ' +
       fmtDinero(t.limiteEfectivoAbordo) + '. Solo avisa: no bloquea nada en la app.';
   }
   function pintarLag(t) {
