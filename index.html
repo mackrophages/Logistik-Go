@@ -32,11 +32,12 @@
     --acento: #f15923;
     --serie-1: #524ae9;
     --serie-2: #f15923;
-    --serie-3: #1baf7a;
-    --estado-ok: #0ca30c;
-    --estado-alerta: #fab219;
-    --estado-error: #d03b3b;
-    --sin-dato: #cccccc;
+    /* Semáforo (Tarea 28 Parte B): paleta Caldera validada por daltonismo y contraste sobre Ash White.
+       El texto va en tinta sobre jade y ocre; sobre granate, blanco. Siempre con ícono y texto. */
+    --estado-ok: #3aa58a;
+    --estado-alerta: #cc9a22;
+    --estado-error: #a8324f;
+    --sin-dato: #c9c8c3;
     --resaltado: #f5f28e;
     --borde-fino: #d8d8d5;
     --superficie: var(--superficie-tarjeta);
@@ -525,6 +526,168 @@
     }
   }
 
+  /* Línea de tiempo sutil fija bajo la barra azul (Tarea 28 Parte A) */
+  nav.tab-franja-periodo {
+    display: none;
+    position: relative;
+    width: 100%;
+    height: 44px;
+    background-color: var(--superficie-tarjeta);
+    border-bottom: 1px solid var(--borde-fino);
+    color: var(--tinta);
+    box-sizing: border-box;
+    font-family: var(--fuente-panel);
+    z-index: 10;
+  }
+  body.tablero-desplazado nav.tab-franja-periodo:not(.oculto) {
+    display: block;
+  }
+  .tab-franja-periodo-interior {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 0 12px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    box-sizing: border-box;
+  }
+  @media (min-width: 700px), (orientation: landscape) and (min-width: 600px) {
+    .tab-franja-periodo-interior {
+      max-width: 1200px;
+      padding: 0 20px;
+    }
+  }
+  .btn-franja-flecha {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0;
+    border-radius: 9999px;
+    border: 1px solid var(--borde-fino);
+    background: var(--superficie-tarjeta);
+    color: var(--tinta);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: none;
+    transition: background-color .15s, border-color .15s;
+  }
+  .btn-franja-flecha:hover:not(:disabled) {
+    background: var(--superficie-2);
+  }
+  .btn-franja-flecha:disabled {
+    opacity: .35;
+    cursor: default;
+  }
+  .btn-franja-periodo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: 9999px;
+    border: 1px solid var(--borde-fino);
+    background: var(--superficie-tarjeta);
+    color: var(--tinta);
+    font-family: var(--fuente-panel);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 84px);
+    transition: background-color .15s, border-color .15s;
+  }
+  .btn-franja-periodo:hover {
+    background: var(--superficie-2);
+  }
+  .btn-franja-periodo svg.icono {
+    flex: none;
+    stroke: var(--tinta);
+  }
+  .tab-periodo-texto-compacto {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tab-desplegable-periodo {
+    position: absolute;
+    top: 44px;
+    left: 0;
+    right: 0;
+    background: var(--superficie-tarjeta);
+    border-bottom: 1px solid var(--borde-fino);
+    padding: 8px 12px;
+    box-sizing: border-box;
+    box-shadow: none;
+    z-index: 25;
+  }
+  .tab-desplegable-periodo.oculto {
+    display: none;
+  }
+  .linea-tiempo-compacta {
+    max-width: 560px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 0;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  @media (min-width: 700px), (orientation: landscape) and (min-width: 600px) {
+    .linea-tiempo-compacta {
+      max-width: 1200px;
+      padding: 4px 8px;
+    }
+  }
+  .linea-tiempo-compacta button.dia-compacto {
+    background: var(--superficie-tarjeta);
+    border: 1px solid var(--borde-fino);
+    border-radius: 9999px;
+    padding: 4px 10px;
+    font-family: var(--fuente-panel);
+    font-size: 12px;
+    color: var(--tinta);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    cursor: pointer;
+    min-height: 30px;
+    box-shadow: none;
+    transition: background-color .15s, border-color .15s;
+    flex: none;
+  }
+  .linea-tiempo-compacta button.dia-compacto:hover {
+    background: var(--superficie-2);
+  }
+  .linea-tiempo-compacta button.dia-compacto[aria-pressed="true"] {
+    background: var(--resaltado) !important;
+    border-color: #d0ce6b;
+    font-weight: 700;
+    color: var(--tinta);
+  }
+  .punto-estado {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex: none;
+    background: var(--sin-dato);
+  }
+  .punto-estado.ok { background: var(--estado-ok); }
+  .punto-estado.alerta { background: var(--estado-alerta); }
+  .punto-estado.error { background: var(--estado-error); }
+
   /* Control de secciones grande (bajo el título del panel) */
   .tab-secciones-grande-wrapper {
     min-height: 52px;
@@ -677,7 +840,6 @@
   #pTablero .leyenda .muestra { width: 12px; height: 12px; border-radius: 3px; flex: none; }
   #pTablero .leyenda .muestra.serie-1 { background: var(--serie-1); }
   #pTablero .leyenda .muestra.serie-2 { background: var(--serie-2); }
-  #pTablero .leyenda .muestra.serie-3 { background: var(--serie-3); }
   #pTablero .leyenda .muestra.ok { background: var(--estado-ok); }
   #pTablero .leyenda .muestra.alerta { background: var(--estado-alerta); }
   #pTablero .leyenda .muestra.error { background: var(--estado-error); }
@@ -1098,6 +1260,24 @@
     </div>
   </div>
 
+  <nav id="tabFranjaPeriodo" class="tab-franja-periodo oculto" aria-label="Línea de tiempo fija">
+    <div class="tab-franja-periodo-interior">
+      <button type="button" id="btnTabAnteriorCompacto" class="btn-franja-flecha" aria-label="Periodo anterior" title="Periodo anterior">
+        <svg class="icono" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button type="button" id="btnTabPeriodoCompacto" class="btn-franja-periodo" aria-expanded="false" aria-label="Línea de tiempo" title="Ver línea de tiempo">
+        <svg class="icono" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+        <span id="tabPeriodoTextoCompacto" class="tab-periodo-texto-compacto"></span>
+      </button>
+      <button type="button" id="btnTabSiguienteCompacto" class="btn-franja-flecha" aria-label="Periodo siguiente" title="Periodo siguiente" disabled>
+        <svg class="icono" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+    <div id="tabDesplegablePeriodo" class="tab-desplegable-periodo oculto" role="region" aria-label="Línea de tiempo compacta">
+      <div id="tabEvolucionCompacto" class="linea-tiempo-compacta"></div>
+    </div>
+  </nav>
+
   <!-- Panel de la oficina (administradores): solo lectura. -->
   <section id="pTablero" class="oculto">
     <div class="tarjeta" id="tabCabeceraTarjeta">
@@ -1507,6 +1687,12 @@
       if (barra && barra.parentNode === $('quien')) {
         barra.classList.add('oculto');
         $('pTablero').insertBefore(barra, $('pTablero').firstChild);
+      }
+      var franja = $('tabFranjaPeriodo');
+      if (franja && franja.parentNode === $('quien')) {
+        franja.classList.add('oculto');
+        if (typeof cerrarDesplegablePeriodo === 'function') cerrarDesplegablePeriodo();
+        $('pTablero').insertBefore(franja, barra ? barra.nextSibling : $('pTablero').firstChild);
       }
     } else {
       iniciarObservadorTablero();
@@ -2307,10 +2493,12 @@
     ev.preventDefault();
     pintarAppNueva();
   });
-  // Al volver la señal, se envían solos los días pendientes.
   window.addEventListener('online', function () {
     // Administrador con su sesión vigente que abrió la app sin señal: al volver la señal, vuelve al panel.
     if (sesionAdmin() && config.version >= 11 && pantallaActual() === 'pIngreso' && !(dia && dia.iniciado)) { aviso('mensajeGlobal'); abrirTablero(null); }
+    // Gráficos del panel que no cargaron por falta de señal: se reintentan ahora.
+    if (sesionAdmin() && pantallaActual() === 'pTablero' && !window.LogistikGraficos && ultimoTablero) pintarGraficos(ultimoTablero);
+    // Al volver la señal, se envían solos los días pendientes.
     if (!config.pilotos.length) return;
     reintentarPendientes();
     reintentarCargas();
@@ -2427,6 +2615,12 @@
       barra.classList.add('oculto');
       $('pTablero').insertBefore(barra, $('pTablero').firstChild);
     }
+    var franja = $('tabFranjaPeriodo');
+    if (franja && franja.parentNode === $('quien')) {
+      franja.classList.add('oculto');
+      if (typeof cerrarDesplegablePeriodo === 'function') cerrarDesplegablePeriodo();
+      $('pTablero').insertBefore(franja, barra ? barra.nextSibling : $('pTablero').firstChild);
+    }
     document.body.classList.remove('en-tablero', 'tablero-desplazado');
     $('quien').innerHTML = '';
     mostrar('pIngreso');
@@ -2473,6 +2667,11 @@
       if (nom) nom.textContent = s.nombre;
       $('quien').innerHTML = '';
       $('quien').appendChild(barra);
+      var franja = $('tabFranjaPeriodo');
+      if (franja) {
+        franja.classList.remove('oculto');
+        $('quien').appendChild(franja);
+      }
     }
     document.body.classList.add('en-tablero');
     if (typeof cambiarSeccionTablero === 'function') cambiarSeccionTablero('general');
@@ -2575,6 +2774,70 @@
     var b = e.target.closest('button.dia');
     if (b) elegirPeriodo({ tipo: 'dia', fecha: b.getAttribute('data-fecha') });
   });
+  // Franja compacta de periodo (Tarea 28 Parte A)
+  function cerrarDesplegablePeriodo() {
+    var dp = $('tabDesplegablePeriodo');
+    if (dp) { dp.classList.add('oculto'); }
+    var btn = $('btnTabPeriodoCompacto');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+  $('btnTabAnteriorCompacto').addEventListener('click', function () {
+    if (ultimoTablero && ultimoTablero.periodo && ultimoTablero.periodo.anterior) {
+      cerrarDesplegablePeriodo();
+      elegirPeriodo(ultimoTablero.periodo.anterior);
+    }
+  });
+  $('btnTabSiguienteCompacto').addEventListener('click', function () {
+    if (ultimoTablero && ultimoTablero.periodo && ultimoTablero.periodo.siguiente) {
+      cerrarDesplegablePeriodo();
+      elegirPeriodo(ultimoTablero.periodo.siguiente);
+    }
+  });
+  $('btnTabPeriodoCompacto').addEventListener('click', function () {
+    var dp = $('tabDesplegablePeriodo');
+    var abierto = !dp.classList.contains('oculto');
+    if (abierto) { cerrarDesplegablePeriodo(); return; }
+    dp.classList.remove('oculto');
+    $('btnTabPeriodoCompacto').setAttribute('aria-expanded', 'true');
+    pintarEvolucionCompacta();
+  });
+  $('tabEvolucionCompacto').addEventListener('click', function (e) {
+    var b = e.target.closest('button.dia-compacto');
+    if (b) {
+      cerrarDesplegablePeriodo();
+      elegirPeriodo({ tipo: 'dia', fecha: b.getAttribute('data-fecha') });
+    }
+  });
+  document.addEventListener('click', function (e) {
+    var dp = $('tabDesplegablePeriodo');
+    if (!dp || dp.classList.contains('oculto')) return;
+    var franja = $('tabFranjaPeriodo');
+    if (franja && !franja.contains(e.target)) cerrarDesplegablePeriodo();
+  });
+  function pintarEvolucionCompacta() {
+    if (!ultimoTablero || !ultimoTablero.evolucion) return;
+    var p = ultimoTablero.periodo;
+    var unDia = p.desde === p.hasta;
+    var el = $('tabEvolucionCompacto');
+    el.innerHTML = ultimoTablero.evolucion.map(function (d) {
+      var sel = unDia && d.fecha === p.desde;
+      var semCls = d.semaforo || '';
+      return '<button type="button" class="dia-compacto" data-fecha="' + esc(d.fecha) +
+        '" aria-pressed="' + sel + '">' +
+        '<span class="punto-estado ' + esc(semCls) + '"></span>' +
+        esc(d.diaSemana) + ' ' + esc(fmtFecha(d.fecha).slice(0, 5)) +
+        '</button>';
+    }).join('');
+    var elegido = el.querySelector('button.dia-compacto[aria-pressed="true"]');
+    if (elegido) elegido.scrollIntoView({ inline: 'center', block: 'nearest' });
+  }
+  function sincronizarFranjaCompacta() {
+    if (!ultimoTablero || !ultimoTablero.periodo) return;
+    var texto = textoPeriodo(ultimoTablero);
+    $('tabPeriodoTextoCompacto').textContent = texto;
+    $('btnTabAnteriorCompacto').disabled = !ultimoTablero.periodo.anterior;
+    $('btnTabSiguienteCompacto').disabled = !ultimoTablero.periodo.siguiente;
+  }
   /** 'Semana del 05/10 al 11/10/2026', 'Hoy, 06/10/2026'... (el día de la semana viene del servidor, en evolucion). */
   function textoPeriodo(t) {
     var p = t.periodo, corto = function (iso) { return fmtFecha(iso).slice(0, 5); };
@@ -2632,6 +2895,7 @@
       var elegido = el.querySelector('button.dia[aria-pressed="true"]');
       el.scrollLeft = elegido ? Math.max(0, elegido.offsetLeft - 8) : el.scrollWidth;
     }
+    sincronizarFranjaCompacta();
   }
   /** '50%' con su chip de semáforo, o 'Sin dato' (ninguna factura en el cálculo). */
   function chipOtif(o) {
@@ -2853,7 +3117,7 @@
    * <script> la primera vez que se pinta el panel, nunca en las pantallas de los pilotos. Desde el enlace de Apps Script la
    * dirección viene en el tablero (urlGraficos, la /exec del servidor); la app instalable usa la suya (LOGISTIK_API). Un
    * servidor anterior a la versión 19 (sin umbralesSemaforo) no tiene el recurso: no se pide. Si no carga (sin señal), se
-   * reintenta en la próxima actualización; mientras tanto el panel queda con sus tablas y tarjetas.
+   * reintenta al volver la señal o en la próxima actualización; mientras tanto el panel queda con sus tablas y tarjetas.
    */
   var cargandoGraficos = false;
   function urlGraficos(t) {
@@ -2875,13 +3139,35 @@
       return;
     }
     var url = urlGraficos(t);
-    if (!url || cargandoGraficos) return;
+    if (!url) { plegarTablas(); return; }
+    if (cargandoGraficos) return;
     cargandoGraficos = true;
     var s = document.createElement('script');
     s.src = url;
+    // En la versión web la isla viene de otro origen (script.google.com): se pide sin cookies, igual que los datos.
+    // Con la sesión de Google abierta (varias cuentas) Apps Script puede contestar una página en vez del script y
+    // Chrome la bloquea sin avisar. Apps Script responde con Access-Control-Allow-Origin: *.
+    if (window.LOGISTIK_API) s.crossOrigin = 'anonymous';
     s.async = true;
-    s.onload = function () { cargandoGraficos = false; if (window.LogistikGraficos && ultimoTablero) pintarGraficos(ultimoTablero); };
-    s.onerror = function () { cargandoGraficos = false; s.parentNode.removeChild(s); };
+    // Si no carga (sin señal, o colgada más de 10 s): tablas desplegadas y se reintenta al volver la señal (ver 'online').
+    var relojFallo = setTimeout(function () {
+      if (!window.LogistikGraficos) {
+        cargandoGraficos = false;
+        if (s.parentNode) s.parentNode.removeChild(s);
+        plegarTablas();
+      }
+    }, 10000);
+    s.onload = function () {
+      clearTimeout(relojFallo);
+      cargandoGraficos = false;
+      if (window.LogistikGraficos && ultimoTablero) pintarGraficos(ultimoTablero);
+    };
+    s.onerror = function () {
+      clearTimeout(relojFallo);
+      cargandoGraficos = false;
+      if (s.parentNode) s.parentNode.removeChild(s);
+      plegarTablas();
+    };
     document.head.appendChild(s);
   }
   var FORMATO_GRAFICOS = { dinero: fmtDinero, numero: fmtKm, estadoMant: TEXTO_ESTADO_MANT };
@@ -2958,7 +3244,10 @@
     ultimoTablero = t;
     iniciarObservadorTablero();
     pintarPeriodo(t);
-    $('tabGenerado').textContent = 'Actualizado: ' + (t.generado || '') + '. Se actualiza solo cada 2 minutos mientras está abierto.';
+    $('tabGenerado').textContent = 'Actualizado: ' + (t.generado || '') + '. Se actualiza solo cada 2 minutos mientras está abierto.' +
+      // Implementación de Apps Script publicada en una versión sin gráficos (Tarea 30): que se note y se sepa cómo arreglarlo.
+      (t.umbralesSemaforo ? '' : ' Sin gráficos: el servidor está publicado en la versión ' + (config.version || '?') +
+        '. En Apps Script: Implementar > Administrar implementaciones > Editar > Nueva versión.');
     $('tabEnRuta').innerHTML = !t.enRuta.length ? '<p class="ayuda">Nadie está en ruta ahora.</p>' : t.enRuta.map(function (r) {
       var u = r.ultima;
       return '<div class="enruta"><b>' + esc(r.piloto) + '</b> · ' + esc(r.placa) + (r.fecha && r.fecha !== t.fecha ? ' · <b>desde el ' + esc(fmtFecha(r.fecha)) + '</b>' : '') +
