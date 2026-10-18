@@ -379,9 +379,286 @@
   #pTablero button { border-radius: 9999px; font-weight: 500; font-family: var(--fuente-panel); }
   #pTablero button.chico { border-color: var(--borde-fino); color: var(--tinta); background: var(--superficie-tarjeta); }
   #pTablero button.chico:hover { background: var(--superficie-2); }
-  #pTablero #btnTabActualizar { background: var(--marino); border-color: var(--marino); color: #fff; }
   #pTablero .pildoras button, #pTablero .periodo-nav button { border-color: var(--borde-fino); }
   #pTablero .pildoras, #pTablero .fila, #pTablero .periodo-nav { gap: 10px; }
+
+  /* Barra superior en el panel de la oficina (Tarea 26) */
+  body.en-tablero header .quien,
+  body:has(#pTablero:not(.oculto)) header .quien {
+    background: var(--marino);
+    color: #fff;
+    padding: 0;
+  }
+  .quien-tablero {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 4px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 48px;
+    box-sizing: border-box;
+  }
+  @media (min-width: 700px), (orientation: landscape) and (min-width: 600px) {
+    .quien-tablero {
+      max-width: 1200px;
+      padding: 6px 20px;
+    }
+  }
+  .quien-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  .quien-info b {
+    font-size: 13.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .quien-rol {
+    font-size: 12px;
+    opacity: .85;
+    white-space: nowrap;
+  }
+  @media (max-width: 480px) {
+    .quien-rol {
+      display: none;
+    }
+  }
+
+  /* Acciones en la barra superior: Actualizar y Salir */
+  .quien-acciones {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+  }
+  .btn-icono-top {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, .3);
+    background: rgba(255, 255, 255, .1);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color .15s, border-color .15s, transform .15s;
+  }
+  .btn-icono-top:hover {
+    background: rgba(255, 255, 255, .2);
+    border-color: rgba(255, 255, 255, .5);
+  }
+  .btn-icono-top:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  .btn-icono-top svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    flex: none;
+  }
+  #btnTabActualizar[disabled] svg,
+  #btnTabActualizar.girando svg,
+  #btnTabActualizar.cargando svg {
+    animation: girar .9s linear infinite;
+  }
+
+  /* Control de secciones compacto en la barra superior (se muestra al desplazar) */
+  .quien-secciones-compacto {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+  }
+  body.tablero-desplazado .quien-secciones-compacto {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .btn-seccion-compacto {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, .3);
+    background: transparent;
+    color: #fff;
+    font-family: var(--fuente-panel);
+    font-weight: 600;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: background-color .18s, color .18s, border-color .18s;
+  }
+  .btn-seccion-compacto svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    flex: none;
+  }
+  .btn-seccion-compacto[aria-pressed="true"] {
+    background: #fff;
+    color: var(--marino);
+    border-color: #fff;
+  }
+  @media (max-width: 480px) {
+    .btn-seccion-compacto .txt-seccion {
+      display: none;
+    }
+  }
+
+  /* Control de secciones grande (bajo el título del panel) */
+  .tab-secciones-grande-wrapper {
+    min-height: 52px;
+    margin: 0 0 16px;
+    box-sizing: border-box;
+  }
+  .tab-secciones-grande {
+    display: flex;
+    gap: 10px;
+    transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+  }
+  body.tablero-desplazado .tab-secciones-grande {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-4px);
+  }
+  .btn-seccion-grande {
+    flex: 1 1 0;
+    min-height: 44px;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    border: 1px solid var(--borde-fino);
+    background: var(--superficie-tarjeta);
+    color: var(--tinta);
+    font-family: var(--fuente-panel);
+    font-weight: 600;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background-color .18s, color .18s, border-color .18s;
+  }
+  .btn-seccion-grande svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    flex: none;
+  }
+  .btn-seccion-grande[aria-pressed="true"] {
+    background: var(--marino);
+    color: #fff;
+    border-color: var(--marino);
+  }
+
+  /* Píldoras de periodo en una sola fila a 390 px */
+  #tabPeriodo .pildoras {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    align-items: center;
+  }
+  #tabPeriodo .pildoras button {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 40px;
+    padding: 6px 4px;
+    font-size: 13.5px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #tabPeriodo .pildoras button[data-periodo="rango"] {
+    flex: 0 0 44px;
+    width: 44px;
+    min-width: 44px;
+    padding: 0;
+  }
+  #tabPeriodo .pildoras button[data-periodo="rango"] svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    flex: none;
+  }
+  #tabPeriodo .periodo-nav button {
+    min-height: 44px;
+    width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  #tabPeriodo .periodo-nav button svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    flex: none;
+  }
+
+  /* Encabezados h3 de tarjetas del panel con icono Lucide */
+  #pTablero h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  #pTablero h3 svg.icono {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    stroke: var(--tinta);
+  }
+
+  /* Chips de estado en el panel (16 px / 14 px) */
+  #pTablero .sem,
+  #pTablero .chip,
+  #pTablero .estado-mant {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  #pTablero .sem svg.icono,
+  #pTablero .chip svg.icono,
+  #pTablero .estado-mant svg.icono {
+    width: 14px;
+    height: 14px;
+    flex: none;
+    stroke: currentColor;
+  }
+
+  /* Acciones de la tabla de transportistas */
+  .btn-accion-trans {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-accion-trans svg.icono {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    stroke: currentColor;
+  }
   #pTablero .grafico { background-color: var(--superficie-tarjeta); border: 1px solid var(--borde-fino); border-radius: 20px; padding: 14px 12px; }
   #pTablero .grafico-tarjeta .grafico { background-color: var(--superficie-tarjeta); border: 0; padding: 0; }
   #pTablero input, #pTablero select {
@@ -407,6 +684,20 @@
   #pTablero .leyenda .muestra.sin-dato { background: repeating-linear-gradient(45deg, var(--sin-dato), var(--sin-dato) 2px, var(--superficie-pagina) 2px, var(--superficie-pagina) 4px); }
   #pTablero svg text { fill: var(--tinta) !important; font-family: var(--fuente-panel) !important; }
   #pTablero #grafOtifDiario circle:hover { r: 8px; }
+  /* Una gráfica por tabla (Tarea 27): la capa de HTML encima del SVG (nombre, chip y valor de cada barra; etiquetas de las
+     referencias) y el botón «Ver tabla» que despliega la tabla plegada debajo. */
+  #pTablero .grafica-capas { position: relative; }
+  #pTablero .capa { position: absolute; inset: 0; pointer-events: none; visibility: hidden; }
+  #pTablero .capa-item { position: absolute; font-size: 12px; line-height: 15px; white-space: nowrap; color: var(--tinta); }
+  #pTablero .fila-barra { display: flex; align-items: center; gap: 6px; }
+  #pTablero .fila-barra .nombre { overflow: hidden; text-overflow: ellipsis; min-width: 0; font-weight: 500; }
+  #pTablero .fila-barra .valor { margin-left: auto; flex: none; font-weight: 700; font-variant-numeric: tabular-nums; padding-left: 4px;
+    background: var(--superficie-tarjeta); }
+  #pTablero .chip-grafica { flex: none; font-size: 10.5px; line-height: 15px; padding: 0 6px; }
+  #pTablero .capa-item.referencia { font-size: 11px; font-weight: 600; background: var(--superficie-tarjeta); padding: 0 3px; }
+  #pTablero .nota-grafica { margin: 6px 0 0; }
+  #pTablero .tabla-plegada { display: none !important; }
+  #pTablero button.ver-tabla { margin: 8px 0 4px; }
   /* App instalada: sin "jalar para recargar" ni rebote que saque al piloto de lo que está haciendo. */
   /* overflow-x: hidden en html y body convertía al body en contenedor de desplazamiento propio y en el teléfono
      (dentro del marco de Apps Script) dejaba de desplazarse; clip recorta sin crear ese contenedor. */
@@ -705,20 +996,46 @@
     <div id="instalarListo" class="oculto"><p></p><button class="secundario" type="button" data-instalar>Instalar la app en el teléfono</button></div>
   </section>
 
+  <!-- Barra superior del panel de la oficina (se inserta en #quien al abrir el panel) -->
+  <div id="barraTableroHeader" class="quien-tablero oculto">
+    <div class="quien-info">
+      <b id="quienAdminNombre">Oficina</b>
+      <span class="quien-rol">Panel de la oficina</span>
+    </div>
+    <div id="tabSeccionesCompacto" class="quien-secciones-compacto" role="tablist" aria-label="Secciones del panel (barra superior)">
+      <button type="button" id="btnTabSeccionGeneralCompacto" class="btn-seccion-compacto" aria-pressed="true" aria-label="Operaciones" title="Operaciones">
+        <svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="13" x="1" y="6" rx="2"/><polygon points="17 8 20 8 23 11 23 19 17 19 17 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span class="txt-seccion">Operaciones</span>
+      </button>
+      <button type="button" id="btnTabSeccionTransportistasCompacto" class="btn-seccion-compacto" aria-pressed="false" aria-label="Transportistas" title="Transportistas">
+        <svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg><span class="txt-seccion">Transportistas</span>
+      </button>
+    </div>
+    <div class="quien-acciones">
+      <button type="button" id="btnTabActualizar" class="btn-icono-top" aria-label="Actualizar" title="Actualizar">
+        <svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+      </button>
+      <button type="button" id="btnTabSalir" class="btn-icono-top" aria-label="Salir del panel" title="Salir del panel">
+        <svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+      </button>
+    </div>
+  </div>
+
   <!-- Panel de la oficina (administradores): solo lectura. -->
   <section id="pTablero" class="oculto">
-    <div class="tarjeta">
+    <div class="tarjeta" id="tabCabeceraTarjeta">
       <p class="paso">Panel de la oficina</p>
       <h2>Cómo va el día</h2>
       <p class="ayuda" id="tabGenerado"></p>
       <div id="tabAviso"></div>
-      <div class="fila">
-        <button class="chico" type="button" id="btnTabActualizar">Actualizar</button>
-        <button class="chico" type="button" id="btnTabSalir">Salir del panel</button>
-      </div>
-      <div class="pildoras" role="tablist" style="margin-top:14px" aria-label="Secciones del panel">
-        <button type="button" id="btnTabSeccionGeneral" aria-pressed="true">Operaciones</button>
-        <button type="button" id="btnTabSeccionTransportistas" aria-pressed="false">Transportistas</button>
+    </div>
+    <div class="tab-secciones-grande-wrapper" id="wrapTabSeccionesGrande">
+      <div class="tab-secciones-grande" id="tabSeccionesGrande" role="tablist" aria-label="Secciones del panel">
+        <button type="button" id="btnTabSeccionGeneral" class="btn-seccion-grande" aria-pressed="true">
+          <svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="13" x="1" y="6" rx="2"/><polygon points="17 8 20 8 23 11 23 19 17 19 17 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>Operaciones</span>
+        </button>
+        <button type="button" id="btnTabSeccionTransportistas" class="btn-seccion-grande" aria-pressed="false">
+          <svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg><span>Transportistas</span>
+        </button>
       </div>
     </div>
     <!-- Periodo (servidor 15): hoy, ayer, semana, mes o un rango; anterior/siguiente y un día por tarjeta. -->
@@ -728,7 +1045,7 @@
         <button type="button" data-periodo="ayer" aria-pressed="false">Ayer</button>
         <button type="button" data-periodo="semana" aria-pressed="false">Semana</button>
         <button type="button" data-periodo="mes" aria-pressed="false">Mes</button>
-        <button type="button" data-periodo="rango" aria-pressed="false">Rango</button>
+        <button type="button" data-periodo="rango" aria-pressed="false" aria-label="Rango de fechas" title="Rango de fechas"><svg class="icono" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></button>
       </div>
       <div class="fila oculto" id="tabRango">
         <div><label for="txtTabDesde">Desde</label><input id="txtTabDesde" type="date"></div>
@@ -737,20 +1054,20 @@
       </div>
       <div id="errTabRango"></div>
       <div class="periodo-nav">
-        <button type="button" id="btnTabAnterior" aria-label="Periodo anterior" title="Periodo anterior">&#8249;</button>
+        <button type="button" id="btnTabAnterior" aria-label="Periodo anterior" title="Periodo anterior"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
         <div class="texto" id="tabPeriodoTexto"></div>
-        <button type="button" id="btnTabSiguiente" aria-label="Periodo siguiente" title="Periodo siguiente">&#8250;</button>
+        <button type="button" id="btnTabSiguiente" aria-label="Periodo siguiente" title="Periodo siguiente" disabled><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
       </div>
       <div class="linea-tiempo periodo-datos" id="tabEvolucion" aria-label="Día por día"></div>
     </div>
     <div id="tabSeccionGeneral">
-      <div class="tarjeta"><h3 style="margin-top:0">En ruta ahora</h3><div id="tabEnRuta"></div></div>
+      <div class="tarjeta"><h3 style="margin-top:0"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>En ruta ahora</h3><div id="tabEnRuta"></div></div>
       <div class="periodo-datos">
     <!-- Gráficos (Task 20): isla React con TanStack Charts (graficos/, compilada a Graficos.html). El panel pide el código con
          un <script> solo al abrirse (pintarGraficos); cada <figure> queda oculta hasta que su gráfico tiene datos. Las tablas
          y tarjetas siguen: son el respaldo accesible y la referencia exacta. -->
     <div class="tarjeta grafico-tarjeta" hidden id="tabMapaTarjeta">
-      <h3 style="margin-top:0" class="cap-periodo" data-titulo="OTIF por departamento">OTIF por departamento (este mes)</h3>
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="OTIF por departamento"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>OTIF por departamento (este mes)</h3>
       <figure class="grafico" hidden><div id="grafMapa"></div></figure>
     </div>
     <div class="tarjeta"><h3 style="margin-top:0">Hoy</h3><div class="kpis" id="tabHoy"></div>
@@ -758,28 +1075,33 @@
     <!-- Efectivo a bordo (Task 13): de hoy, por piloto, lo cobrado en efectivo (el Contado se paga en caja, no cuenta); en rojo el que pasa el límite
          (LIMITE_EFECTIVO_ABORDO). Lo calcula el servidor (tablero_); sin efectivoAbordoPorPiloto (servidor anterior), no aparece. -->
     <div class="tarjeta oculto" id="tabEfectivoTarjeta">
-      <h3 style="margin-top:0">Efectivo a bordo (hoy)</h3>
+      <h3 style="margin-top:0"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>Efectivo a bordo (hoy)</h3>
       <div class="kpis" id="tabEfectivoKpis"></div>
-      <div class="tabla-scroll" id="tabEfectivo"></div>
+      <figure class="grafico" hidden><figcaption>Efectivo de cada piloto</figcaption><div id="grafEfectivo"></div></figure>
+      <div class="tabla-scroll" id="tabEfectivo" data-grafico="grafEfectivo"></div>
       <p class="ayuda" id="tabEfectivoNota"></p>
     </div>
-    <div class="tarjeta"><h3 style="margin-top:0" class="cap-periodo" data-titulo="Pilotos">Pilotos (este mes)</h3><div class="tabla-scroll" id="tabPilotos"></div></div>
-    <div class="tarjeta"><h3 style="margin-top:0">Flota y mantenimiento</h3><div class="tabla-scroll" id="tabFlota"></div></div>
+    <div class="tarjeta"><h3 style="margin-top:0" class="cap-periodo" data-titulo="Pilotos"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Pilotos (este mes)</h3>
+      <figure class="grafico" hidden><figcaption>Facturas de cada piloto</figcaption><div id="grafPilotos"></div></figure>
+      <div class="tabla-scroll" id="tabPilotos" data-grafico="grafPilotos"></div></div>
+    <div class="tarjeta"><h3 style="margin-top:0"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="13" x="1" y="6" rx="2"/><polygon points="17 8 20 8 23 11 23 19 17 19 17 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Flota y mantenimiento</h3>
+      <figure class="grafico" hidden><figcaption>Intervalo de mantenimiento recorrido</figcaption><div id="grafFlota"></div></figure>
+      <div class="tabla-scroll" id="tabFlota" data-grafico="grafFlota"></div></div>
     <!-- OTIF (Task 8): del periodo, por región y por departamento. Lo calcula el servidor (resultadoOtif_); sin otif (servidor
          anterior), solo la tabla de departamentos, como antes. -->
     <div class="tarjeta" id="tabOtifTarjeta">
       <div class="oculto" id="tabOtif">
-        <h3 style="margin-top:0" class="cap-periodo" data-titulo="OTIF">OTIF (este mes)</h3>
+        <h3 style="margin-top:0" class="cap-periodo" data-titulo="OTIF"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>OTIF (este mes)</h3>
         <div class="kpis" id="tabOtifKpis"></div>
         <p class="ayuda" id="tabOtifNota"></p>
         <div class="otif-graficos-fila">
           <figure class="grafico" hidden><figcaption>OTIF día por día</figcaption><div id="grafOtifDiario"></div></figure>
           <div>
-            <h3>Por región</h3><figure class="grafico" hidden><div id="grafOtifRegion"></div></figure><div class="regiones" id="tabRegiones"></div>
+            <h3>Por región</h3><figure class="grafico" hidden><div id="grafOtifRegion"></div></figure><div class="regiones" id="tabRegiones" data-grafico="grafOtifRegion"></div>
           </div>
         </div>
       </div>
-      <h3 class="cap-periodo" data-titulo="Departamentos">Departamentos (este mes)</h3><div class="tabla-scroll" id="tabDeptos"></div>
+      <h3 class="cap-periodo" data-titulo="Departamentos"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Departamentos (este mes)</h3><div class="tabla-scroll" id="tabDeptos" data-grafico="grafMapa"></div>
     </div>
     <!-- Liquidación (Task 9): lo que se le liquida a Celasa por las facturas del periodo, con su desglose por forma de pago. Lo
          calcula el servidor (liquidacionDeFila_, la base de la pestaña Liquidación); sin liquidacion (servidor anterior),
@@ -787,7 +1109,7 @@
          regla de la pestaña (facturaLiquidacion_); sin pendientesLiquidar (servidor anterior), el bloque no aparece. -->
     <div class="tarjeta" id="tabLiqTarjeta">
       <div class="oculto" id="tabLiq">
-        <h3 style="margin-top:0" class="cap-periodo" data-titulo="Liquidación">Liquidación (este mes)</h3>
+        <h3 style="margin-top:0" class="cap-periodo" data-titulo="Liquidación"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>Liquidación (este mes)</h3>
         <div class="kpis" id="tabLiqKpis"></div>
         <p class="ayuda" id="tabLiqNota"></p>
         <div class="oculto" id="tabLiqPendBloque">
@@ -797,13 +1119,14 @@
         </div>
         <h3>Por forma de pago</h3>
       </div>
-      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Forma de pago" id="tabPagoTitulo">Forma de pago (este mes)</h3>
-      <div class="tabla-scroll" id="tabPago"></div>
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Forma de pago" id="tabPagoTitulo"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>Forma de pago (este mes)</h3>
+      <figure class="grafico" hidden><figcaption>Monto por forma de pago</figcaption><div id="grafPago"></div></figure>
+      <div class="tabla-scroll" id="tabPago" data-grafico="grafPago"></div>
     </div>
     <!-- Costo por factura (Task 11): galones de los días enviados x precio del galón (Configuración, M2) / facturas
          entregadas. Lo calcula el servidor (tablero_); sin combustible (servidor anterior), la tarjeta no aparece. -->
     <div class="tarjeta oculto" id="tabCostoTarjeta">
-      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Costo por factura">Costo por factura (este mes)</h3>
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Costo por factura"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" x2="15" y1="22" y2="22"/><line x1="4" x2="14" y1="9" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></svg>Costo por factura (este mes)</h3>
       <div class="kpis" id="tabCostoKpis"></div>
       <p class="ayuda" id="tabCostoNota"></p>
       <figure class="grafico" hidden><figcaption>Costo por factura, día por día</figcaption><div id="grafCosto"></div></figure>
@@ -821,80 +1144,87 @@
           <button type="submit" class="boton" id="btnGuardarPrecioDiesel" style="padding:6px 12px;height:34px;">Actualizar precio del diésel</button>
         </form>
         <div id="avisoPrecioDiesel" class="ayuda" style="margin-top:6px;"></div>
-        <div id="listaPreciosDiesel" style="margin-top:10px;"></div>
+        <figure class="grafico" hidden><figcaption>Precio del diésel por galón</figcaption><div id="grafPrecioDiesel"></div></figure>
+        <div id="listaPreciosDiesel" style="margin-top:10px;" data-grafico="grafPrecioDiesel"></div>
       </div>
     </div>
     <!-- Eficiencia operativa (Task 12): paradas por viaje, km por galón y tiempo en el cliente, de los días enviados del
          periodo. Lo calcula el servidor (tablero_); sin eficiencia (servidor anterior), la tarjeta no aparece. -->
     <div class="tarjeta oculto" id="tabEficienciaTarjeta">
-      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Eficiencia operativa">Eficiencia operativa (este mes)</h3>
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Eficiencia operativa"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>Eficiencia operativa (este mes)</h3>
       <div class="kpis" id="tabEficienciaKpis"></div>
       <p class="ayuda" id="tabEficienciaNota"></p>
     </div>
     <!-- Lag de liquidación (Task 14): días entre la entrega y la liquidación de las facturas con lote registrado (pestaña
          Liquidación, Task 19), con fecha de liquidación del periodo. Sin lagLiquidacion (servidor anterior), no aparece. -->
     <div class="tarjeta oculto" id="tabLagTarjeta">
-      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Lag de liquidación">Lag de liquidación (este mes)</h3>
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Lag de liquidación"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Lag de liquidación (este mes)</h3>
       <div class="kpis" id="tabLagKpis"></div>
       <p class="ayuda" id="tabLagNota"></p>
     </div>
     <!-- Margen del subcontratista (Task 14): por viaje subcontratado, facturas del viaje menos el monto a cobrar; en rojo los
          viajes que cobran más de PORCENTAJE_COBRO_ALTO de sus facturas. Sin subcontratados (servidor anterior), no aparece. -->
     <div class="tarjeta oculto" id="tabMargenTarjeta">
-      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Margen del subcontratista">Margen del subcontratista (este mes)</h3>
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Margen del subcontratista"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>Margen del subcontratista (este mes)</h3>
       <div class="kpis" id="tabMargenKpis"></div>
-      <div class="tabla-scroll" id="tabMargen"></div>
+      <figure class="grafico" hidden><figcaption>Lo que cobra cada viaje contra su mercadería</figcaption><div id="grafMargen"></div></figure>
+      <div class="tabla-scroll" id="tabMargen" data-grafico="grafMargen"></div>
       <p class="ayuda" id="tabMargenNota"></p>
     </div>
     <!-- Mantenimiento vencido asignado (Task 15): viajes del periodo cuya placa tenía el mantenimiento vencido el día de
          salida. Solo medición: la app sigue dejando elegir la placa, con el aviso de siempre. Sin mantenimientoVencido
          (servidor anterior, o sin datos de mantenimiento), no aparece. -->
     <div class="tarjeta oculto" id="tabMantVencidoTarjeta">
-      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Viajes con mantenimiento vencido">Viajes con mantenimiento vencido (este mes)</h3>
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Viajes con mantenimiento vencido"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Viajes con mantenimiento vencido (este mes)</h3>
       <div class="kpis" id="tabMantVencidoKpis"></div>
-      <div class="tabla-scroll" id="tabMantVencido"></div>
+      <figure class="grafico" hidden><figcaption>Viajes por placa</figcaption><div id="grafMantVencido"></div></figure>
+      <div class="tabla-scroll" id="tabMantVencido" data-grafico="grafMantVencido"></div>
       <p class="ayuda" id="tabMantVencidoNota"></p>
     </div>
     <!-- Pareto 80/20 de clientes (Task 16): los clientes que juntan el 80 % de lo que se compró en el periodo (facturado menos
          devuelto). Lo calcula el servidor (tablero_); sin paretoClientes (servidor anterior), no aparece. -->
     <div class="tarjeta oculto" id="tabParetoTarjeta">
-      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Pareto 80/20 de clientes">Pareto 80/20 de clientes (este mes)</h3>
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Pareto 80/20 de clientes"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Pareto 80/20 de clientes (este mes)</h3>
       <p id="tabParetoResumen"></p>
       <figure class="grafico" hidden><figcaption>Cada cliente y el acumulado</figcaption><div id="grafPareto"></div></figure>
-      <div class="tabla-scroll" id="tabPareto"></div>
+      <div class="tabla-scroll" id="tabPareto" data-grafico="grafPareto"></div>
       <p class="ayuda" id="tabParetoNota"></p>
     </div>
     <!-- Facturas por canal (Task 18): facturas y monto del periodo por canal de venta (Industria, Mayoreo, Retail), con el
          código de vendedor de cada factura y la pestaña Vendedores. Por canal, nunca por vendedor. Lo calcula el servidor
          (tablero_, con canalDeVendedor_); sin porCanal (servidor anterior), no aparece. -->
     <div class="tarjeta oculto" id="tabCanalTarjeta">
-      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Facturas por canal">Facturas por canal (este mes)</h3>
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Facturas por canal"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 6.5-10 6.5L2 8.5Z"/><path d="m2 15.5 10 6.5 10-6.5"/></svg>Facturas por canal (este mes)</h3>
       <figure class="grafico" hidden><figcaption>Parte de las facturas y del monto</figcaption><div id="grafCanal"></div></figure>
-      <div class="tabla-scroll" id="tabCanal"></div>
+      <div class="tabla-scroll" id="tabCanal" data-grafico="grafCanal"></div>
       <p class="ayuda" id="tabCanalNota"></p>
     </div>
     <!-- Novedades por responsabilidad (Task 17, sobre la tarjeta de motivos de la Task 13): fallidas y devoluciones del
          periodo por responsabilidad (Ventas, Bodega, Transporte, Por revisar) y debajo por motivo. Lo calcula el servidor
          (tablero_, con RESPONSABILIDAD_NOVEDAD); sin porResponsabilidad (servidor anterior), la tarjeta no aparece. -->
     <div class="tarjeta oculto" id="tabMotivosTarjeta">
-      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Novedades por responsabilidad">Novedades por responsabilidad (este mes)</h3>
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Novedades por responsabilidad"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>Novedades por responsabilidad (este mes)</h3>
       <div class="kpis" id="tabResponsabilidadKpis"></div>
       <figure class="grafico" hidden><figcaption>Por proceso de origen</figcaption><div id="grafNovedades"></div></figure>
-      <div class="tabla-scroll" id="tabMotivos"></div>
+      <figure class="grafico" hidden><figcaption>Por motivo</figcaption><div id="grafMotivos"></div></figure>
+      <div class="tabla-scroll" id="tabMotivos" data-grafico="grafMotivos"></div>
       <p class="ayuda" id="tabMotivosNota"></p>
     </div>
     </div>
-    <div class="tarjeta"><h3 style="margin-top:0">Últimos viajes enviados</h3><div class="tabla-scroll" id="tabRecientes"></div></div>
+    <div class="tarjeta"><h3 style="margin-top:0"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><polyline points="12 7 12 12 15 15"/></svg>Últimos viajes enviados</h3>
+      <figure class="grafico" hidden><figcaption>Km de cada viaje</figcaption><div id="grafRecientes"></div></figure>
+      <div class="tabla-scroll" id="tabRecientes" data-grafico="grafRecientes"></div></div>
     </div>
     <div id="tabSeccionTransportistas" class="oculto">
       <div class="tarjeta periodo-datos" id="tabTransMetricasTarjeta">
-        <h3 style="margin-top:0" class="cap-periodo" data-titulo="Transportistas subcontratados">Transportistas subcontratados (este mes)</h3>
+        <h3 style="margin-top:0" class="cap-periodo" data-titulo="Transportistas subcontratados"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>Transportistas subcontratados (este mes)</h3>
         <div class="kpis" id="tabTransKpis"></div>
         <p class="ayuda" id="tabTransNota"></p>
       </div>
       <div class="tarjeta periodo-datos" id="tabTransRutasTarjeta">
-        <h3 style="margin-top:0" class="cap-periodo" data-titulo="Rutas subcontratadas">Rutas subcontratadas (este mes)</h3>
-        <div class="tabla-scroll" id="tabTransRutas"></div>
+        <h3 style="margin-top:0" class="cap-periodo" data-titulo="Rutas subcontratadas"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="13" x="1" y="6" rx="2"/><polygon points="17 8 20 8 23 11 23 19 17 19 17 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Rutas subcontratadas (este mes)</h3>
+        <figure class="grafico" hidden><figcaption>Declarado contra pagado por ruta</figcaption><div id="grafTransportistas"></div></figure>
+        <div class="tabla-scroll" id="tabTransRutas" data-grafico="grafTransportistas"></div>
         <p class="ayuda" id="tabTransRutasNota"></p>
       </div>
     </div>
@@ -1086,8 +1416,19 @@
       $(s).classList.toggle('oculto', s !== id);
     });
     document.body.classList.toggle('en-tablero', id === 'pTablero');
-    if (id !== 'pTablero') pararRelojTablero();
-    else iniciarObservadorTablero();
+    if (id !== 'pTablero') {
+      pararRelojTablero();
+      if (typeof detenerObservadorSecciones === 'function') detenerObservadorSecciones();
+      document.body.classList.remove('tablero-desplazado');
+      var barra = $('barraTableroHeader');
+      if (barra && barra.parentNode === $('quien')) {
+        barra.classList.add('oculto');
+        $('pTablero').insertBefore(barra, $('pTablero').firstChild);
+      }
+    } else {
+      iniciarObservadorTablero();
+      if (typeof iniciarObservadorSecciones === 'function') iniciarObservadorSecciones();
+    }
     $('barraRuta').classList.toggle('oculto', id !== 'pRuta');
     $('btnCerrarSesion').classList.toggle('oculto', ['pInicio', 'pMant', 'pRuta', 'pParada', 'pCierre', 'pListo'].indexOf(id) < 0);
     // Registrar mantenimiento: desde la salida de bodega, si el servidor ya lo sabe hacer.
@@ -1102,6 +1443,47 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
+
+  /* Iconos de Lucide (licencia ISC): https://lucide.dev/license */
+  var ICONOS_LUCIDE = {
+    camion: '<rect width="16" height="13" x="1" y="6" rx="2"/><polygon points="17 8 20 8 23 11 23 19 17 19 17 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+    edificio: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>',
+    actualizar: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+    salir: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>',
+    calendario: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+    anterior: '<path d="m15 18-6-6 6-6"/>',
+    siguiente: '<path d="m9 18 6-6-6-6"/>',
+    navegacion: '<polygon points="3 11 22 2 13 21 11 13 3 11"/>',
+    diana: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    billete: '<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
+    alerta: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/>',
+    llave: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+    bomba: '<line x1="3" x2="15" y1="22" y2="22"/><line x1="4" x2="14" y1="9" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/>',
+    usuarios: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    mapa: '<polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/>',
+    check: '<polyline points="20 6 9 17 4 12"/>',
+    x: '<line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/>',
+    guion: '<line x1="5" x2="19" y1="12" y2="12"/>',
+    recibo: '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-8"/><path d="M16 12h-8"/><path d="M14 16h-6"/>',
+    billetera: '<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+    gauge: '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+    dinero: '<circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/>',
+    reloj: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    porcentaje: '<line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+    capas: '<path d="m12 2 10 6.5-10 6.5L2 8.5Z"/><path d="m2 15.5 10 6.5 10-6.5"/>',
+    pin: '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+    historial: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><polyline points="12 7 12 12 15 15"/>'
+  };
+
+  function icono(nombre, opts) {
+    opts = opts || {};
+    var trazo = ICONOS_LUCIDE[nombre] || '';
+    var tam = opts.tam || 20;
+    var clase = opts.clase ? ' ' + opts.clase : '';
+    var aria = opts.label ? ' aria-label="' + esc(opts.label) + '" role="img"' : ' aria-hidden="true"';
+    return '<svg class="icono' + clase + '" width="' + tam + '" height="' + tam + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"' + aria + '>' + trazo + '</svg>';
+  }
+
   function hoyISO(fecha) {
     var d = fecha || new Date();
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -1906,9 +2288,38 @@
       aviso('errOficina', 'error', esErrorDeRed(e) && !/Demasiados intentos/i.test(e.message) ? 'Sin señal: el panel necesita internet.' : esc(e.message));
     });
   });
+  var observadorSecciones = null;
+  function iniciarObservadorSecciones() {
+    if (observadorSecciones || typeof IntersectionObserver === 'undefined') return;
+    var wrap = $('wrapTabSeccionesGrande');
+    if (!wrap) return;
+    observadorSecciones = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        var e = entries[i];
+        document.body.classList.toggle('tablero-desplazado', !e.isIntersecting);
+      }
+    }, {
+      rootMargin: '-48px 0px 0px 0px',
+      threshold: 0
+    });
+    observadorSecciones.observe(wrap);
+  }
+  function detenerObservadorSecciones() {
+    if (observadorSecciones) {
+      observadorSecciones.disconnect();
+      observadorSecciones = null;
+    }
+  }
   function salirTablero(mensaje) {
+    detenerObservadorSecciones();
     try { localStorage.removeItem(CLAVE_ADMIN); } catch (e) {}
     filtroTablero = null; rangoAbierto = false; ultimoTablero = null; clavePeriodo = '';
+    var barra = $('barraTableroHeader');
+    if (barra && barra.parentNode === $('quien')) {
+      barra.classList.add('oculto');
+      $('pTablero').insertBefore(barra, $('pTablero').firstChild);
+    }
+    document.body.classList.remove('en-tablero', 'tablero-desplazado');
     $('quien').innerHTML = '';
     mostrar('pIngreso');
     if (mensaje) { $('ingresoOficina').classList.remove('oculto'); aviso('errOficina', 'ambar', mensaje); }
@@ -1947,9 +2358,18 @@
   function abrirTablero(datos) {
     var s = sesionAdmin();
     if (!s) { salirTablero('Su sesión del panel venció: escriba su PIN otra vez.'); return; }
-    $('quien').innerHTML = '<div><b>' + esc(s.nombre) + '</b><span>Panel de la oficina</span></div>';
+    var barra = $('barraTableroHeader');
+    if (barra) {
+      barra.classList.remove('oculto');
+      var nom = $('quienAdminNombre');
+      if (nom) nom.textContent = s.nombre;
+      $('quien').innerHTML = '';
+      $('quien').appendChild(barra);
+    }
+    document.body.classList.add('en-tablero');
     if (typeof cambiarSeccionTablero === 'function') cambiarSeccionTablero('general');
     mostrar('pTablero');
+    iniciarObservadorSecciones();
     if (datos) pintarTablero(datos); else cargarTablero();
     programarTablero();
   }
@@ -2067,7 +2487,13 @@
     var texto = t.periodo ? textoPeriodo(t) : 'Este mes';
     Array.prototype.forEach.call(document.querySelectorAll('#pTablero .cap-periodo'), function (h) {
       var titulo = h.getAttribute('data-titulo');
-      h.textContent = titulo ? titulo + ' (' + texto.charAt(0).toLowerCase() + texto.slice(1) + ')' : texto;
+      var textoFinal = titulo ? titulo + ' (' + texto.charAt(0).toLowerCase() + texto.slice(1) + ')' : texto;
+      var ico = h.querySelector('svg.icono');
+      if (ico) {
+        h.innerHTML = ico.outerHTML + esc(textoFinal);
+      } else {
+        h.textContent = textoFinal;
+      }
     });
     if (!t.periodo) return;
     var p = t.periodo;
@@ -2083,12 +2509,13 @@
       // El semáforo es el del OTIF del día; un servidor 15 (sin otif) lo mandaba con la tasa de entrega.
       var o = d.otif, entregas = d.facturas ? d.entregadas + ' de ' + d.facturas + ' entregadas' : 'Sin facturas';
       var sem = !d.facturas ? 'Sin facturas' : !o ? 'Entregas ' + d.porcentajeEntregadas + '%' : o.porcentaje == null ? 'OTIF sin dato' : 'OTIF ' + o.porcentaje + '%';
+      var semIco = icono(d.semaforo === 'ok' ? 'check' : (d.semaforo === 'alerta' ? 'alerta' : (d.semaforo === 'error' ? 'x' : 'guion')), { tam: 12 });
       var titulo = o && d.facturas ? (o.facturas ? o.aTiempo + ' de ' + o.facturas + ' a tiempo' : 'Sin facturas con fecha de factura') + '. ' + entregas : entregas;
       return '<button type="button" class="dia ' + esc(d.semaforo || '') + '" data-fecha="' + esc(d.fecha) + '" aria-pressed="' + sel + '" title="' +
         esc(titulo) + '">' +
         '<span class="cuando">' + esc(d.diaSemana) + ' ' + esc(fmtFecha(d.fecha).slice(0, 5)) + '</span>' +
         '<b>' + fmtDinero(d.monto) + '</b>' + facturas + '<br>' + fmtKm(d.viajes) + (d.viajes === 1 ? ' viaje' : ' viajes') +
-        '<br><span class="sem ' + esc(d.semaforo || '') + '">' + sem + '</span></button>';
+        '<br><span class="sem ' + esc(d.semaforo || '') + '">' + semIco + sem + '</span></button>';
     }).join('') || '<p class="ayuda">Sin días para mostrar.</p>';
     // Al cambiar de periodo, se ve el día elegido (o el último); al actualizarse solo, no se mueve lo que la oficina desplazó.
     var clave = p.tipo + '|' + p.desde + '|' + p.hasta;
@@ -2100,7 +2527,10 @@
   }
   /** '50%' con su chip de semáforo, o 'Sin dato' (ninguna factura en el cálculo). */
   function chipOtif(o) {
-    return '<span class="sem ' + esc(o.semaforo || '') + '">' + (o.porcentaje == null ? 'Sin dato' : o.porcentaje + '%') + '</span>';
+    var sem = o.semaforo || '';
+    var icoNombre = sem === 'ok' ? 'check' : (sem === 'alerta' ? 'alerta' : (sem === 'error' ? 'x' : 'guion'));
+    var icoHtml = icono(icoNombre, { tam: 14 });
+    return '<span class="sem ' + esc(sem) + '">' + icoHtml + (o.porcentaje == null ? 'Sin dato' : o.porcentaje + '%') + '</span>';
   }
   function aTiempo(o) { return o.facturas ? fmtKm(o.aTiempo) + ' de ' + fmtKm(o.facturas) + ' a tiempo' : 'Sin facturas en el cálculo'; }
   function pintarOtif(t) {
@@ -2318,10 +2748,14 @@
     if (window.LogistikGraficos) {
       window.LogistikGraficos.pintar(t, {
         contenedores: { mapa: $('grafMapa'), otifDiario: $('grafOtifDiario'), otifRegion: $('grafOtifRegion'), novedades: $('grafNovedades'),
-                        pareto: $('grafPareto'), canal: $('grafCanal'), costo: $('grafCosto') },
+                        pareto: $('grafPareto'), canal: $('grafCanal'), costo: $('grafCosto'),
+                        pago: $('grafPago'), precioDiesel: $('grafPrecioDiesel'), efectivo: $('grafEfectivo'), margen: $('grafMargen'),
+                        mantVencido: $('grafMantVencido'), motivos: $('grafMotivos'), pilotos: $('grafPilotos'), flota: $('grafFlota'),
+                        recientes: $('grafRecientes'), transportistas: $('grafTransportistas') },
         alElegirDia: function (fecha) { elegirPeriodo({ tipo: 'dia', fecha: fecha }); },
         formato: FORMATO_GRAFICOS
       });
+      plegarTablas();
       return;
     }
     var url = urlGraficos(t);
@@ -2334,7 +2768,39 @@
     s.onerror = function () { cargandoGraficos = false; s.parentNode.removeChild(s); };
     document.head.appendChild(s);
   }
-  var FORMATO_GRAFICOS = { dinero: fmtDinero, numero: fmtKm };
+  var FORMATO_GRAFICOS = { dinero: fmtDinero, numero: fmtKm, estadoMant: TEXTO_ESTADO_MANT };
+  /**
+   * Una gráfica por tabla (Tarea 27): cada tabla con gráfica (data-grafico, el contenedor de su gráfica) queda plegada
+   * debajo con el botón «Ver tabla» (la vista accesible y la del número exacto). Sin la isla de gráficos (sin señal) o
+   * sin gráfica (sin datos: la tabla dice «Sin datos.»), la tabla se ve desplegada y sin botón. Lo que la oficina abrió o
+   * cerró con el botón se respeta en las actualizaciones.
+   */
+  function mostrarTabla(cuerpo, boton, visible) {
+    cuerpo.classList.toggle('tabla-plegada', !visible);
+    boton.setAttribute('aria-expanded', visible ? 'true' : 'false');
+    boton.textContent = visible ? 'Ocultar tabla' : 'Ver tabla';
+  }
+  function plegarTablas() {
+    Array.prototype.forEach.call(document.querySelectorAll('#pTablero [data-grafico]'), function (cuerpo) {
+      var boton = cuerpo.previousElementSibling;
+      if (!boton || !boton.classList.contains('ver-tabla')) {
+        boton = document.createElement('button');
+        boton.type = 'button';
+        boton.className = 'chico ver-tabla';
+        boton.setAttribute('aria-controls', cuerpo.id);
+        boton.addEventListener('click', function () {
+          cuerpo.setAttribute('data-tocada', '1');
+          mostrarTabla(cuerpo, boton, cuerpo.classList.contains('tabla-plegada'));
+        });
+        cuerpo.parentNode.insertBefore(boton, cuerpo);
+      }
+      var graf = $(cuerpo.getAttribute('data-grafico')), caja = graf && graf.closest('.grafico');
+      var conGrafica = Boolean(caja && !caja.hidden) && cuerpo.innerHTML.trim() !== '';
+      boton.hidden = !conGrafica;
+      if (!conGrafica) mostrarTabla(cuerpo, boton, true);
+      else if (!cuerpo.hasAttribute('data-tocada')) mostrarTabla(cuerpo, boton, false);
+    });
+  }
   var observadorTablero = null;
   var ultimoAnchoTablero = 0;
   function iniciarObservadorTablero() {
@@ -2393,7 +2859,9 @@
     }), [1, 2, 3, 4, 5]);
     $('tabFlota').innerHTML = tabla(['Placa', 'Mantenimiento', 'Próximo', 'Km actual', 'Último viaje'], t.flota.map(function (f) {
       var m = f.mant;
-      var estado = m && TEXTO_ESTADO_MANT[m.estado] ? '<span class="estado-mant ' + esc(m.estado) + '">' + TEXTO_ESTADO_MANT[m.estado] + '</span>' : '–';
+      var estado = m && TEXTO_ESTADO_MANT[m.estado] ? '<span class="estado-mant ' + esc(m.estado) + '">' +
+        icono(m.estado === 'ok' ? 'check' : (m.estado === 'vencido' ? 'x' : (m.estado === 'sin_registro' ? 'guion' : 'alerta')), { tam: 14 }) +
+        TEXTO_ESTADO_MANT[m.estado] + '</span>' : '–';
       var prox = m && m.servicio ? esc(m.servicio) + (m.km != null ? ' a los ' + fmtKm(m.km) : '') +
         (m.faltan != null ? '<br><span class="ayuda">' + (m.faltan < 0 ? 'pasado por ' + fmtKm(-m.faltan) + ' km' : 'faltan ' + fmtKm(m.faltan) + ' km') + '</span>' : '') +
         (m.fechaLimite ? '<br><span class="ayuda">por tiempo: ' + esc(fmtFecha(m.fechaLimite)) + '</span>' : '') : '–';
@@ -2412,11 +2880,12 @@
     pintarMotivos(t);
     pintarOtif(t);
     pintarTransportistas(t);
-    pintarGraficos(t);
     $('tabRecientes').innerHTML = tabla(['Fecha', 'Piloto', 'Placa', 'Km', 'Facturas', 'Monto', 'Revisar'], t.recientes.map(function (v) {
       return [esc(fmtFecha(v.fecha)), esc(v.piloto), esc(v.placa), fmtKm(v.km), fmtKm(v.facturas), fmtDinero(v.monto),
-              v.revisar ? '<span class="estado-mant proximo">' + v.revisar + (v.revisar === 1 ? ' fila' : ' filas') + '</span>' : ''];
+              v.revisar ? '<span class="estado-mant proximo">' + icono('alerta', { tam: 14 }) + v.revisar + (v.revisar === 1 ? ' fila' : ' filas') + '</span>' : ''];
     }), [3, 4, 5]);
+    // Al final: plegarTablas mira si cada tabla ya tiene contenido.
+    pintarGraficos(t);
   }
 
   // ------------------------------------------------------------ transportistas (Task 23)
@@ -2424,13 +2893,25 @@
 
   function cambiarSeccionTablero(seccion) {
     var esGeneral = seccion === 'general';
-    $('btnTabSeccionGeneral').setAttribute('aria-pressed', esGeneral ? 'true' : 'false');
-    $('btnTabSeccionTransportistas').setAttribute('aria-pressed', esGeneral ? 'false' : 'true');
+    var btnGen = $('btnTabSeccionGeneral');
+    var btnTrans = $('btnTabSeccionTransportistas');
+    var btnGenC = $('btnTabSeccionGeneralCompacto');
+    var btnTransC = $('btnTabSeccionTransportistasCompacto');
+    if (btnGen) btnGen.setAttribute('aria-pressed', esGeneral ? 'true' : 'false');
+    if (btnTrans) btnTrans.setAttribute('aria-pressed', esGeneral ? 'false' : 'true');
+    if (btnGenC) btnGenC.setAttribute('aria-pressed', esGeneral ? 'true' : 'false');
+    if (btnTransC) btnTransC.setAttribute('aria-pressed', esGeneral ? 'false' : 'true');
     $('tabSeccionGeneral').classList.toggle('oculto', !esGeneral);
     $('tabSeccionTransportistas').classList.toggle('oculto', esGeneral);
   }
   $('btnTabSeccionGeneral').addEventListener('click', function () { cambiarSeccionTablero('general'); });
   $('btnTabSeccionTransportistas').addEventListener('click', function () { cambiarSeccionTablero('transportistas'); });
+  if ($('btnTabSeccionGeneralCompacto')) {
+    $('btnTabSeccionGeneralCompacto').addEventListener('click', function () { cambiarSeccionTablero('general'); });
+  }
+  if ($('btnTabSeccionTransportistasCompacto')) {
+    $('btnTabSeccionTransportistasCompacto').addEventListener('click', function () { cambiarSeccionTablero('transportistas'); });
+  }
 
   function pintarTransportistas(t) {
     var tr = t && t.transportistas;
@@ -2472,22 +2953,25 @@
       var accionHtml = '';
 
       if (r.estadoPago === 'Pendiente') {
-        estadoHtml = '<span class="estado-mant proximo">Pendiente</span>';
-        accionHtml = '<button class="chico btn-accion-trans" type="button" data-accion="factura" data-id="' + esc(r.id) + '">Escanear factura</button> ' +
-          '<button class="chico btn-accion-trans" type="button" data-accion="cajachica" data-id="' + esc(r.id) + '">Caja chica</button>';
+        estadoHtml = '<span class="estado-mant proximo">' + icono('alerta', { tam: 14 }) + 'Pendiente</span>';
+        accionHtml = '<button class="chico btn-accion-trans" type="button" data-accion="factura" data-id="' + esc(r.id) + '">' +
+          icono('recibo', { tam: 14 }) + 'Escanear factura</button> ' +
+          '<button class="chico btn-accion-trans" type="button" data-accion="cajachica" data-id="' + esc(r.id) + '">' +
+          icono('billetera', { tam: 14 }) + 'Caja chica</button>';
       } else {
         var p = r.pago;
         var esFac = r.estadoPago === 'Factura';
-        estadoHtml = '<span class="chip' + (esFac ? '' : ' neutro') + '">' + esc(r.estadoPago) + '</span>';
+        estadoHtml = '<span class="chip' + (esFac ? '' : ' neutro') + '">' + (esFac ? icono('recibo', { tam: 14 }) : icono('billetera', { tam: 14 })) + esc(r.estadoPago) + '</span>';
         if (p && p.diferencia !== 0) {
-          estadoHtml += '<br><span class="estado-mant vencido">Revisar (' + (p.diferencia > 0 ? '+' : '') + fmtDinero(p.diferencia) + ')</span>';
+          estadoHtml += '<br><span class="estado-mant vencido">' + icono('alerta', { tam: 14 }) + 'Revisar (' + (p.diferencia > 0 ? '+' : '') + fmtDinero(p.diferencia) + ')</span>';
         }
         if (p) {
           estadoHtml += '<br><span class="ayuda">' + fmtDinero(p.montoPagado) +
             (p.control ? ' · ' + esc(p.control) : '') +
             (p.concepto ? ' · ' + esc(p.concepto) : '') + '</span>';
         }
-        accionHtml = '<button class="chico peligro btn-accion-trans" type="button" data-accion="anular" data-id="' + esc(r.id) + '">Anular pago</button>';
+        accionHtml = '<button class="chico peligro btn-accion-trans" type="button" data-accion="anular" data-id="' + esc(r.id) + '">' +
+          icono('x', { tam: 14 }) + 'Anular pago</button>';
       }
 
       return [esc(fmtFecha(r.fecha)), '<b>' + esc(r.transportista) + '</b>', esc(r.placa), facMerc, declarado, estadoHtml, accionHtml];
