@@ -244,7 +244,62 @@
   #pTablero .grafico-tarjeta .grafico { background: var(--blanco); border: 0; padding: 0; }
   #pTablero input { border-radius: var(--radio-s); }
   /* App instalada: sin "jalar para recargar" ni rebote que saque al piloto de lo que está haciendo. */
-  html, body { overscroll-behavior: none; }
+  html, body { overscroll-behavior: none; overflow-x: hidden; }
+  input, select, textarea { scroll-margin-top: 70px; scroll-margin-bottom: 70px; }
+
+  /* Pantallas del piloto en horizontal (Task 21): teléfono montado de lado en el carro (~390 px de alto) */
+  @media (orientation: landscape) and (max-height: 500px) {
+    header .marca { padding: 4px 12px; gap: 8px; }
+    header .marca img { height: 22px; }
+    header .marca .sub { font-size: 9.5px; line-height: 1.2; }
+    header .marca .sub b { font-size: 11px; }
+    header .quien div { padding: 3px 12px; font-size: 11.5px; }
+    main { padding: 8px 12px 80px; }
+    .tarjeta { padding: 12px 14px; margin-bottom: 10px; }
+    h2 { font-size: 17px; margin-bottom: 8px; }
+    h3 { font-size: 14px; margin: 12px 0 6px; }
+    label { margin: 8px 0 3px; font-size: 12.5px; }
+    input, select, textarea { padding: 7px 10px; font-size: 15px; }
+    button { min-height: 38px; padding: 7px 12px; font-size: 14px; }
+    button.primario, button.acento, button.escanear { min-height: 40px; font-size: 16px; }
+    .barra { padding: 6px 12px calc(6px + env(safe-area-inset-bottom)); }
+    .parada { padding: 8px 10px; margin-bottom: 8px; }
+    .factura { padding: 8px 10px; margin-top: 8px; }
+    .estados button { min-height: 36px; padding: 4px; font-size: 13px; }
+    .resumen div { padding: 8px 10px; }
+    .resumen b { font-size: 20px; }
+  }
+
+  /* Panel de la oficina en horizontal o pantalla ancha (Task 21): 2 columnas para los gráficos, mapa a todo el ancho */
+  @media (min-width: 700px), (orientation: landscape) and (min-width: 600px) {
+    body.en-tablero header .marca,
+    body.en-tablero header .quien div,
+    body.en-tablero main,
+    body:has(#pTablero:not(.oculto)) header .marca,
+    body:has(#pTablero:not(.oculto)) header .quien div,
+    body:has(#pTablero:not(.oculto)) main {
+      max-width: 1200px;
+    }
+    #pTablero > .periodo-datos {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+    #pTablero > .periodo-datos > .tarjeta {
+      margin-bottom: 0;
+    }
+    #pTablero #tabMapaTarjeta,
+    #pTablero #tabOtifTarjeta {
+      grid-column: 1 / -1;
+    }
+    #pTablero #tabOtif .otif-graficos-fila {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+  }
 </style>
 </head>
 <body>
@@ -489,8 +544,11 @@
         <button class="chico" type="button" id="btnTabActualizar">Actualizar</button>
         <button class="chico" type="button" id="btnTabSalir">Salir del panel</button>
       </div>
+      <div class="pildoras" role="tablist" style="margin-top:14px" aria-label="Secciones del panel">
+        <button type="button" id="btnTabSeccionGeneral" aria-pressed="true">Operaciones</button>
+        <button type="button" id="btnTabSeccionTransportistas" aria-pressed="false">Transportistas</button>
+      </div>
     </div>
-    <div class="tarjeta"><h3 style="margin-top:0">En ruta ahora</h3><div id="tabEnRuta"></div></div>
     <!-- Periodo (servidor 15): hoy, ayer, semana, mes o un rango; anterior/siguiente y un día por tarjeta. -->
     <div class="tarjeta oculto" id="tabPeriodo">
       <div class="pildoras" role="group" aria-label="Periodo">
@@ -513,7 +571,9 @@
       </div>
       <div class="linea-tiempo periodo-datos" id="tabEvolucion" aria-label="Día por día"></div>
     </div>
-    <div class="periodo-datos">
+    <div id="tabSeccionGeneral">
+      <div class="tarjeta"><h3 style="margin-top:0">En ruta ahora</h3><div id="tabEnRuta"></div></div>
+      <div class="periodo-datos">
     <!-- Gráficos (Task 20): isla React con TanStack Charts (graficos/, compilada a Graficos.html). El panel pide el código con
          un <script> solo al abrirse (pintarGraficos); cada <figure> queda oculta hasta que su gráfico tiene datos. Las tablas
          y tarjetas siguen: son el respaldo accesible y la referencia exacta. -->
@@ -540,8 +600,12 @@
         <h3 style="margin-top:0" class="cap-periodo" data-titulo="OTIF">OTIF (este mes)</h3>
         <div class="kpis" id="tabOtifKpis"></div>
         <p class="ayuda" id="tabOtifNota"></p>
-        <figure class="grafico" hidden><figcaption>OTIF día por día</figcaption><div id="grafOtifDiario"></div></figure>
-        <h3>Por región</h3><figure class="grafico" hidden><div id="grafOtifRegion"></div></figure><div class="regiones" id="tabRegiones"></div>
+        <div class="otif-graficos-fila">
+          <figure class="grafico" hidden><figcaption>OTIF día por día</figcaption><div id="grafOtifDiario"></div></figure>
+          <div>
+            <h3>Por región</h3><figure class="grafico" hidden><div id="grafOtifRegion"></div></figure><div class="regiones" id="tabRegiones"></div>
+          </div>
+        </div>
       </div>
       <h3 class="cap-periodo" data-titulo="Departamentos">Departamentos (este mes)</h3><div class="tabla-scroll" id="tabDeptos"></div>
     </div>
@@ -633,6 +697,19 @@
     </div>
     </div>
     <div class="tarjeta"><h3 style="margin-top:0">Últimos viajes enviados</h3><div class="tabla-scroll" id="tabRecientes"></div></div>
+    </div>
+    <div id="tabSeccionTransportistas" class="oculto">
+      <div class="tarjeta periodo-datos" id="tabTransMetricasTarjeta">
+        <h3 style="margin-top:0" class="cap-periodo" data-titulo="Transportistas subcontratados">Transportistas subcontratados (este mes)</h3>
+        <div class="kpis" id="tabTransKpis"></div>
+        <p class="ayuda" id="tabTransNota"></p>
+      </div>
+      <div class="tarjeta periodo-datos" id="tabTransRutasTarjeta">
+        <h3 style="margin-top:0" class="cap-periodo" data-titulo="Rutas subcontratadas">Rutas subcontratadas (este mes)</h3>
+        <div class="tabla-scroll" id="tabTransRutas"></div>
+        <p class="ayuda" id="tabTransRutasNota"></p>
+      </div>
+    </div>
   </section>
 </main>
 
@@ -648,6 +725,74 @@
     <button class="primario" type="button" id="btnPinSesion">Continuar</button>
     <p></p>
     <button class="secundario" type="button" id="btnPinSesionNo">Ahora no</button>
+  </div>
+</div>
+
+<!-- Diálogos para módulo de transportistas (Task 23) -->
+<div id="dlgFacturaTrans" class="dialogo oculto" role="dialog" aria-modal="true" aria-labelledby="dlgFacturaTransTitulo">
+  <div class="tarjeta" style="max-height:90vh; overflow-y:auto;">
+    <h2 id="dlgFacturaTransTitulo">Factura del transportista</h2>
+    <p class="ayuda" id="dlgFacturaTransSub"></p>
+    <div class="fila" style="margin-bottom:10px">
+      <button class="secundario chico" type="button" id="btnFotoTrans">Tomar foto / Subir factura</button>
+      <input type="file" id="fotoFacturaTrans" accept="image/*" capture="environment" class="oculto">
+    </div>
+    <div id="avisoLecturaTrans"></div>
+    <label for="txtTransCodigoGen">Código de generación</label>
+    <input id="txtTransCodigoGen" class="codigo" type="text" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" autocomplete="off">
+    <label for="txtTransNumControl">Número de control</label>
+    <input id="txtTransNumControl" class="codigo" type="text" placeholder="DTE-01-M001P001-000000000000001" autocomplete="off">
+    <label for="txtTransEmisor">Emisor (Nombre / NIT) <span class="opc">(opcional)</span></label>
+    <input id="txtTransEmisor" type="text" placeholder="Transporte Rafael" autocomplete="off">
+    <label for="txtTransFechaFac">Fecha de la factura</label>
+    <input id="txtTransFechaFac" type="date">
+    <label for="txtTransMontoFac">Monto pagado ($)</label>
+    <input id="txtTransMontoFac" type="number" step="0.01" min="0" placeholder="0.00">
+    <div id="difTransFac" class="ayuda" style="margin-top:6px"></div>
+    <div id="errFacTrans"></div>
+    <p></p>
+    <div class="fila">
+      <button class="primario" type="button" id="btnGuardarFacTrans">Registrar pago</button>
+      <button class="secundario" type="button" id="btnCancelarFacTrans">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="dlgCajaChicaTrans" class="dialogo oculto" role="dialog" aria-modal="true" aria-labelledby="dlgCajaChicaTransTitulo">
+  <div class="tarjeta" style="max-height:90vh; overflow-y:auto;">
+    <h2 id="dlgCajaChicaTransTitulo">Pago por caja chica</h2>
+    <p class="ayuda" id="dlgCajaChicaTransSub"></p>
+    <label for="txtTransCajaFecha">Fecha del pago</label>
+    <input id="txtTransCajaFecha" type="date">
+    <label for="txtTransCajaMonto">Monto pagado ($)</label>
+    <input id="txtTransCajaMonto" type="number" step="0.01" min="0" placeholder="0.00">
+    <div id="difTransCaja" class="ayuda" style="margin-top:6px"></div>
+    <label for="txtTransCajaConcepto">Concepto</label>
+    <input id="txtTransCajaConcepto" type="text" value="Servicio profesional de transporte" autocomplete="off">
+    <label for="txtTransCajaNota">Nota <span class="opc">(opcional)</span></label>
+    <textarea id="txtTransCajaNota" rows="2" placeholder="Detalle adicional del pago"></textarea>
+    <div id="errCajaTrans"></div>
+    <p></p>
+    <div class="fila">
+      <button class="primario" type="button" id="btnGuardarCajaTrans">Registrar pago</button>
+      <button class="secundario" type="button" id="btnCancelarCajaTrans">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="dlgAnularPagoTrans" class="dialogo oculto" role="dialog" aria-modal="true" aria-labelledby="dlgAnularPagoTransTitulo">
+  <div class="tarjeta">
+    <h2 id="dlgAnularPagoTransTitulo">Anular pago a transportista</h2>
+    <p class="ayuda" id="dlgAnularPagoTransSub"></p>
+    <p class="ayuda">El pago quedará anulado y la ruta volverá a estado Pendiente. No se borra del historial.</p>
+    <label for="txtTransAnularMotivo">Motivo de anulación <span class="opc">(obligatorio)</span></label>
+    <textarea id="txtTransAnularMotivo" rows="2" placeholder="Escriba el motivo de la anulación"></textarea>
+    <div id="errAnularTrans"></div>
+    <p></p>
+    <div class="fila">
+      <button class="primario peligro" type="button" id="btnConfirmarAnularTrans">Anular pago</button>
+      <button class="secundario" type="button" id="btnCancelarAnularTrans">Cancelar</button>
+    </div>
   </div>
 </div>
 
@@ -752,7 +897,9 @@
     ['pCargando', 'pIngreso', 'pInicio', 'pRuta', 'pParada', 'pCierre', 'pListo', 'pMant', 'pTablero'].forEach(function (s) {
       $(s).classList.toggle('oculto', s !== id);
     });
+    document.body.classList.toggle('en-tablero', id === 'pTablero');
     if (id !== 'pTablero') pararRelojTablero();
+    else iniciarObservadorTablero();
     $('barraRuta').classList.toggle('oculto', id !== 'pRuta');
     $('btnCerrarSesion').classList.toggle('oculto', ['pInicio', 'pMant', 'pRuta', 'pParada', 'pCierre', 'pListo'].indexOf(id) < 0);
     // Registrar mantenimiento: desde la salida de bodega, si el servidor ya lo sabe hacer.
@@ -1584,6 +1731,7 @@
     var s = sesionAdmin();
     if (!s) { salirTablero('Su sesión del panel venció: escriba su PIN otra vez.'); return; }
     $('quien').innerHTML = '<div><b>' + esc(s.nombre) + '</b><span>Panel de la oficina</span></div>';
+    if (typeof cambiarSeccionTablero === 'function') cambiarSeccionTablero('general');
     mostrar('pTablero');
     if (datos) pintarTablero(datos); else cargarTablero();
     programarTablero();
@@ -1951,9 +2099,49 @@
     document.head.appendChild(s);
   }
   var FORMATO_GRAFICOS = { dinero: fmtDinero, numero: fmtKm };
+  var observadorTablero = null;
+  var ultimoAnchoTablero = 0;
+  function iniciarObservadorTablero() {
+    if (observadorTablero || typeof ResizeObserver === 'undefined') return;
+    var cont = $('pTablero');
+    if (!cont) return;
+    observadorTablero = new ResizeObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        var w = Math.round(entries[i].contentRect.width);
+        if (w > 0 && Math.abs(w - ultimoAnchoTablero) >= 4) {
+          ultimoAnchoTablero = w;
+          if (window.LogistikGraficos && ultimoTablero && pantallaActual() === 'pTablero') {
+            pintarGraficos(ultimoTablero);
+          }
+        }
+      }
+    });
+    observadorTablero.observe(cont);
+  }
+  window.addEventListener('resize', function () {
+    if (window.LogistikGraficos && ultimoTablero && pantallaActual() === 'pTablero') {
+      pintarGraficos(ultimoTablero);
+    }
+  });
+  window.addEventListener('orientationchange', function () {
+    if (window.LogistikGraficos && ultimoTablero && pantallaActual() === 'pTablero') {
+      pintarGraficos(ultimoTablero);
+    }
+  });
+  document.addEventListener('focusin', function (e) {
+    var tag = e.target && e.target.tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') {
+      setTimeout(function () {
+        if (e.target && typeof e.target.scrollIntoView === 'function') {
+          e.target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+      }, 150);
+    }
+  });
   function pintarTablero(t) {
     if (!t) return;
     ultimoTablero = t;
+    iniciarObservadorTablero();
     pintarPeriodo(t);
     $('tabGenerado').textContent = 'Actualizado: ' + (t.generado || '') + '. Se actualiza solo cada 2 minutos mientras está abierto.';
     $('tabEnRuta').innerHTML = !t.enRuta.length ? '<p class="ayuda">Nadie está en ruta ahora.</p>' : t.enRuta.map(function (r) {
@@ -1990,12 +2178,331 @@
     pintarCanales(t);
     pintarMotivos(t);
     pintarOtif(t);
+    pintarTransportistas(t);
     pintarGraficos(t);
     $('tabRecientes').innerHTML = tabla(['Fecha', 'Piloto', 'Placa', 'Km', 'Facturas', 'Monto', 'Revisar'], t.recientes.map(function (v) {
       return [esc(fmtFecha(v.fecha)), esc(v.piloto), esc(v.placa), fmtKm(v.km), fmtKm(v.facturas), fmtDinero(v.monto),
               v.revisar ? '<span class="estado-mant proximo">' + v.revisar + (v.revisar === 1 ? ' fila' : ' filas') + '</span>' : ''];
     }), [3, 4, 5]);
   }
+
+  // ------------------------------------------------------------ transportistas (Task 23)
+  var rutaActualTrans = null;
+
+  function cambiarSeccionTablero(seccion) {
+    var esGeneral = seccion === 'general';
+    $('btnTabSeccionGeneral').setAttribute('aria-pressed', esGeneral ? 'true' : 'false');
+    $('btnTabSeccionTransportistas').setAttribute('aria-pressed', esGeneral ? 'false' : 'true');
+    $('tabSeccionGeneral').classList.toggle('oculto', !esGeneral);
+    $('tabSeccionTransportistas').classList.toggle('oculto', esGeneral);
+  }
+  $('btnTabSeccionGeneral').addEventListener('click', function () { cambiarSeccionTablero('general'); });
+  $('btnTabSeccionTransportistas').addEventListener('click', function () { cambiarSeccionTablero('transportistas'); });
+
+  function pintarTransportistas(t) {
+    var tr = t && t.transportistas;
+    $('tabTransMetricasTarjeta').classList.toggle('oculto', !tr);
+    $('tabTransRutasTarjeta').classList.toggle('oculto', !tr);
+    if (!tr) return;
+
+    var dif = tr.diferenciaTotal || 0;
+    var tieneDif = dif !== 0;
+    var hayRutasConDif = Boolean(tr.rutasConDiferencia);
+    var signoDif = dif > 0 ? '+' : '';
+
+    $('tabTransKpis').innerHTML =
+      '<div class="kpi destacado"><span>Declarado</span><b>' + fmtDinero(tr.declarado) + '</b><small>Rutas pagadas</small></div>' +
+      '<div class="kpi"><span>Pagado</span><b>' + fmtDinero(tr.pagado) + '</b><small>Total pagado</small></div>' +
+      '<div class="kpi' + (tieneDif ? ' sobre-limite' : '') + '"><span>Diferencia total</span><b>' + (tieneDif ? signoDif + fmtDinero(dif) : '$0.00') + '</b><small>' + (tieneDif ? 'Cobro vs declarado' : 'Sin diferencias') + '</small></div>' +
+      '<div class="kpi' + (hayRutasConDif ? ' sobre-limite' : '') + '"><span>Rutas con diferencia</span><b>' + fmtKm(tr.rutasConDiferencia) + (tr.rutasConDiferencia === 1 ? ' ruta' : ' rutas') + '</b><small>' + (hayRutasConDif ? 'Por revisar' : 'Cuadradas') + '</small></div>' +
+      '<div class="kpi"><span>Pendientes de pago</span><b>' + fmtKm(tr.pendientes) + (tr.pendientes === 1 ? ' ruta' : ' rutas') + '</b><small>' + fmtDinero(tr.montoPendiente) + ' por pagar</small></div>' +
+      '<div class="kpi"><span>Costo por ruta</span><b>' + (tr.costoPorRuta != null ? fmtDinero(tr.costoPorRuta) : 'Sin dato') + '</b><small>' + fmtKm(tr.totalRutas) + (tr.totalRutas === 1 ? ' ruta' : ' rutas') + '</small></div>' +
+      '<div class="kpi"><span>Costo por factura</span><b>' + (tr.costoPorFactura != null ? fmtDinero(tr.costoPorFactura) : 'Sin dato') + '</b><small>Entregadas</small></div>' +
+      '<div class="kpi"><span>Costo por km</span><b>' + (tr.costoPorKm != null ? fmtDinero(tr.costoPorKm) : 'Sin dato') + '</b><small>Hojas de ruta</small></div>';
+
+    $('tabTransNota').textContent = tr.totalRutas
+      ? 'Métricas de transportistas subcontratados del periodo. Declarado vs pagado sobre rutas pagadas; en rojo si hay diferencia entre lo cobrado y lo declarado. Costos unitarios incluyen lo pagado y lo pendiente por pagar.'
+      : 'En este periodo no hay rutas subcontratadas.';
+
+    var rutas = tr.rutas || [];
+    if (!rutas.length) {
+      $('tabTransRutas').innerHTML = '<p class="ayuda">No hay rutas subcontratadas en este periodo.</p>';
+      $('tabTransRutasNota').textContent = '';
+      return;
+    }
+
+    $('tabTransRutas').innerHTML = tabla(['Fecha', 'Transportista', 'Placa', 'Facturas / Mercadería', 'Monto declarado', 'Estado de pago', 'Acción'], rutas.map(function (r) {
+      var facMerc = fmtKm(r.facturasEntregadas) + (r.facturasEntregadas === 1 ? ' factura' : ' facturas') +
+        '<br><span class="ayuda">' + fmtDinero(r.montoMercaderia) + '</span>';
+      var declarado = '<b>' + fmtDinero(r.montoDeclarado) + '</b>';
+      var estadoHtml = '';
+      var accionHtml = '';
+
+      if (r.estadoPago === 'Pendiente') {
+        estadoHtml = '<span class="estado-mant proximo">Pendiente</span>';
+        accionHtml = '<button class="chico btn-accion-trans" type="button" data-accion="factura" data-id="' + esc(r.id) + '">Escanear factura</button> ' +
+          '<button class="chico btn-accion-trans" type="button" data-accion="cajachica" data-id="' + esc(r.id) + '">Caja chica</button>';
+      } else {
+        var p = r.pago;
+        var esFac = r.estadoPago === 'Factura';
+        estadoHtml = '<span class="chip' + (esFac ? '' : ' neutro') + '">' + esc(r.estadoPago) + '</span>';
+        if (p && p.diferencia !== 0) {
+          estadoHtml += '<br><span class="estado-mant vencido">Revisar (' + (p.diferencia > 0 ? '+' : '') + fmtDinero(p.diferencia) + ')</span>';
+        }
+        if (p) {
+          estadoHtml += '<br><span class="ayuda">' + fmtDinero(p.montoPagado) +
+            (p.control ? ' · ' + esc(p.control) : '') +
+            (p.concepto ? ' · ' + esc(p.concepto) : '') + '</span>';
+        }
+        accionHtml = '<button class="chico peligro btn-accion-trans" type="button" data-accion="anular" data-id="' + esc(r.id) + '">Anular pago</button>';
+      }
+
+      return [esc(fmtFecha(r.fecha)), '<b>' + esc(r.transportista) + '</b>', esc(r.placa), facMerc, declarado, estadoHtml, accionHtml];
+    }), [3, 4]);
+
+    $('tabTransRutasNota').textContent = 'Mostrando ' + rutas.length + (rutas.length === 1 ? ' ruta subcontratada' : ' rutas subcontratadas') + ' del periodo.';
+  }
+
+  $('tabTransRutas').addEventListener('click', function (ev) {
+    var btn = ev.target.closest('.btn-accion-trans');
+    if (!btn) return;
+    var accion = btn.getAttribute('data-accion');
+    var id = btn.getAttribute('data-id');
+    var tr = ultimoTablero && ultimoTablero.transportistas;
+    var ruta = tr && tr.rutas && tr.rutas.filter(function (x) { return x.id === id; })[0];
+    if (!ruta) return;
+    if (accion === 'factura') abrirFacturaTrans(ruta);
+    else if (accion === 'cajachica') abrirCajaChicaTrans(ruta);
+    else if (accion === 'anular') abrirAnularPagoTrans(ruta);
+  });
+
+  function abrirFacturaTrans(r) {
+    rutaActualTrans = r;
+    $('dlgFacturaTransSub').textContent = fmtFecha(r.fecha) + ' · ' + r.transportista + ' · ' + r.placa + ' · Declarado: ' + fmtDinero(r.montoDeclarado);
+    $('txtTransCodigoGen').value = '';
+    $('txtTransNumControl').value = '';
+    $('txtTransEmisor').value = r.transportista || '';
+    $('txtTransFechaFac').value = r.fecha || hoyISO();
+    $('txtTransMontoFac').value = r.montoDeclarado ? String(r.montoDeclarado) : '';
+    aviso('avisoLecturaTrans');
+    aviso('errFacTrans');
+    actualizarDifFacTrans();
+    $('btnGuardarFacTrans').disabled = false;
+    $('dlgFacturaTrans').classList.remove('oculto');
+  }
+
+  function actualizarDifFacTrans() {
+    if (!rutaActualTrans) return;
+    var monto = parseFloat($('txtTransMontoFac').value);
+    var decl = rutaActualTrans.montoDeclarado || 0;
+    if (isNaN(monto)) {
+      $('difTransFac').textContent = 'Monto declarado en la ruta: ' + fmtDinero(decl) + '.';
+      return;
+    }
+    var diff = Math.round((monto - decl) * 100) / 100;
+    if (diff !== 0) {
+      $('difTransFac').innerHTML = '<span class="sobre-limite">Difiere del declarado (' + fmtDinero(decl) + ' vs ' + fmtDinero(monto) + '). Quedará marcado «Revisar» con diferencia de ' + (diff > 0 ? '+' : '') + fmtDinero(diff) + '.</span>';
+    } else {
+      $('difTransFac').textContent = 'Coincide con el monto declarado (' + fmtDinero(decl) + ').';
+    }
+  }
+
+  $('txtTransMontoFac').addEventListener('input', actualizarDifFacTrans);
+
+  $('btnFotoTrans').addEventListener('click', function () {
+    $('fotoFacturaTrans').value = '';
+    $('fotoFacturaTrans').click();
+  });
+
+  $('fotoFacturaTrans').addEventListener('change', function (ev) {
+    var archivo = ev.target.files && ev.target.files[0];
+    if (!archivo) return;
+    var s = sesionAdmin();
+    if (!s) { aviso('errFacTrans', 'error', 'Sesión de administrador no válida.'); return; }
+    aviso('avisoLecturaTrans', 'info', 'Leyendo factura…');
+    var url = URL.createObjectURL(archivo);
+    var img = new Image();
+    img.onerror = function () {
+      try { URL.revokeObjectURL(url); } catch (e) {}
+      aviso('avisoLecturaTrans', 'error', 'No se pudo abrir la foto.');
+    };
+    img.onload = function () {
+      var ancho = img.naturalWidth, alto = img.naturalHeight;
+      buscarQR(img, ancho, alto).then(function (qr) {
+        var textoQr = qr || '';
+        var q = leerQR(textoQr);
+        if (q.codigo) $('txtTransCodigoGen').value = q.codigo;
+        if (q.fechaEmision) $('txtTransFechaFac').value = q.fechaEmision;
+        var foto = fotoReducida(img, ancho, alto);
+        try { URL.revokeObjectURL(url); } catch (e) {}
+        return servidor('leerFactura', foto, textoQr, s.token, s.nombre).then(function (datos) {
+          datos = datos || {};
+          if (datos.codigo && !$('txtTransCodigoGen').value) $('txtTransCodigoGen').value = datos.codigo;
+          var ctl = datos.numeroControl || datos.control;
+          if (ctl && !$('txtTransNumControl').value) $('txtTransNumControl').value = String(ctl);
+          if (datos.fechaEmision && !$('txtTransFechaFac').value) $('txtTransFechaFac').value = datos.fechaEmision;
+          if (datos.total != null && !isNaN(datos.total)) {
+            $('txtTransMontoFac').value = String(datos.total);
+            actualizarDifFacTrans();
+          }
+          if (datos.cliente && !$('txtTransEmisor').value) $('txtTransEmisor').value = datos.cliente;
+          aviso('avisoLecturaTrans', 'ok', 'Factura leída. Revise y corrija los datos antes de registrar.');
+        }, function (e) {
+          aviso('avisoLecturaTrans', 'ambar', 'No se pudo leer todo el texto (' + esc(e.message) + '). Complete los datos a mano.');
+        });
+      }).catch(function (e) {
+        try { URL.revokeObjectURL(url); } catch (err) {}
+        aviso('avisoLecturaTrans', 'error', 'Error al procesar la foto (' + esc(e.message || e) + ').');
+      });
+    };
+    img.src = url;
+  });
+
+  $('btnGuardarFacTrans').addEventListener('click', function () {
+    var s = sesionAdmin();
+    if (!s) { aviso('errFacTrans', 'error', 'Sesión de administrador vencida o no válida.'); return; }
+    if (!rutaActualTrans) return;
+    var cod = $('txtTransCodigoGen').value.trim();
+    var ctl = $('txtTransNumControl').value.trim();
+    if (!cod && !ctl) {
+      aviso('errFacTrans', 'error', 'Escriba el código de generación o el número de control.');
+      return;
+    }
+    var monto = parseFloat($('txtTransMontoFac').value);
+    if (isNaN(monto) || monto <= 0) {
+      aviso('errFacTrans', 'error', 'Escriba un monto válido mayor a 0.');
+      return;
+    }
+    $('btnGuardarFacTrans').disabled = true;
+    aviso('errFacTrans');
+    servidor('registrarPagoTransportista', s.token, {
+      idEnvio: rutaActualTrans.id,
+      tipo: 'Factura',
+      codigo: cod,
+      control: ctl,
+      emisor: $('txtTransEmisor').value.trim(),
+      fechaFactura: $('txtTransFechaFac').value,
+      monto: monto
+    }).then(function () {
+      $('dlgFacturaTrans').classList.add('oculto');
+      $('btnGuardarFacTrans').disabled = false;
+      mostrarToast('Pago con factura registrado.');
+      cargarTablero();
+    }, function (e) {
+      $('btnGuardarFacTrans').disabled = false;
+      aviso('errFacTrans', 'error', esc(e.message));
+    });
+  });
+
+  $('btnCancelarFacTrans').addEventListener('click', function () {
+    $('dlgFacturaTrans').classList.add('oculto');
+  });
+
+  function abrirCajaChicaTrans(r) {
+    rutaActualTrans = r;
+    $('dlgCajaChicaTransSub').textContent = fmtFecha(r.fecha) + ' · ' + r.transportista + ' · ' + r.placa + ' · Declarado: ' + fmtDinero(r.montoDeclarado);
+    $('txtTransCajaFecha').value = r.fecha || hoyISO();
+    $('txtTransCajaMonto').value = r.montoDeclarado ? String(r.montoDeclarado) : '';
+    $('txtTransCajaConcepto').value = 'Servicio profesional de transporte';
+    $('txtTransCajaNota').value = '';
+    aviso('errCajaTrans');
+    actualizarDifCajaTrans();
+    $('btnGuardarCajaTrans').disabled = false;
+    $('dlgCajaChicaTrans').classList.remove('oculto');
+  }
+
+  function actualizarDifCajaTrans() {
+    if (!rutaActualTrans) return;
+    var monto = parseFloat($('txtTransCajaMonto').value);
+    var decl = rutaActualTrans.montoDeclarado || 0;
+    if (isNaN(monto)) {
+      $('difTransCaja').textContent = 'Monto declarado en la ruta: ' + fmtDinero(decl) + '.';
+      return;
+    }
+    var diff = Math.round((monto - decl) * 100) / 100;
+    if (diff !== 0) {
+      $('difTransCaja').innerHTML = '<span class="sobre-limite">Difiere del declarado (' + fmtDinero(decl) + ' vs ' + fmtDinero(monto) + '). Quedará marcado «Revisar» con diferencia de ' + (diff > 0 ? '+' : '') + fmtDinero(diff) + '.</span>';
+    } else {
+      $('difTransCaja').textContent = 'Coincide con el monto declarado (' + fmtDinero(decl) + ').';
+    }
+  }
+
+  $('txtTransCajaMonto').addEventListener('input', actualizarDifCajaTrans);
+
+  $('btnGuardarCajaTrans').addEventListener('click', function () {
+    var s = sesionAdmin();
+    if (!s) { aviso('errCajaTrans', 'error', 'Sesión de administrador vencida o no válida.'); return; }
+    if (!rutaActualTrans) return;
+    var monto = parseFloat($('txtTransCajaMonto').value);
+    if (isNaN(monto) || monto <= 0) {
+      aviso('errCajaTrans', 'error', 'Escriba un monto válido mayor a 0.');
+      return;
+    }
+    var concepto = $('txtTransCajaConcepto').value.trim();
+    if (!concepto) {
+      aviso('errCajaTrans', 'error', 'Escriba el concepto del pago.');
+      return;
+    }
+    $('btnGuardarCajaTrans').disabled = true;
+    aviso('errCajaTrans');
+    servidor('registrarPagoTransportista', s.token, {
+      idEnvio: rutaActualTrans.id,
+      tipo: 'Caja chica',
+      monto: monto,
+      fechaFactura: $('txtTransCajaFecha').value,
+      concepto: concepto,
+      nota: $('txtTransCajaNota').value.trim()
+    }).then(function () {
+      $('dlgCajaChicaTrans').classList.add('oculto');
+      $('btnGuardarCajaTrans').disabled = false;
+      mostrarToast('Pago por caja chica registrado.');
+      cargarTablero();
+    }, function (e) {
+      $('btnGuardarCajaTrans').disabled = false;
+      aviso('errCajaTrans', 'error', esc(e.message));
+    });
+  });
+
+  $('btnCancelarCajaTrans').addEventListener('click', function () {
+    $('dlgCajaChicaTrans').classList.add('oculto');
+  });
+
+  function abrirAnularPagoTrans(r) {
+    rutaActualTrans = r;
+    var p = r.pago;
+    $('dlgAnularPagoTransSub').textContent = fmtFecha(r.fecha) + ' · ' + r.transportista + ' · ' + r.placa +
+      ' · ' + (p ? p.tipo + ' por ' + fmtDinero(p.montoPagado) : '');
+    $('txtTransAnularMotivo').value = '';
+    aviso('errAnularTrans');
+    $('btnConfirmarAnularTrans').disabled = false;
+    $('dlgAnularPagoTrans').classList.remove('oculto');
+  }
+
+  $('btnConfirmarAnularTrans').addEventListener('click', function () {
+    var s = sesionAdmin();
+    if (!s) { aviso('errAnularTrans', 'error', 'Sesión de administrador vencida o no válida.'); return; }
+    if (!rutaActualTrans) return;
+    var motivo = $('txtTransAnularMotivo').value.trim();
+    if (!motivo) {
+      aviso('errAnularTrans', 'error', 'Escriba el motivo de la anulación (obligatorio).');
+      return;
+    }
+    $('btnConfirmarAnularTrans').disabled = true;
+    aviso('errAnularTrans');
+    servidor('anularPagoTransportista', s.token, rutaActualTrans.id, motivo).then(function () {
+      $('dlgAnularPagoTrans').classList.add('oculto');
+      $('btnConfirmarAnularTrans').disabled = false;
+      mostrarToast('Pago anulado. La ruta vuelve a Pendiente.');
+      cargarTablero();
+    }, function (e) {
+      $('btnConfirmarAnularTrans').disabled = false;
+      aviso('errAnularTrans', 'error', esc(e.message));
+    });
+  });
+
+  $('btnCancelarAnularTrans').addEventListener('click', function () {
+    $('dlgAnularPagoTrans').classList.add('oculto');
+  });
 
   function pintarQuien() {
     // El usuario de prueba lo ve siempre: lo que envía no va a Registros.
@@ -2339,10 +2846,15 @@
         '" placeholder="Elija o escriba el motivo"' + (f.motivo ? '' : ' class="falta"') + '>';
     }
     var m = motivoElegido(f);
+    var esOtra = m.sel === 'Otra';
+    var textoComentario = esOtra ? (m.otra || f.comentario || '') : (f.comentario || '');
+    var falta = esOtra && !textoComentario.trim();
+    var campoNombre = esOtra ? 'motivoOtra' : 'comentario';
+    var placeholder = esOtra ? 'Escriba cuál es el motivo' : 'Comentario (opcional)';
     return titulo + '<select data-motivo="' + j + '"' + (m.sel ? '' : ' class="falta"') + '><option value="">Elija el motivo</option>' +
       motivosRechazo().map(function (x) { return '<option' + (m.sel === x ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('') + '</select>' +
-      (m.sel !== 'Otra' ? '' : '<input data-f="' + j + '" data-campo="motivoOtra" type="text" autocomplete="off" maxlength="190" value="' + esc(m.otra) +
-        '" placeholder="Escriba cuál es el motivo"' + (m.otra ? '' : ' class="falta"') + '>');
+      '<input data-f="' + j + '" data-campo="' + campoNombre + '" data-comentario="' + j + '" type="text" autocomplete="off" maxlength="190" value="' + esc(textoComentario) +
+      '" placeholder="' + placeholder + '"' + (falta ? ' class="falta"' : '') + '>';
   }
   /** Fecha y hora de cada factura: solo si el servidor ya las guarda (versión 12, columnas X e Y de Registros). */
   function conFechaFactura() { return config.version >= 12; }
@@ -2465,10 +2977,17 @@
     var v = ev.target.value;
     if (campo === 'control') { v = v.replace(/\D/g, ''); if (v !== ev.target.value) ev.target.value = v; }
     if (campo === 'vendedor') { v = v.toUpperCase().replace(/\s+/g, ''); if (v !== ev.target.value) ev.target.value = v; }
-    // «Otra»: lo que escribe el piloto va en el motivo como 'Otra: texto'.
+    // «Otra» y Comentario: lo que escribe el piloto.
     if (campo === 'motivoOtra') {
       facturasForm[Number(j)].motivo = v.trim() ? 'Otra: ' + v.trim() : 'Otra';
+      facturasForm[Number(j)].comentario = v.trim();
       ev.target.classList.toggle('falta', !v.trim());
+      guardarConFaltantes = false;
+      guardarParadaAbierta();
+      return;
+    }
+    if (campo === 'comentario') {
+      facturasForm[Number(j)].comentario = v.trim();
       guardarConFaltantes = false;
       guardarParadaAbierta();
       return;
@@ -2491,7 +3010,18 @@
     var sm = ev.target.getAttribute('data-motivo');
     if (sm != null) {
       var fm = facturasForm[Number(sm)];
-      if (fm) { fm.motivo = ev.target.value; guardarConFaltantes = false; dibujarFacturas(); guardarParadaAbierta(); }
+      if (fm) {
+        var viejoComentario = fm.comentario || (motivoElegido(fm).otra || '');
+        if (ev.target.value === 'Otra') {
+          fm.motivo = viejoComentario ? 'Otra: ' + viejoComentario : 'Otra';
+        } else {
+          fm.motivo = ev.target.value;
+        }
+        fm.comentario = viejoComentario;
+        guardarConFaltantes = false;
+        dibujarFacturas();
+        guardarParadaAbierta();
+      }
       return;
     }
     var j = ev.target.getAttribute('data-f');
@@ -2645,6 +3175,7 @@
         return { control: f.control, codigo: String(f.codigo || '').toUpperCase(), monto: f.monto === '' ? '' : Number(f.monto),
                  vendedor: String(f.vendedor || '').toUpperCase(), numeroControl: f.numeroControl || '',
                  estado: estadoDe(f), motivo: estadoDe(f) === 'Exitosa' ? '' : String(f.motivo || '').trim(),
+                 comentario: estadoDe(f) === 'Exitosa' ? '' : String(f.comentario || (motivoElegido(f).sel === 'Otra' ? motivoElegido(f).otra : '')).trim(),
                  montoDevuelto: estadoDe(f) === 'Devolución parcial' ? Math.round(Number(f.montoDevuelto) * 100) / 100 : '',
                  formaPago: conFormaPago() ? f.formaPago || '' : undefined,
                  desglosePago: conPagoMixto() && f.formaPago === 'Mixto' ? desgloseParaEnviar(f) : undefined,
