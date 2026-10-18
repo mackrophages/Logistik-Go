@@ -900,6 +900,168 @@
   #pCombustible .cuadre.no .icono { color: var(--estado-error); }
   #pCombustible .cuadre .icono { flex: none; margin-top: 1px; }
 
+  /* Ingreso y pantalla de carga con la línea Caldera (Tarea 31, retomada en M2): mismas variables por rol que Combustible.
+     Botón naranja con texto blanco a 19 px en negrita (texto grande: 3.4 a 1 sobre el naranja pasa el mínimo de 3 a 1). */
+  body.caldera { background: var(--superficie-pagina); color: var(--tinta); min-height: 100vh; }
+  #pCargando { padding: 64px 16px; color: var(--tinta); font-family: var(--fuente-panel); }
+  #pCargando .carga-marca { font-family: var(--fuente-display); font-size: 44px; line-height: 1; letter-spacing: .04em; text-transform: uppercase; }
+  #pCargando .carga-barra { width: 160px; height: 6px; margin: 18px auto 12px; border-radius: 800px; background: var(--borde-fino); overflow: hidden; }
+  #pCargando .carga-barra i { display: block; width: 40%; height: 100%; border-radius: 800px; background: var(--acento);
+    animation: cargaVaiven 1.1s ease-in-out infinite alternate; }
+  @keyframes cargaVaiven { from { transform: translateX(-20%); } to { transform: translateX(170%); } }
+  @media (prefers-reduced-motion: reduce) { #pCargando .carga-barra i { animation: none; width: 100%; } }
+  #pCargando p { margin: 0; font-size: 14px; font-weight: 500; color: var(--gris); }
+  #pIngreso { max-width: 480px; margin: 8px auto 14px; background: var(--superficie-tarjeta); border: 0; border-radius: var(--radio-l);
+    padding: 24px 20px; color: var(--tinta); font-family: var(--fuente-panel); }
+  #pIngreso h2 { font-family: var(--fuente-display); font-weight: 400; font-size: 40px; line-height: .95; letter-spacing: .02em;
+    text-transform: uppercase; color: var(--tinta); margin: 2px 0 6px; }
+  #pIngreso h3 { font-family: var(--fuente-display); font-weight: 400; font-size: 26px; line-height: 1; letter-spacing: .03em; color: var(--tinta);
+    margin: 4px 0 0; }
+  #pIngreso label { color: var(--tinta); font-size: 14px; font-weight: 600; margin: 16px 0 6px; }
+  #pIngreso .ayuda { color: var(--gris); }
+  #pIngreso input, #pIngreso select { min-height: 54px; padding: 12px 22px; border-radius: 100px; border: 1px solid var(--borde-fino);
+    background: var(--blanco); color: var(--tinta); font-size: 18px; }
+  #pIngreso input:focus, #pIngreso select:focus { outline: 3px solid var(--resaltado); border-color: var(--tinta); }
+  .campo-pin { position: relative; }
+  .campo-pin input { padding-right: 64px; letter-spacing: .3em; font-weight: 700; }
+  .campo-pin input[type="text"] { letter-spacing: .12em; }
+  button.ver-pin { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; min-height: 44px; padding: 0;
+    border: 0; border-radius: 50%; background: transparent; color: var(--tinta); display: flex; align-items: center; justify-content: center; }
+  button.ver-pin:active:not(:disabled) { transform: translateY(-50%); }
+  #pIngreso button:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2px; }
+  #pIngreso button.primario { background: var(--acento); border: 1px solid var(--acento); color: var(--blanco); border-radius: 800px; min-height: 56px;
+    width: 100%; margin-top: 20px; font-family: var(--fuente-panel); font-size: 19px; font-weight: 700; }
+  #pIngreso button.fantasma, #pIngreso #instalar button { background: transparent; border: 1px solid var(--tinta); color: var(--tinta);
+    border-radius: 800px; min-height: 52px; width: 100%; margin-top: 16px; font-family: var(--fuente-panel); font-weight: 600; }
+  #pIngreso button.enlace { display: block; margin: 16px auto 0; min-height: 44px; padding: 10px 8px; color: var(--gris); font-weight: 500;
+    font-size: 14.5px; text-underline-offset: 4px; }
+  #ingresoOficina { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--borde-fino); }
+  #pIngreso #instalar { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--borde-fino); }
+  #pIngreso .aviso { display: flex; align-items: flex-start; gap: 8px; margin: 14px 0 0; padding: 12px 16px; border-radius: var(--radio-m);
+    border: 2px solid var(--borde-fino); background: var(--superficie-2); color: var(--tinta); font-size: 15px; font-weight: 600; }
+  #pIngreso .aviso .icono { flex: none; margin-top: 1px; }
+  #pIngreso .aviso.error { border-color: var(--estado-error); }
+  #pIngreso .aviso.error .icono { color: var(--estado-error); }
+  #pIngreso .aviso.ambar { border-color: var(--estado-alerta); }
+  #pIngreso .aviso.ambar .icono { color: var(--estado-alerta); }
+  @media (min-width: 600px) {
+    #pIngreso { margin-top: 32px; border-radius: 40px; padding: 36px 40px; }
+  }
+
+  /* App nueva del motorista (M2): cabecera compacta, bandeja, Mi día, carga y salida (maqueta piloto v2, estilos de
+     Combustible). Solo con body.app-nueva o dentro de .pantalla-nueva: con «App nueva: No» nada de esto aplica. */
+  body:not(.app-nueva) .solo-nueva { display: none !important; }
+  body.app-nueva header { background: var(--superficie-tarjeta); border-bottom: 1px solid var(--borde-fino); }
+  body.app-nueva header .marca, body.app-nueva header .quien, body.app-nueva #accesoCombustible { display: none; }
+  .cabecera { max-width: 560px; margin: 0 auto; display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-family: var(--fuente-panel);
+    color: var(--tinta); }
+  .cab-quien { min-width: 0; flex: 1; line-height: 1.15; }
+  .cab-quien b { display: block; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cab-quien > span { font-size: 11.5px; color: var(--gris); }
+  .cab-quien .modo-prueba { margin-left: 0; }
+  .cabecera button { font-family: var(--fuente-panel); color: var(--tinta); }
+  .cabecera button.volver { display: inline-flex; align-items: center; gap: 2px; border: 0; background: transparent; min-height: 44px; padding: 6px 4px;
+    font-size: 15px; font-weight: 600; flex: none; }
+  .cabecera .btn-icono { width: 44px; height: 44px; min-height: 44px; border-radius: 50%; border: 1px solid var(--tinta); background: transparent;
+    display: inline-flex; align-items: center; justify-content: center; padding: 0; flex: none; }
+  .chip-bandeja { display: inline-flex; align-items: center; gap: 5px; border-radius: 800px; padding: 0 10px; min-height: 36px; font-size: 12.5px;
+    font-weight: 700; background: var(--resaltado); border: 1px solid var(--estado-alerta); white-space: nowrap; flex: none; }
+  .chip-bandeja .cuenta { background: var(--tinta); color: var(--blanco); border-radius: 800px; min-width: 18px; height: 18px; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 11px; padding: 0 5px; }
+  .chip-bandeja.al-dia { background: transparent; border-color: var(--estado-ok); }
+  .chip-bandeja.al-dia .icono { color: var(--estado-ok); }
+  body.app-nueva #bandeja:not(.abierta) { display: none; }
+  body.app-nueva #bandeja { background: var(--superficie-tarjeta); border: 1px solid var(--tinta); border-radius: var(--radio-m); padding: 12px 14px;
+    margin: 0 0 12px; font-family: var(--fuente-panel); color: var(--tinta); }
+  #bandeja h4 { margin: 0 0 4px; font-family: var(--fuente-display); font-weight: 400; font-size: 24px; letter-spacing: .03em; line-height: 1; }
+  #bandeja .ayuda { margin: 8px 0 0; }
+  .pantalla-nueva { font-family: var(--fuente-panel); color: var(--tinta); }
+  .pantalla-nueva .tarjeta, .tarjeta.pantalla-nueva { background: var(--superficie-tarjeta); border: 0; border-radius: var(--radio-l); padding: 20px 18px;
+    margin-bottom: 12px; }
+  .pantalla-nueva .paso { color: var(--acento); }
+  .pantalla-nueva h2 { font-family: var(--fuente-display); font-weight: 400; font-size: 34px; line-height: .95; letter-spacing: .02em;
+    text-transform: uppercase; color: var(--tinta); margin: 0 0 12px; }
+  .pantalla-nueva h3 { font-family: var(--fuente-display); font-weight: 400; font-size: 22px; line-height: 1; letter-spacing: .03em; color: var(--tinta);
+    margin: 18px 0 6px; }
+  .pantalla-nueva label { color: var(--tinta); font-weight: 600; }
+  .pantalla-nueva .ayuda { color: var(--gris); }
+  .pantalla-nueva input, .pantalla-nueva select { min-height: 52px; padding: 12px 20px; border-radius: 100px; border: 1px solid var(--borde-fino);
+    background: var(--blanco); color: var(--tinta); font-size: 18px; }
+  .pantalla-nueva input:focus, .pantalla-nueva select:focus { outline: 3px solid var(--resaltado); border-color: var(--tinta); }
+  .pantalla-nueva input.autollenado, .pantalla-nueva select.autollenado { background: var(--superficie-2); border-color: var(--acento); }
+  .pantalla-nueva button { font-family: var(--fuente-panel); }
+  .pantalla-nueva button:focus-visible, .cabecera button:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2px; }
+  .pantalla-nueva button.primario { background: var(--acento); border: 1px solid var(--acento); color: var(--blanco); border-radius: 800px;
+    min-height: 56px; width: 100%; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .pantalla-nueva button.fantasma { background: transparent; border: 1px solid var(--tinta); color: var(--tinta); border-radius: 800px; width: 100%;
+    min-height: 48px; margin-top: 12px; font-size: 16px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .pantalla-nueva button.enlace { color: var(--tinta); font-weight: 500; font-size: 14px; min-height: 44px; padding: 8px 4px; }
+  .pantalla-nueva .centro { text-align: center; }
+  .pantalla-nueva .accesos { display: flex; gap: 8px; margin: 10px 0 0; }
+  .pantalla-nueva .accesos button.fantasma { flex: 1; min-height: 44px; margin-top: 0; font-size: 15px; }
+  .estado-grande { font-family: var(--fuente-display); font-size: 58px; line-height: .9; letter-spacing: .02em; margin: 6px 0; }
+  .estado-grande.ruta { color: var(--acento); }
+  .estado-grande.carga { color: var(--serie-1); }
+  .datos-dia { font-size: 15px; }
+  .pantalla-nueva .cuadre { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: var(--radio-m);
+    border: 2px solid var(--borde-fino); background: var(--superficie-2); color: var(--tinta); font-size: 15px; font-weight: 600; margin: 10px 0 4px; }
+  .pantalla-nueva .cuadre .icono { flex: none; margin-top: 1px; }
+  .pantalla-nueva .cuadre small { display: block; font-weight: 500; font-size: 13px; color: var(--gris); }
+  .pantalla-nueva .cuadre.ok { border-color: var(--estado-ok); }
+  .pantalla-nueva .cuadre.ok .icono { color: var(--estado-ok); }
+  .pantalla-nueva .cuadre.no { border-color: var(--estado-error); }
+  .pantalla-nueva .cuadre.no .icono { color: var(--estado-error); }
+  .pantalla-nueva .cuadre.alerta { border-color: var(--estado-alerta); }
+  .pantalla-nueva .cuadre.alerta .icono { color: var(--estado-alerta); }
+  .pantalla-nueva .vacio { text-align: center; color: var(--gris); font-size: 14px; padding: 18px 8px; border: 2px dashed var(--borde-fino);
+    border-radius: var(--radio-m); }
+  body.app-nueva #bandeja .aviso, .pantalla-nueva .aviso { border: 2px solid var(--estado-alerta); border-radius: var(--radio-m);
+    background: var(--superficie-2); color: var(--tinta); font-size: 15px; font-weight: 600; padding: 12px 16px; }
+  .pantalla-nueva .aviso:has(> .icono) { display: flex; align-items: flex-start; gap: 8px; }
+  .pantalla-nueva .aviso > .icono { flex: none; margin-top: 1px; color: var(--estado-alerta); }
+  body.app-nueva #bandeja .aviso.error, .pantalla-nueva .aviso.error { border-color: var(--estado-error); }
+  .pantalla-nueva .aviso.error > .icono { color: var(--estado-error); }
+  .pantalla-nueva .aviso.ok { border-color: var(--estado-ok); }
+  .pantalla-nueva .aviso.info, .pantalla-nueva .aviso.neutro { border-color: var(--borde-fino); }
+  .pantalla-nueva .aviso.neutro > .icono { color: var(--gris); }
+  .pantalla-nueva .aviso button { display: block; margin-top: 10px; border-radius: 800px; border: 1px solid var(--tinta); background: transparent;
+    color: var(--tinta); min-height: 44px; padding: 6px 16px; font-family: var(--fuente-panel); font-size: 15px; }
+  /* Salida de la app nueva: la misma #pInicio, en el orden de la maqueta; fecha de hoy sin campo, hora y auxiliar plegados. */
+  #pInicio.pantalla-nueva { display: flex; flex-direction: column; }
+  #pInicio.pantalla-nueva > * { order: 50; }
+  #pInicio.pantalla-nueva > .paso { order: 1; }
+  #pInicio.pantalla-nueva > h2 { order: 2; }
+  #pInicio.pantalla-nueva > label[for="selPlaca"] { order: 3; }
+  #pInicio.pantalla-nueva > #selPlaca { order: 4; }
+  #pInicio.pantalla-nueva > #campoOtraPlaca { order: 5; }
+  #pInicio.pantalla-nueva > label[for="txtKmSalida"] { order: 6; }
+  #pInicio.pantalla-nueva > #txtKmSalida { order: 7; }
+  #pInicio.pantalla-nueva > #ayudaPlaca { order: 8; }
+  #pInicio.pantalla-nueva > #avisoKmSalida { order: 9; }
+  #pInicio.pantalla-nueva > #horaAuto { order: 10; }
+  #pInicio.pantalla-nueva > label[for="txtHoraSalida"] { order: 11; }
+  #pInicio.pantalla-nueva > .fila { order: 12; }
+  #pInicio.pantalla-nueva > #auxPlegado { order: 13; }
+  #pInicio.pantalla-nueva > label[for="txtAuxiliar"] { order: 14; }
+  #pInicio.pantalla-nueva > #txtAuxiliar { order: 15; }
+  #pInicio.pantalla-nueva > #mantPlaca { order: 16; }
+  #pInicio.pantalla-nueva > #errInicio { order: 17; }
+  #pInicio.pantalla-nueva > #btnIniciar { order: 19; margin-top: 16px; }
+  #pInicio.pantalla-nueva > label[for="txtFecha"], #pInicio.pantalla-nueva > #txtFecha, #pInicio.pantalla-nueva > p:empty { display: none; }
+  #pInicio.pantalla-nueva:not(.hora-abierta) > label[for="txtHoraSalida"], #pInicio.pantalla-nueva:not(.hora-abierta) > .fila,
+  #pInicio.pantalla-nueva.hora-abierta > #horaAuto,
+  #pInicio.pantalla-nueva:not(.aux-abierto) > label[for="txtAuxiliar"], #pInicio.pantalla-nueva:not(.aux-abierto) > #txtAuxiliar,
+  #pInicio.pantalla-nueva.aux-abierto > #auxPlegado { display: none; }
+  #pInicio.pantalla-nueva .ayuda { margin-top: 6px; padding-left: 20px; }
+  #pInicio.pantalla-nueva button.angosto { border-radius: 800px; border: 1px solid var(--tinta); background: transparent; color: var(--tinta); min-height: 52px; }
+  .pantalla-nueva .auto { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 14px; margin: 14px 0 0; padding: 4px 6px 4px 14px;
+    border-radius: 800px; background: var(--superficie-2); }
+  .pantalla-nueva .auto .icono { color: var(--gris); }
+  .pantalla-nueva .auto b { font-variant-numeric: tabular-nums; }
+  .pantalla-nueva .auto .enlace { margin-left: auto; white-space: nowrap; font-size: 13.5px; }
+  #auxPlegado { margin-top: 6px; }
+  #auxPlegado .enlace { display: inline-flex; align-items: center; gap: 6px; }
+
   /* Pantallas del piloto en horizontal (Task 21): teléfono montado de lado en el carro (~390 px de alto) */
   @media (orientation: landscape) and (max-height: 500px) {
     header .marca { padding: 4px 12px; gap: 8px; }
@@ -927,6 +1089,15 @@
     #pCombustible h2 { font-size: 26px; }
     #pCombustible input, #pCombustible select { min-height: 42px; padding: 7px 16px; font-size: 16px; }
     #pCombustible button.escanear, #pCombustible button.primario { min-height: 44px; font-size: 16px; }
+    #pIngreso { margin-top: 4px; padding: 16px 24px; }
+    .cabecera { padding: 4px 12px; }
+    .estado-grande { font-size: 44px; }
+    .pantalla-nueva .tarjeta { padding: 14px 16px; margin-bottom: 10px; }
+    .pantalla-nueva button.primario { min-height: 48px; }
+    #pIngreso h2 { font-size: 30px; }
+    #pIngreso label { margin: 8px 0 4px; }
+    #pIngreso button.primario { margin-top: 12px; }
+    #pCargando { padding: 28px 16px; }
   }
 
   /* Panel de la oficina en horizontal o pantalla ancha (Task 21): 2 columnas para los gráficos, mapa a todo el ancho */
@@ -961,8 +1132,10 @@
   }
 </style>
 </head>
-<body>
+<body class="caldera">
 <header>
+  <!-- App nueva del motorista (M2): cabecera compacta (Mi día o volver, chip de la bandeja, Combustible, Salir) -->
+  <div id="cabeceraNueva" class="cabecera oculto"></div>
   <div class="marca">
     <img src="data:image/png;base64,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" alt="Logistik S.A.">
     <div class="div"></div>
@@ -975,16 +1148,26 @@
 <main>
   <div id="appNueva"></div>
   <div id="mensajeGlobal"></div>
-  <div id="pendientes" class="aviso ambar pendientes oculto"></div>
-  <div id="rechazados" class="aviso error oculto"></div>
-  <div id="cargasPendientes" class="aviso ambar pendientes oculto"></div>
+  <!-- Lo que quedó sin enviar. Con la app nueva no son franjas: se abren desde el chip de la cabecera (bandeja). -->
+  <div id="bandeja">
+    <h4 class="solo-nueva" id="bandejaTitulo"></h4>
+    <div id="pendientes" class="aviso ambar pendientes oculto"></div>
+    <div id="rechazados" class="aviso error oculto"></div>
+    <div id="cargasPendientes" class="aviso ambar pendientes oculto"></div>
+    <div id="bodegaPendientes" class="aviso ambar oculto"></div>
+    <p class="ayuda solo-nueva" id="bandejaAyuda"></p>
+  </div>
   <!-- Combustible (servidor 22): fuera de la ruta, para el piloto propio con sesión (antes, durante y después de la ruta) -->
   <div id="accesoCombustible" class="acceso-combustible oculto">
     <button type="button" id="btnCombustible" class="btn-combustible">Combustible</button>
   </div>
 
   <!-- Paso 0: cargando -->
-  <section id="pCargando" class="cargando"><div class="girador"></div>Cargando Logistik Go…</section>
+  <section id="pCargando" class="cargando">
+    <div class="carga-marca">Logistik Go</div>
+    <div class="carga-barra" role="progressbar" aria-label="Cargando Logistik Go"><i></i></div>
+    <p>Cargando Logistik Go…</p>
+  </section>
 
   <!-- Paso 1: identificarse -->
   <section id="pIngreso" class="tarjeta oculto">
@@ -993,22 +1176,25 @@
     <label for="selPiloto">Piloto</label>
     <select id="selPiloto"></select>
     <label for="txtPin">PIN <span class="opc" id="pinOpcional">(si le asignaron uno)</span></label>
-    <input id="txtPin" type="password" inputmode="numeric" autocomplete="off" maxlength="8">
+    <div class="campo-pin">
+      <input id="txtPin" type="password" inputmode="numeric" autocomplete="off" maxlength="8">
+      <button type="button" class="ver-pin" data-ver-pin="txtPin" aria-label="Mostrar PIN"></button>
+    </div>
     <div id="errIngreso"></div>
-    <p></p>
-    <button class="primario" id="btnIngresar">Continuar</button>
+    <button class="primario" id="btnIngresar">Entrar</button>
     <div id="accesoOficina" class="oculto">
-      <p></p>
-      <button type="button" class="enlace" id="btnModoOficina">¿Es de la oficina? Ver el panel</button>
+      <button type="button" class="enlace" id="btnModoOficina">Soy de la oficina</button>
       <div id="ingresoOficina" class="oculto">
         <h3>Panel de la oficina</h3>
         <label for="txtAdmin">Nombre (como está en Configuración)</label>
         <input id="txtAdmin" type="text" autocomplete="off" autocapitalize="words" maxlength="80">
         <label for="txtPinAdmin">PIN de administrador</label>
-        <input id="txtPinAdmin" type="password" inputmode="numeric" autocomplete="off" maxlength="32">
+        <div class="campo-pin">
+          <input id="txtPinAdmin" type="password" inputmode="numeric" autocomplete="off" maxlength="32">
+          <button type="button" class="ver-pin" data-ver-pin="txtPinAdmin" aria-label="Mostrar PIN"></button>
+        </div>
         <div id="errOficina"></div>
-        <p></p>
-        <button class="secundario" type="button" id="btnIngresarOficina">Ver el panel</button>
+        <button class="fantasma" type="button" id="btnIngresarOficina">Ver el panel</button>
       </div>
     </div>
     <div id="instalar" class="oculto"><p class="ayuda">Instale Logistik Go en el teléfono: abre en pantalla completa, sin la barra de Chrome.</p>
@@ -1040,11 +1226,35 @@
       <input id="txtHoraSalida" type="time">
       <button class="angosto" data-ahora="txtHoraSalida">Ahora</button>
     </div>
+    <div id="horaAuto" class="auto solo-nueva"></div>
+    <div id="auxPlegado" class="solo-nueva"><button class="enlace" type="button" id="btnAgregarAux">+ Agregar auxiliar</button></div>
     <div id="errInicio"></div>
     <p></p>
     <button class="primario" id="btnIniciar">Iniciar ruta</button>
   </section>
   <button class="secundario oculto" id="btnIrMant">Registrar un mantenimiento</button>
+
+  <!-- App nueva (M2): Mi día, la pantalla central del piloto. Se pinta con pintarDia() según el estado del día. -->
+  <section id="pDia" class="pantalla-nueva oculto">
+    <div class="tarjeta">
+      <p class="paso" id="diaFecha">Mi día</p>
+      <div class="estado-grande" id="diaEstado"></div>
+      <div class="datos-dia" id="diaDatos"></div>
+      <div id="diaNota"></div>
+    </div>
+    <div id="diaAcciones"></div>
+  </section>
+
+  <!-- App nueva (M2): marcador de la carga en bodega hasta que llegue M3 -->
+  <section id="pCarga" class="pantalla-nueva oculto">
+    <div class="tarjeta">
+      <p class="paso">Empieza el día · paso 2 de 2 · Carga en bodega</p>
+      <h2>Carga en bodega</h2>
+      <div class="cuadre"><span data-icono="paquete"></span><div>Carga en bodega (próximamente)<small>Aquí va a escanear sus facturas antes de
+        salir. Por ahora, toque Terminar carga y registre sus paradas en la ruta como siempre.</small></div></div>
+    </div>
+    <button class="primario" type="button" id="btnTerminarCarga">Terminar carga</button>
+  </section>
 
   <!-- Mantenimiento: lo registra el piloto cuando el vehículo sale del taller -->
   <section id="pMant" class="tarjeta oculto">
@@ -1608,6 +1818,9 @@
   var CLAVE_CARGAS = 'kmCelasa.cargas.v1';         // cargas de combustible sin enviar (sin señal): se envían solas al volver
   var CLAVE_FORM_COMB = 'kmCelasa.combForm.v1';    // carga de combustible a medio llenar (por si el teléfono recarga al usar la cámara)
   var CLAVE_PLACA_COMB = 'kmCelasa.combPlaca.v1';  // { piloto: placa } de su última carga de combustible
+  var CLAVE_APP_NUEVA = 'kmCelasa.appNueva.v1';    // { piloto: true|false }: «App nueva» de Configuración (servidor 24), del último ingreso con sesión
+  var CLAVE_CERRADO = 'kmCelasa.cerrado.v1';       // { piloto, fecha, hora, facturas, km }: último día que la app nueva cerró en este teléfono
+  var CLAVE_CARGAS_BODEGA = 'kmCelasa.cargasBodega.v1'; // cargas en bodega sin enviar (las llena M3): cuentan en la bandeja
 
   // Los 14 departamentos y sus 262 municipios de siempre (desde mayo de 2024, "distritos" de los 44 municipios nuevos;
   // las facturas siguen usando estos nombres). La misma lista está en Codigo.gs: una prueba revisa que sean iguales.
@@ -1674,11 +1887,19 @@
 
   // ------------------------------------------------------------ utilidades
   function $(id) { return document.getElementById(id); }
+  var PANTALLAS = ['pCargando', 'pIngreso', 'pInicio', 'pDia', 'pCarga', 'pRuta', 'pParada', 'pCierre', 'pListo', 'pMant', 'pCombustible', 'pTablero'];
   function mostrar(id) {
-    ['pCargando', 'pIngreso', 'pInicio', 'pRuta', 'pParada', 'pCierre', 'pListo', 'pMant', 'pCombustible', 'pTablero'].forEach(function (s) {
+    PANTALLAS.forEach(function (s) {
       $(s).classList.toggle('oculto', s !== id);
     });
     document.body.classList.toggle('en-tablero', id === 'pTablero');
+    // App nueva (M2): el día que empezó con «App nueva: Sí» se ve así hasta enviarse, aunque la oficina cambie el interruptor.
+    var nueva = esDiaNuevo() && ['pCargando', 'pIngreso', 'pTablero', 'pListo'].indexOf(id) < 0;
+    document.body.classList.toggle('app-nueva', nueva);
+    document.body.classList.toggle('caldera', nueva || id === 'pCargando' || id === 'pIngreso');
+    $('cabeceraNueva').classList.toggle('oculto', !nueva);
+    if (nueva) pintarCabecera(id);
+    else $('bandeja').classList.remove('abierta');
     if (id !== 'pTablero') {
       pararRelojTablero();
       if (typeof detenerObservadorSecciones === 'function') detenerObservadorSecciones();
@@ -1699,14 +1920,18 @@
       if (typeof iniciarObservadorSecciones === 'function') iniciarObservadorSecciones();
     }
     $('barraRuta').classList.toggle('oculto', id !== 'pRuta');
-    $('btnCerrarSesion').classList.toggle('oculto', ['pInicio', 'pMant', 'pCombustible', 'pRuta', 'pParada', 'pCierre', 'pListo'].indexOf(id) < 0);
+    $('btnCerrarSesion').classList.toggle('oculto', ['pInicio', 'pMant', 'pCombustible', 'pRuta', 'pParada', 'pCierre', 'pListo', 'pDia', 'pCarga'].indexOf(id) < 0);
     pintarAccesoCombustible(id);
-    // Registrar mantenimiento: desde la salida de bodega, si el servidor ya lo sabe hacer.
-    $('btnIrMant').classList.toggle('oculto', id !== 'pInicio' || !(config.version >= 5));
+    // Registrar mantenimiento: desde la salida de bodega, si el servidor ya lo sabe hacer (en la app nueva, desde Mi día).
+    $('btnIrMant').classList.toggle('oculto', id !== 'pInicio' || !(config.version >= 5) || nueva);
     window.scrollTo(0, 0);
   }
   function aviso(id, tipo, texto) {
     $(id).innerHTML = texto ? '<div class="aviso ' + tipo + '">' + texto + '</div>' : '';
+  }
+  /** Aviso con ícono y texto (pantallas Caldera): el estado nunca se dice solo con color. */
+  function avisoIcono(id, tipo, texto) {
+    aviso(id, tipo, texto ? icono('alerta', { tam: 18 }) + '<span>' + texto + '</span>' : '');
   }
   function esc(t) {
     return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) {
@@ -1742,7 +1967,18 @@
     porcentaje: '<line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
     capas: '<path d="m12 2 10 6.5-10 6.5L2 8.5Z"/><path d="m2 15.5 10 6.5 10-6.5"/>',
     pin: '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
-    historial: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><polyline points="12 7 12 12 15 15"/>'
+    historial: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><polyline points="12 7 12 12 15 15"/>',
+    ojo: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+    paquete: '<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>' +
+      '<path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+    qr: '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/>' +
+      '<path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/>' +
+      '<path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/>',
+    circuloCheck: '<path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/>',
+    usuarioMas: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/>' +
+      '<line x1="22" x2="16" y1="11" y2="11"/>',
+    ojoOff: '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>' +
+      '<path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>'
   };
 
   function icono(nombre, opts) {
@@ -2408,6 +2644,7 @@
     var s = leerJSON(CLAVE_SESION, null);
     servidor('obtenerConfiguracion', s && Number(s.vence) > Date.now() ? s.token : '').then(function (c) {
       var publica = Boolean(c && c.publica);
+      if (s && Number(s.vence) > Date.now()) anotarAppNueva(s.piloto, c);
       config = unirConfigPublica(c);
       guardarConfig(!publica);
       arrancar(config, null);
@@ -2443,7 +2680,7 @@
     if (guardado && c.pilotos.indexOf(guardado) >= 0) $('selPiloto').value = guardado;
     dia = leerJSON(CLAVE_BORRADOR, null);
     if (dia && dia.piloto && dia.iniciado) {
-      pintarQuien(); pintarRuta(); if (!recuperarParadaAbierta()) mostrar('pRuta');
+      pintarQuien(); pintarRuta(); if (!recuperarParadaAbierta()) { if (dia.nueva) mostrarDia(); else mostrar('pRuta'); }
       if (!guardadaEl && avancePendiente()) mandarAvance();
     }
     else if (sesionAdmin() && c.version >= 11 && !guardadaEl) { dia = null; olvidarParadaAbierta(); abrirTablero(null); }
@@ -2505,11 +2742,31 @@
     if (avancePendiente()) mandarAvance();
   });
 
+  // PIN con ojo (Tarea 31): muestra u oculta lo escrito; al volver al ingreso el PIN queda vacío y oculto.
+  function pintarOjo(boton, visible) {
+    boton.setAttribute('aria-label', visible ? 'Ocultar PIN' : 'Mostrar PIN');
+    boton.innerHTML = icono(visible ? 'ojoOff' : 'ojo', { tam: 22 });
+  }
+  document.querySelectorAll('[data-ver-pin]').forEach(function (b) { pintarOjo(b, false); });
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-ver-pin]');
+    if (!b) return;
+    var campo = $(b.getAttribute('data-ver-pin')), visible = campo.type === 'password';
+    campo.type = visible ? 'text' : 'password';
+    pintarOjo(b, visible);
+    campo.focus();
+  });
+  function limpiarPin() {
+    $('txtPin').value = '';
+    $('txtPin').type = 'password';
+    pintarOjo(document.querySelector('[data-ver-pin="txtPin"]'), false);
+  }
+
   $('btnIngresar').addEventListener('click', function () {
     var piloto = $('selPiloto').value;
     var pin = $('txtPin').value.trim();
-    if (!piloto) { aviso('errIngreso', 'error', 'Seleccione su nombre.'); return; }
-    if (conSesion() && !pin) { aviso('errIngreso', 'error', 'Escriba su PIN.'); return; }
+    if (!piloto) { avisoIcono('errIngreso', 'error', 'Seleccione su nombre.'); return; }
+    if (conSesion() && !pin) { avisoIcono('errIngreso', 'error', 'Escriba su PIN.'); return; }
     $('btnIngresar').disabled = true;
     // Servidor 9: el PIN abre una sesión (y trae la configuración completa). Antes: solo se comprobaba el PIN.
     var pedido = conSesion()
@@ -2518,7 +2775,7 @@
           if (ok) {
             guardarSesion(r);
             delete pinEnMemoria[piloto];
-            if (r.config) { config = r.config; guardarConfig(true); pintarListas(config); $('selPiloto').value = piloto; }
+            if (r.config) { config = r.config; anotarAppNueva(piloto, config); guardarConfig(true); pintarListas(config); $('selPiloto').value = piloto; }
           }
           return ok;
         })
@@ -2536,15 +2793,15 @@
       });
     }).then(function (ok) {
       $('btnIngresar').disabled = false;
-      if (!ok) { aviso('errIngreso', 'error', 'PIN incorrecto.'); return; }
+      if (!ok) { avisoIcono('errIngreso', 'error', 'PIN incorrecto.'); return; }
       aviso('errIngreso');
       escribirJSON(CLAVE_PILOTO, piloto);
-      dia = { id: nuevoId(), piloto: piloto, pin: conSesion() ? '' : pin, fecha: hoyISO(), placa: '', auxiliar: '', kmSalida: '',
-              horaSalida: ahora(), paradas: [], iniciado: false };
+      dia = nuevoDia(piloto, conSesion() ? '' : pin);
       pintarQuien();
+      if (dia.nueva) { mostrarDia(); return; }
       prepararInicio();
       mostrar('pInicio');
-    }).catch(function (e) { $('btnIngresar').disabled = false; aviso('errIngreso', 'error', esc(e.message)); });
+    }).catch(function (e) { $('btnIngresar').disabled = false; avisoIcono('errIngreso', 'error', esc(e.message)); });
   });
 
   // ------------------------------------------------------------ panel de la oficina (administradores, servidor 11)
@@ -2567,12 +2824,12 @@
   });
   $('btnIngresarOficina').addEventListener('click', function () {
     var nombre = $('txtAdmin').value.trim(), pin = $('txtPinAdmin').value.trim();
-    if (!nombre) { aviso('errOficina', 'error', 'Escriba su nombre.'); return; }
-    if (!pin) { aviso('errOficina', 'error', 'Escriba su PIN de administrador.'); return; }
+    if (!nombre) { avisoIcono('errOficina', 'error', 'Escriba su nombre.'); return; }
+    if (!pin) { avisoIcono('errOficina', 'error', 'Escriba su PIN de administrador.'); return; }
     $('btnIngresarOficina').disabled = true;
     servidor('iniciarSesionAdmin', nombre, pin).then(function (r) {
       $('btnIngresarOficina').disabled = false;
-      if (!r || !r.ok) { aviso('errOficina', 'error', esc((r && r.error) || 'Nombre o PIN incorrecto.')); return; }
+      if (!r || !r.ok) { avisoIcono('errOficina', 'error', esc((r && r.error) || 'Nombre o PIN incorrecto.')); return; }
       aviso('errOficina');
       $('txtPinAdmin').value = '';
       escribirJSON(CLAVE_ADMIN, { nombre: r.nombre, token: r.token, vence: r.vence });
@@ -2581,7 +2838,7 @@
     }).catch(function (e) {
       $('btnIngresarOficina').disabled = false;
       // «Demasiados intentos» cuenta como de red para los días pendientes; aquí hay que decirlo tal cual.
-      aviso('errOficina', 'error', esErrorDeRed(e) && !/Demasiados intentos/i.test(e.message) ? 'Sin señal: el panel necesita internet.' : esc(e.message));
+      avisoIcono('errOficina', 'error', esErrorDeRed(e) && !/Demasiados intentos/i.test(e.message) ? 'Sin señal: el panel necesita internet.' : esc(e.message));
     });
   });
   var observadorSecciones = null;
@@ -2624,7 +2881,7 @@
     document.body.classList.remove('en-tablero', 'tablero-desplazado');
     $('quien').innerHTML = '';
     mostrar('pIngreso');
-    if (mensaje) { $('ingresoOficina').classList.remove('oculto'); aviso('errOficina', 'ambar', mensaje); }
+    if (mensaje) { $('ingresoOficina').classList.remove('oculto'); avisoIcono('errOficina', 'ambar', mensaje); }
   }
   $('btnTabSalir').addEventListener('click', function () { salirTablero(''); });
   $('btnTabActualizar').addEventListener('click', function () { cargarTablero(); });
@@ -3339,9 +3596,10 @@
       '<div class="kpi"><span>Costo por factura</span><b>' + (tr.costoPorFactura != null ? fmtDinero(tr.costoPorFactura) : 'Sin dato') + '</b><small>Entregadas</small></div>' +
       '<div class="kpi"><span>Costo por km</span><b>' + (tr.costoPorKm != null ? fmtDinero(tr.costoPorKm) : 'Sin dato') + '</b><small>Hojas de ruta</small></div>';
 
-    $('tabTransNota').textContent = tr.totalRutas
+    $('tabTransNota').textContent = (tr.totalRutas
       ? 'Métricas de transportistas subcontratados del periodo. Declarado vs pagado sobre rutas pagadas; en rojo si hay diferencia entre lo cobrado y lo declarado. Costos unitarios incluyen lo pagado y lo pendiente por pagar.'
-      : 'En este periodo no hay rutas subcontratadas.';
+      : 'En este periodo no hay rutas subcontratadas.') +
+      ' Las rutas del usuario de prueba no aparecen aquí (quedan en la pestaña Pruebas).';
 
     var rutas = tr.rutas || [];
     if (!rutas.length) {
@@ -3678,7 +3936,18 @@
   }
 
   // ------------------------------------------------------------ inicio del día
+  // Los textos de la salida de hoy, tal como están en el HTML (la app nueva los cambia y los devuelve).
+  var TEXTOS_SALIDA = { paso: $('pInicio').querySelector('.paso').textContent, km: document.querySelector('label[for="txtKmSalida"]').textContent,
+                        boton: $('btnIniciar').textContent };
   function prepararInicio() {
+    var nueva = esDiaNuevo();
+    // App nueva (M2): misma pantalla y mismas validaciones, otra presentación y otro orden (CSS de #pInicio.pantalla-nueva).
+    $('pInicio').classList.toggle('pantalla-nueva', nueva);
+    $('pInicio').classList.remove('hora-abierta');
+    $('pInicio').classList.toggle('aux-abierto', Boolean(dia.auxiliar));
+    $('pInicio').querySelector('.paso').textContent = nueva ? 'Empieza el día · paso 1 de 2 · ' + fechaCorta(dia.fecha) : TEXTOS_SALIDA.paso;
+    document.querySelector('label[for="txtKmSalida"]').textContent = nueva ? 'Km del odómetro' : TEXTOS_SALIDA.km;
+    $('btnIniciar').innerHTML = !nueva ? TEXTOS_SALIDA.boton : (dia.iniciado ? 'Guardar salida' : icono('qr', { tam: 22 }) + 'Seguir: cargar facturas');
     pintarPlacasInicio();
     $('txtFecha').value = dia.fecha;
     if (dia.placa) {
@@ -3704,15 +3973,30 @@
       $('campoOtraPlaca').classList.add('oculto');
       $('txtOtraPlaca').value = '';
     }
+    // App nueva: la placa de su último viaje ya puesta (si es una de las que puede usar); se cambia como siempre.
+    var sugerida = nueva && !dia.placa ? placaSugerida() : '';
+    $('selPlaca').classList.toggle('autollenado', Boolean(sugerida) && $('selPlaca').querySelector('option[value="' + sugerida + '"]') !== null);
+    if ($('selPlaca').classList.contains('autollenado')) $('selPlaca').value = sugerida;
     $('txtAuxiliar').value = dia.auxiliar || '';
     $('txtKmSalida').value = dia.kmSalida || '';
-    $('txtHoraSalida').value = dia.horaSalida || ahora();
+    // App nueva: la hora de salida se pone sola al abrir la salida (la de un día ya iniciado no se mueve).
+    $('txtHoraSalida').value = nueva && !dia.iniciado ? ahora() : (dia.horaSalida || ahora());
     kmAutollenado = null; // el km de un día ya iniciado lo escribió el piloto
     actualizarPlaca();
     // Al corregir la salida de un día ya iniciado, el km que el piloto confirmó sigue confirmado.
     kmConfirmado = dia.iniciado ? num(dia.kmSalida) : null;
     aviso('errInicio');
+    pintarHoraAuto();
   }
+  function pintarHoraAuto() {
+    $('horaAuto').innerHTML = icono('reloj', { tam: 18 }) + '<span>Salida <b>' + esc($('txtHoraSalida').value) + '</b>' + (dia.iniciado ? '' : ' (puesta sola)') +
+      '</span><button class="enlace" type="button" id="btnCambiarHora">cambiar hora</button>';
+  }
+  $('pInicio').addEventListener('click', function (ev) {
+    if (ev.target.closest('#btnCambiarHora')) { $('pInicio').classList.add('hora-abierta'); $('txtHoraSalida').focus(); }
+    if (ev.target.closest('#btnAgregarAux')) { $('pInicio').classList.add('aux-abierto'); $('txtAuxiliar').focus(); }
+  });
+  $('btnAgregarAux').insertAdjacentHTML('afterbegin', icono('usuarioMas', { tam: 17 }));
   /**
    * Fecha del día frente al último registro de la placa (mismo criterio que el servidor): 'antes' (el registro es
    * posterior: no se compara), 'mismo' (otro viaje ese día: se sugiere su km, pero no se pide confirmar) o 'despues'.
@@ -3724,8 +4008,8 @@
   }
   function actualizarPlaca() {
     var placa = placaSeleccionada(), p = datosPlaca(placa), u = p ? p.ultimoKm : null, rel = relacionConUltimo(p);
-    $('ayudaPlaca').textContent = !u ? '' : (rel === 'antes' ? 'Hay un registro posterior de esta placa: ' : 'Último registro de esta placa: ') +
-      textoUltimoRegistro(placa) + '.';
+    $('ayudaPlaca').textContent = !u ? '' : esDiaNuevo() ? 'último: ' + fmtKm(u) + (rel === 'antes' ? ' (hay un registro posterior)' : '') :
+      (rel === 'antes' ? 'Hay un registro posterior de esta placa: ' : 'Último registro de esta placa: ') + textoUltimoRegistro(placa) + '.';
     // El km que puso la app se cambia con la placa o la fecha; el que escribió el piloto no se toca.
     var actual = num($('txtKmSalida').value);
     if (actual == null || actual === kmAutollenado) {
@@ -3734,19 +4018,21 @@
     }
     revisarKmSalida();
   }
+  /** El aviso del km de salida. En la app nueva es el único (también la confirmación del km menor) y lleva ícono. */
+  function avisoKm(tipo, texto) { (esDiaNuevo() ? avisoIcono : aviso)('avisoKmSalida', tipo, texto); }
   function revisarKmSalida() {
     var placa = placaSeleccionada(), p = datosPlaca(placa), u = p ? p.ultimoKm : null, rel = relacionConUltimo(p), k = num($('txtKmSalida').value);
-    if (!u || k == null || rel === 'antes') aviso('avisoKmSalida');
+    if (!u || k == null || rel === 'antes') avisoKm();
     else if (configGuardadaEl && k === u && k === kmAutollenado) {
-      aviso('avisoKmSalida', 'ambar', 'Sin conexión con la oficina: este es el último km que conoce este teléfono (' + esc(textoUltimoRegistro(placa)) +
+      avisoKm('ambar', 'Sin conexión con la oficina: este es el último km que conoce este teléfono (' + esc(textoUltimoRegistro(placa)) +
         '). Revise que sea lo que marca el odómetro.');
     } else if (k < u && rel === 'mismo') {
-      aviso('avisoKmSalida', 'neutro', 'Ese mismo día hay otro viaje de esta placa que terminó en ' + fmtKm(u) + ' km. Si este viaje fue antes, está bien.');
+      avisoKm('neutro', 'Ese mismo día hay otro viaje de esta placa que terminó en ' + fmtKm(u) + ' km. Si este viaje fue antes, está bien.');
     } else if (k < u) {
-      aviso('avisoKmSalida', 'ambar', 'Es menor que el último registro de esta placa: ' + esc(textoUltimoRegistro(placa)) + '. Revise el odómetro; ' +
+      avisoKm('ambar', 'Es menor que el último registro de esta placa: ' + esc(textoUltimoRegistro(placa)) + '. Revise el odómetro; ' +
         'si de verdad marca ' + fmtKm(k) + ' km, puede iniciar la ruta.');
-    } else if (k - u > 30) aviso('avisoKmSalida', 'ambar', 'Hay ' + fmtKm(k - u) + ' km desde el último registro de esta placa. Si es correcto, continúe.');
-    else aviso('avisoKmSalida');
+    } else if (k - u > 30) avisoKm('ambar', 'Hay ' + fmtKm(k - u) + ' km desde el último registro de esta placa. Si es correcto, continúe.');
+    else avisoKm();
     pintarMantPlaca();
   }
   /** Otro km u otra placa: hay que volver a confirmar un km menor que el último registro. */
@@ -3755,6 +4041,7 @@
     if ($('btnConfirmarKm')) aviso('errInicio');
   }
   $('selPlaca').addEventListener('change', function () {
+    $('selPlaca').classList.remove('autollenado');
     var esOtra = $('selPlaca').value === '__otra__';
     $('campoOtraPlaca').classList.toggle('oculto', !esOtra);
     if (esOtra) {
@@ -3788,6 +4075,9 @@
 
   $('btnIniciar').addEventListener('click', function () {
     var errores = [];
+    var nueva = esDiaNuevo();
+    // App nueva: la hora puesta sola es la del momento en que sale (si no la cambió a mano).
+    if (nueva && !dia.iniciado && !$('pInicio').classList.contains('hora-abierta')) { $('txtHoraSalida').value = ahora(); pintarHoraAuto(); }
     var sel = $('selPlaca').value;
     var placa = sel;
     var otraPlaca = sel === '__otra__';
@@ -3806,18 +4096,20 @@
     // avance y la oficina dejaría de ver la ruta).
     var primera = dia && dia.iniciado ? kmMinimoParadas(0) : null;
     if (k != null && primera && k > primera.km) errores.push('El km de salida es mayor que el de la parada ' + primera.n + ' (' + fmtKm(primera.km) + ').');
-    if (errores.length) { aviso('errInicio', 'error', errores.join('<br>')); return; }
+    if (errores.length) { (nueva ? avisoIcono : aviso)('errInicio', 'error', errores.join('<br>')); return; }
     // Km menor que el último registro: no se bloquea (manda el odómetro; el registro anterior puede ser una prueba o un
     // error), pero se pide confirmar el número. El servidor marca el día para que la oficina revise el registro anterior.
     // Solo frente a un registro de un día anterior (otro viaje del mismo día, o un registro posterior, no se compara).
     if (u && k < u && rel === 'despues' && kmConfirmado !== k) {
-      aviso('errInicio', 'ambar', 'El odómetro marca menos que el último registro de esta placa: ' + esc(textoUltimoRegistro(placa)) + '. ' +
+      // En la app nueva la confirmación va en el lugar del aviso del km (un solo aviso); en la de hoy, abajo como siempre.
+      (nueva ? avisoKm : function (t, x) { aviso('errInicio', t, x); })('ambar', 'El odómetro marca menos que el último registro de esta placa: ' + esc(textoUltimoRegistro(placa)) + '. ' +
         'Si el odómetro de verdad marca ' + fmtKm(k) + ' km, continúe: la oficina revisará el registro anterior.' +
         '<br><button class="chico" type="button" id="btnConfirmarKm">Continuar con ' + fmtKm(k) + ' km</button>');
       $('btnConfirmarKm').addEventListener('click', function () { kmConfirmado = k; $('btnIniciar').click(); });
       return;
     }
     aviso('errInicio');
+    var primeraSalida = !dia.iniciado;
     dia.fecha = $('txtFecha').value;
     dia.placa = placa;
     dia.otraPlaca = otraPlaca;
@@ -3825,11 +4117,14 @@
     dia.kmSalida = k;
     dia.horaSalida = $('txtHoraSalida').value;
     dia.iniciado = true;
+    if (dia.nueva && primeraSalida) dia.fase = 'carga';
     guardarBorrador();
     pintarAppNueva();
     pintarQuien();
     pintarRuta();
-    mostrar('pRuta');
+    if (!dia.nueva) mostrar('pRuta');
+    else if (dia.fase === 'carga') mostrar('pCarga');
+    else mostrarDia();
     mandarAvance();
   });
   $('btnEditarSalida').addEventListener('click', function () { prepararInicio(); mostrar('pInicio'); });
@@ -4573,6 +4868,7 @@
     }
     $('listoTexto').innerHTML = html;
     pintarInstalar();
+    if (dia && dia.nueva) { cerrarDiaNuevo(envio, html); return; }
     dia = null;
     pintarQuien();
     pintarPendientes();
@@ -4605,7 +4901,7 @@
       p.ultimoPiloto = envio.piloto;
     });
   }
-  $('btnNuevoDia').addEventListener('click', function () { $('txtPin').value = ''; mostrar('pIngreso'); });
+  $('btnNuevoDia').addEventListener('click', function () { limpiarPin(); mostrar('pIngreso'); });
 
   // ------------------------------------------------------------ cerrar sesión del piloto
   // Solo en este teléfono: borra la sesión y el día a medias, sin llamar al servidor (no es cerrarSesiones() de la
@@ -4621,9 +4917,164 @@
     mantId = null; // el mantenimiento a medio llenar queda guardado a nombre de su piloto; el siguiente empieza en blanco
     pintarQuien();
     aviso('mensajeGlobal');
-    $('txtPin').value = '';
+    limpiarPin();
     mostrar('pIngreso');
   });
+
+  // ------------------------------------------------------------ app nueva del motorista (M2: Mi día y Salida)
+  // Detrás del interruptor «App nueva» de Configuración (servidor 24), que viaja solo en la configuración con sesión y solo
+  // el del piloto de esa sesión: se guarda por piloto para que un ingreso sin señal use lo último que dijo la oficina. El día
+  // queda marcado (dia.nueva) al crearse, así no cambia de pantallas a medio día si la oficina mueve el interruptor.
+  function anotarAppNueva(piloto, c) {
+    if (!piloto || !c || typeof c.appNueva !== 'boolean') return;
+    var m = leerJSON(CLAVE_APP_NUEVA, {}) || {};
+    m[piloto] = c.appNueva;
+    escribirJSON(CLAVE_APP_NUEVA, m);
+  }
+  function usaAppNueva(piloto) { return (leerJSON(CLAVE_APP_NUEVA, {}) || {})[piloto] === true; }
+  function esDiaNuevo() { return Boolean(dia && dia.nueva); }
+  function nuevoDia(piloto, pin) {
+    var d = { id: nuevoId(), piloto: piloto, pin: pin, fecha: hoyISO(), placa: '', auxiliar: '', kmSalida: '', horaSalida: ahora(), paradas: [], iniciado: false };
+    if (usaAppNueva(piloto)) d.nueva = true;
+    return d;
+  }
+  var DIAS_SEMANA = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
+  var envioCerrado = ''; // lo que dijo el servidor del último día enviado (solo mientras la app sigue abierta)
+  /** El último día que la app nueva cerró hoy en este teléfono para este piloto (o null). */
+  function cerradoHoy(piloto) {
+    var c = leerJSON(CLAVE_CERRADO, null);
+    return c && c.piloto === piloto && c.fecha === hoyISO() ? c : null;
+  }
+  /**
+   * Estado del día en Mi día. Por cerrar es el respaldo manual («Ya no tengo más entregas»): el automático (todas las
+   * facturas cargadas con estado) llega con la carga en bodega (M3 y M4).
+   */
+  function estadoDia() {
+    if (!dia.iniciado) return cerradoHoy(dia.piloto) ? 'cerrado' : 'sin';
+    return dia.fase === 'carga' ? 'carga' : (dia.fase === 'porCerrar' ? 'porCerrar' : 'ruta');
+  }
+  var TEXTO_ESTADO_DIA = { sin: 'SIN INICIAR', carga: 'EN CARGA', ruta: 'EN RUTA', porCerrar: 'POR CERRAR', cerrado: 'CERRADO' };
+  function plural(n, uno, varios) { return n + ' ' + (n === 1 ? uno : varios); }
+  function mostrarDia() { pintarDia(); mostrar('pDia'); }
+  function fechaCorta(iso) { return DIAS_SEMANA[new Date(iso + 'T12:00:00').getDay()] + ' ' + fmtFecha(iso).slice(0, 5); }
+  function pintarDia() {
+    var e = estadoDia(), p = dia.placa ? esc(dia.placa) : '';
+    $('diaFecha').textContent = 'Mi día · ' + fechaCorta(dia.fecha);
+    $('diaEstado').textContent = TEXTO_ESTADO_DIA[e];
+    $('diaEstado').className = 'estado-grande ' + e;
+    var datos = '', nota = '', principal, mas = '';
+    var resumen = p + ' · ' + plural(dia.paradas.length, 'parada', 'paradas') + ' · ' + plural(totalFacturas(), 'factura', 'facturas');
+    if (e === 'sin') {
+      var u = datosPlaca(placaSugerida());
+      datos = u ? 'Última placa: ' + esc(u.placa) + (u.ultimoKm ? ' · último km ' + fmtKm(u.ultimoKm) : '') : 'Registre la salida de bodega para empezar.';
+      principal = ['salida', 'camion', 'Empezar el día'];
+      mas = '<h3>Ruta de hoy</h3><div class="vacio">Su ruta se arma con la carga en bodega.</div>';
+    } else if (e === 'carga') {
+      datos = p + ' · salió ' + esc(dia.horaSalida) + ' · km ' + fmtKm(dia.kmSalida);
+      principal = ['carga', 'qr', 'Seguir cargando'];
+      mas = '<h3>Ruta de hoy</h3><div class="vacio">La ruta aparece al tocar «Terminar carga».</div>';
+    } else if (e === 'ruta') {
+      datos = resumen;
+      principal = ['ruta', 'navegacion', 'Ir a la ruta'];
+      mas = '<button class="fantasma" type="button" data-dia="cierre">' + icono('check', { tam: 18 }) + 'Terminar día</button>' +
+        '<div class="centro"><button class="enlace" type="button" data-dia="porCerrar">Ya no tengo más entregas</button></div>';
+    } else if (e === 'porCerrar') {
+      datos = resumen;
+      nota = '<div class="cuadre ok">' + icono('circuloCheck') + '<div>Marcó que ya no tiene más entregas<small>Falta el regreso a bodega.</small></div></div>';
+      principal = ['cierre', 'check', 'Terminar día'];
+      mas = '<button class="fantasma" type="button" data-dia="ruta">' + icono('navegacion', { tam: 18 }) + 'Ver la ruta</button>' +
+        '<div class="centro"><button class="enlace" type="button" data-dia="seguirRuta">Todavía tengo entregas</button></div>';
+    } else {
+      var c = cerradoHoy(dia.piloto);
+      datos = 'Cerrado a las ' + esc(c.hora) + ' · ' + plural(c.facturas, 'factura', 'facturas') + (c.km != null ? ' · ' + fmtKm(c.km) + ' km' : '');
+      nota = envioCerrado;
+      principal = ['salida', 'camion', 'Otro viaje hoy'];
+    }
+    $('diaDatos').innerHTML = datos;
+    $('diaNota').innerHTML = nota;
+    var accesos = (puedeCargarCombustible() ? '<button class="fantasma" type="button" data-dia="combustible">' + icono('bomba', { tam: 18 }) + 'Combustible</button>' : '') +
+      (config.version >= 5 ? '<button class="fantasma" type="button" data-dia="mant">' + icono('llave', { tam: 18 }) + 'Mantenimiento</button>' : '');
+    $('diaAcciones').innerHTML = '<button class="primario" type="button" data-dia="' + principal[0] + '">' + icono(principal[1], { tam: 22 }) + principal[2] + '</button>' +
+      (accesos ? '<div class="accesos">' + accesos + '</div>' : '') + mas;
+  }
+  $('pDia').addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-dia]');
+    if (!b) return;
+    var acc = b.getAttribute('data-dia');
+    if (acc === 'salida') {
+      prepararInicio();
+      mostrar('pInicio');
+    } else if (acc === 'carga') mostrar('pCarga');
+    else if (acc === 'ruta') { pintarRuta(); mostrar('pRuta'); }
+    else if (acc === 'cierre') { prepararCierre(); mostrar('pCierre'); }
+    else if (acc === 'porCerrar' || acc === 'seguirRuta') { dia.fase = acc === 'porCerrar' ? 'porCerrar' : 'ruta'; guardarBorrador(); mostrarDia(); }
+    else if (acc === 'combustible') { aviso('mensajeGlobal'); abrirCombustible('pDia'); }
+    else if (acc === 'mant') prepararMant();
+  });
+  $('btnTerminarCarga').addEventListener('click', function () {
+    dia.fase = 'ruta';
+    guardarBorrador();
+    mostrarDia();
+  });
+  /** Día enviado (o guardado para enviarse solo): Mi día queda CERRADO y el piloto sigue adentro para otro viaje. */
+  function cerrarDiaNuevo(envio, html) {
+    escribirJSON(CLAVE_CERRADO, { piloto: envio.piloto, fecha: hoyISO(), hora: ahora(), facturas: totalFacturas(),
+                                  km: envio.kmRegreso != null && envio.kmSalida != null ? envio.kmRegreso - envio.kmSalida : null });
+    envioCerrado = html;
+    dia = nuevoDia(envio.piloto, dia.pin);
+    dia.nueva = true; // el ciclo termina en Mi día aunque la oficina haya apagado el interruptor a medio día
+    pintarQuien();
+    pintarPendientes();
+    mostrarDia();
+  }
+  /** Placa que se sugiere en la salida: la de su último viaje (la que la oficina anotó con su nombre, la más reciente). */
+  function placaSugerida() {
+    var suya = (config.placas || []).filter(function (p) { return dia && p.ultimoPiloto === dia.piloto; })
+      .sort(function (a, b) { return String(b.ultimoFecha || '') < String(a.ultimoFecha || '') ? -1 : 1; })[0];
+    return suya ? suya.placa : '';
+  }
+
+  // Cabecera compacta: en Mi día, el nombre; en las demás, «Mi día» para volver. Chip de la bandeja, Combustible y Salir.
+  function sinEnviar() {
+    return leerJSON(CLAVE_PENDIENTES, []).length + leerJSON(CLAVE_RECHAZADOS, []).length + leerJSON(CLAVE_CARGAS, []).length +
+      leerJSON(CLAVE_CARGAS_BODEGA, []).length;
+  }
+  function pintarCabecera(id) {
+    var n = sinEnviar(), prueba = esPrueba(dia.piloto);
+    var izq = id === 'pDia'
+      ? '<div class="cab-quien"><b>' + esc(dia.piloto) + '</b><span>' + (prueba ? '<span class="modo-prueba">MODO PRUEBA</span>' : 'Piloto · Logistik Go') + '</span></div>'
+      : (id === 'pParada' ? '' : '<button class="volver" type="button" data-cab="dia">' + icono('anterior') + 'Mi día</button>') +
+        '<div class="cab-quien">' + (prueba ? '<span class="modo-prueba">MODO PRUEBA</span>' : '') + '</div>';
+    var chip = n
+      ? '<button class="chip-bandeja" type="button" data-cab="bandeja" aria-expanded="' + $('bandeja').classList.contains('abierta') + '">' +
+        '<span class="cuenta">' + n + '</span>sin enviar</button>'
+      : (id !== 'pInicio' && estadoDia() !== 'sin' ? '<button class="chip-bandeja al-dia" type="button" data-cab="bandeja">' + icono('check', { tam: 14 }) + 'al día</button>' : '');
+    var bomba = puedeCargarCombustible() && id !== 'pCombustible'
+      ? '<button class="btn-icono" type="button" data-cab="combustible" aria-label="Combustible">' + icono('bomba') + '</button>' : '';
+    $('cabeceraNueva').innerHTML = izq + chip + bomba + '<button class="btn-icono" type="button" data-cab="salir" aria-label="Salir">' + icono('salir') + '</button>';
+  }
+  function pintarBandeja() {
+    var n = sinEnviar();
+    $('bandejaTitulo').textContent = n ? plural(n, 'sin enviar', 'sin enviar') : 'Todo enviado';
+    $('bandejaAyuda').textContent = n ? 'Quedan guardados en el teléfono y se envían solos cuando vuelva la señal. Toque uno para reintentar ahora.'
+      : 'La oficina tiene todo lo que registró en este teléfono.';
+    if (document.body.classList.contains('app-nueva')) pintarCabecera(pantallaActual());
+  }
+  $('cabeceraNueva').addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-cab]');
+    if (!b) return;
+    var acc = b.getAttribute('data-cab'), actual = pantallaActual();
+    if (acc === 'dia') {
+      if (actual === 'pCierre') { leerCierre(); guardarBorrador(); }
+      if (actual === 'pCombustible') { volverDeCombustible(); return; }
+      mostrarDia();
+    } else if (acc === 'bandeja') {
+      $('bandeja').classList.toggle('abierta');
+      pintarCabecera(actual);
+    } else if (acc === 'combustible') { aviso('mensajeGlobal'); abrirCombustible(); }
+    else if (acc === 'salir') $('btnCerrarSesion').click();
+  });
+  document.querySelectorAll('[data-icono]').forEach(function (el) { el.outerHTML = icono(el.getAttribute('data-icono')); });
 
   // ------------------------------------------------------------ pendientes sin señal
   function pintarPendientes() {
@@ -4638,7 +5089,12 @@
     $('cargasPendientes').classList.toggle('oculto', !cargas.length);
     $('cargasPendientes').textContent = cargas.length ? cargas.length + (cargas.length === 1 ? ' carga' : ' cargas') +
       ' de combustible sin enviar por falta de señal. Toque aquí para reintentar.' : '';
+    var bodega = leerJSON(CLAVE_CARGAS_BODEGA, []);
+    $('bodegaPendientes').classList.toggle('oculto', !bodega.length);
+    $('bodegaPendientes').textContent = bodega.length ? bodega.length + (bodega.length === 1 ? ' carga en bodega' : ' cargas en bodega') +
+      ' sin enviar por falta de señal. Se envían solas al volver la señal.' : '';
     pintarAppNueva();
+    pintarBandeja();
   }
   /**
    * Manda los días que quedaron en el teléfono sin señal. Una sola vuelta a la vez (al abrir, al volver la señal o al
@@ -4927,7 +5383,8 @@
     $('mantAvisoKm').innerHTML = raro ? '<div class="aviso ambar">' + esc(raro) + '</div>' : '';
   }
   $('btnIrMant').addEventListener('click', prepararMant);
-  $('btnVolverMant').addEventListener('click', function () { aviso('errMant'); mostrar('pInicio'); });
+  function volverDeMant() { aviso('errMant'); if (esDiaNuevo()) mostrarDia(); else mostrar('pInicio'); }
+  $('btnVolverMant').addEventListener('click', volverDeMant);
   $('mantSelPlaca').addEventListener('change', function () { mantKmConfirmado = null; mantPlacaCambio(); });
   $('mantFecha').addEventListener('change', function () { mantKmConfirmado = null; revisarKmMant(); });
   $('mantKm').addEventListener('input', function () { mantKmAuto = null; mantKmConfirmado = null; revisarKmMant(); });
@@ -5067,8 +5524,9 @@
     var destino = combVolverA;
     // Sin día en curso (por ejemplo, después de enviarlo) no hay salida, ruta ni cierre a donde volver.
     if (!dia && ['pInicio', 'pRuta', 'pCierre'].indexOf(destino) >= 0) destino = 'pListo';
-    if (dia && dia.iniciado && destino === 'pInicio') destino = 'pRuta';
-    mostrar(destino || 'pInicio');
+    if (dia && dia.iniciado && destino === 'pInicio') destino = esDiaNuevo() ? 'pDia' : 'pRuta';
+    if (destino === 'pDia' && esDiaNuevo()) { mostrarDia(); return; }
+    mostrar(destino && destino !== 'pDia' ? destino : 'pInicio');
   }
   $('btnCombustible').addEventListener('click', function () { aviso('mensajeGlobal'); abrirCombustible(); });
   $('btnVolverComb').addEventListener('click', volverDeCombustible);
@@ -5308,8 +5766,7 @@
     relojToast = setTimeout(function () { $('toast').classList.add('oculto'); }, 4500);
   }
   function pantallaActual() {
-    var ids = ['pCargando', 'pIngreso', 'pInicio', 'pRuta', 'pParada', 'pCierre', 'pListo', 'pMant', 'pCombustible', 'pTablero'];
-    for (var i = 0; i < ids.length; i++) if (!$(ids[i]).classList.contains('oculto')) return ids[i];
+    for (var i = 0; i < PANTALLAS.length; i++) if (!$(PANTALLAS[i]).classList.contains('oculto')) return PANTALLAS[i];
     return '';
   }
   function hayAlgoEnCurso() {
@@ -5332,7 +5789,7 @@
     window.addEventListener('popstate', function () {
       guardaPuesta = false;
       if (!hayAlgoEnCurso()) return;
-      if (pantallaActual() === 'pMant') { mostrar('pInicio'); return; }
+      if (pantallaActual() === 'pMant') { volverDeMant(); return; }
       if (pantallaActual() === 'pCombustible') { volverDeCombustible(); return; }
       mostrarToast('Para salir de la app use el botón de inicio del teléfono. Lo que lleva del día queda guardado.');
     });
