@@ -492,13 +492,19 @@
       <h3 class="cap-periodo" data-titulo="Departamentos">Departamentos (este mes)</h3><div class="tabla-scroll" id="tabDeptos"></div>
     </div>
     <!-- Liquidación (Task 9): lo que se le liquida a Celasa por las facturas del periodo, con su desglose por forma de pago. Lo
-         calcula el servidor (liquidacionDeFila_, la misma regla de la pestaña Liquidacion); sin liquidacion (servidor anterior),
-         la tabla de forma de pago de antes. -->
+         calcula el servidor (liquidacionDeFila_, la base de la pestaña Liquidación); sin liquidacion (servidor anterior),
+         la tabla de forma de pago de antes. Pendientes de liquidar (Task 19): facturas sin lote, de cualquier fecha, con la
+         regla de la pestaña (facturaLiquidacion_); sin pendientesLiquidar (servidor anterior), el bloque no aparece. -->
     <div class="tarjeta" id="tabLiqTarjeta">
       <div class="oculto" id="tabLiq">
         <h3 style="margin-top:0" class="cap-periodo" data-titulo="Liquidación">Liquidación (este mes)</h3>
         <div class="kpis" id="tabLiqKpis"></div>
         <p class="ayuda" id="tabLiqNota"></p>
+        <div class="oculto" id="tabLiqPendBloque">
+          <h3>Pendientes de liquidar</h3>
+          <div class="kpis" id="tabLiqPend"></div>
+          <p class="ayuda" id="tabLiqPendNota"></p>
+        </div>
         <h3>Por forma de pago</h3>
       </div>
       <h3 style="margin-top:0" class="cap-periodo" data-titulo="Forma de pago" id="tabPagoTitulo">Forma de pago (este mes)</h3>
@@ -518,8 +524,8 @@
       <div class="kpis" id="tabEficienciaKpis"></div>
       <p class="ayuda" id="tabEficienciaNota"></p>
     </div>
-    <!-- Lag de liquidación (Task 14): días entre la entrega y la liquidación de las facturas que la oficina marcó «Liquidado»
-         en la pestaña Liquidacion, con fecha de liquidación del periodo. Sin lagLiquidacion (servidor anterior), no aparece. -->
+    <!-- Lag de liquidación (Task 14): días entre la entrega y la liquidación de las facturas con lote registrado (pestaña
+         Liquidación, Task 19), con fecha de liquidación del periodo. Sin lagLiquidacion (servidor anterior), no aparece. -->
     <div class="tarjeta oculto" id="tabLagTarjeta">
       <h3 style="margin-top:0" class="cap-periodo" data-titulo="Lag de liquidación">Lag de liquidación (este mes)</h3>
       <div class="kpis" id="tabLagKpis"></div>
@@ -1710,8 +1716,16 @@
       return '<div class="kpi' + x[2] + '"><span>' + x[0] + '</span><b>' + x[1] + '</b></div>';
     }).join('');
     $('tabLiqNota').textContent = 'A Celasa, por las facturas de los días enviados (todas las formas de pago): el monto menos lo devuelto. ' +
-      'El estado de cada una se lleva en la pestaña Liquidacion del Sheet.' +
+      'Cada lote se registra en la pestaña Liquidación del Sheet.' +
       (q.enRevision ? ' ' + fmtKm(q.enRevision) + (q.enRevision === 1 ? ' factura no dice' : ' facturas no dicen') + ' cuánto liquidar: revíselas en Registros.' : '');
+    var p = t.pendientesLiquidar;
+    $('tabLiqPendBloque').classList.toggle('oculto', !p);
+    if (p) {
+      $('tabLiqPend').innerHTML = '<div class="kpi destacado"><span>Facturas</span><b>' + fmtKm(p.facturas) + '</b></div>' +
+        '<div class="kpi"><span>Monto pendiente</span><b>' + fmtDinero(p.monto) + '</b></div>';
+      $('tabLiqPendNota').textContent = 'Facturas de días enviados que todavía no están en ningún lote, de cualquier fecha (no solo de este periodo). ' +
+        'Se liquidan con el menú Logistik Go → Registrar liquidación del Sheet.';
+    }
     // Tres columnas: en el teléfono, «A liquidar» se ve sin desplazar la tabla.
     $('tabPago').innerHTML = tabla(['Forma de pago', 'Monto', 'A liquidar'], q.porPago.filter(function (x) { return x.facturas; }).map(function (x) {
       return [esc(x.formaPago) + '<br><span class="ayuda">' + fmtKm(x.facturas) + (x.facturas === 1 ? ' factura' : ' facturas') + '</span>', fmtDinero(x.monto),
@@ -1753,7 +1767,7 @@
     $('tabLagKpis').innerHTML = '<div class="kpi destacado"><span>Promedio</span><b>' + dias(t.lagLiquidacionPromedio) + '</b></div>' +
       '<div class="kpi"><span>Máximo</span><b>' + dias(g.maximo) + '</b></div>' +
       '<div class="kpi"><span>Facturas</span><b>' + fmtKm(g.facturas) + '</b></div>';
-    $('tabLagNota').textContent = 'Días desde la entrega hasta la fecha de liquidación, de las facturas marcadas «Liquidado» en la pestaña Liquidacion del Sheet ' +
+    $('tabLagNota').textContent = 'Días desde la entrega hasta la fecha de liquidación, de las facturas con lote registrado en la pestaña Liquidación del Sheet ' +
       'con fecha de liquidación en este periodo.' + (g.facturas ? '' : ' Todavía no hay ninguna.');
   }
   function pintarMargen(t) {
