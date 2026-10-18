@@ -1571,33 +1571,35 @@
   .pantalla-nueva .aviso button { display: block; margin-top: 10px; border-radius: 800px; border: 1px solid var(--tinta); background: transparent;
     color: var(--tinta); min-height: 44px; padding: 6px 16px; font-family: var(--fuente-panel); font-size: 15px; }
   /* Salida de la app nueva: la misma #pInicio, en el orden de la maqueta; fecha de hoy sin campo, hora y auxiliar plegados. */
-  #pInicio.pantalla-nueva { display: flex; flex-direction: column; }
-  #pInicio.pantalla-nueva > * { order: 50; }
-  #pInicio.pantalla-nueva > .paso { order: 1; }
-  #pInicio.pantalla-nueva > h2 { order: 2; }
-  #pInicio.pantalla-nueva > label[for="selPlaca"] { order: 3; }
-  #pInicio.pantalla-nueva > #selPlaca { order: 4; }
-  #pInicio.pantalla-nueva > #campoOtraPlaca { order: 5; }
-  #pInicio.pantalla-nueva > label[for="txtKmSalida"] { order: 6; }
-  #pInicio.pantalla-nueva > #txtKmSalida { order: 7; }
-  #pInicio.pantalla-nueva > #ayudaPlaca { order: 8; }
-  #pInicio.pantalla-nueva > #avisoKmSalida { order: 9; }
-  #pInicio.pantalla-nueva > #horaAuto { order: 10; }
-  #pInicio.pantalla-nueva > label[for="txtHoraSalida"] { order: 11; }
-  #pInicio.pantalla-nueva > .fila { order: 12; }
-  #pInicio.pantalla-nueva > #auxPlegado { order: 13; }
-  #pInicio.pantalla-nueva > label[for="txtAuxiliar"] { order: 14; }
-  #pInicio.pantalla-nueva > #txtAuxiliar { order: 15; }
-  #pInicio.pantalla-nueva > #mantPlaca { order: 16; }
-  #pInicio.pantalla-nueva > #errInicio { order: 17; }
-  #pInicio.pantalla-nueva > #btnIniciar { order: 19; margin-top: 16px; }
-  #pInicio.pantalla-nueva > label[for="txtFecha"], #pInicio.pantalla-nueva > #txtFecha, #pInicio.pantalla-nueva > p:empty { display: none; }
-  #pInicio.pantalla-nueva:not(.hora-abierta) > label[for="txtHoraSalida"], #pInicio.pantalla-nueva:not(.hora-abierta) > .fila,
-  #pInicio.pantalla-nueva.hora-abierta > #horaAuto,
-  #pInicio.pantalla-nueva:not(.aux-abierto) > label[for="txtAuxiliar"], #pInicio.pantalla-nueva:not(.aux-abierto) > #txtAuxiliar,
-  #pInicio.pantalla-nueva.aux-abierto > #auxPlegado { display: none; }
-  #pInicio.pantalla-nueva .ayuda { margin-top: 6px; padding-left: 20px; }
-  #pInicio.pantalla-nueva button.angosto { border-radius: 800px; border: 1px solid var(--tinta); background: transparent; color: var(--tinta); min-height: 52px; }
+  #pInicio.salida-nueva { display: flex; flex-direction: column; }
+  #pInicio.salida-nueva > * { order: 50; }
+  #pInicio.salida-nueva > .paso { order: 1; }
+  #pInicio.salida-nueva > h2 { order: 2; }
+  #pInicio.salida-nueva > label[for="selPlaca"] { order: 3; }
+  #pInicio.salida-nueva > #selPlaca { order: 4; }
+  #pInicio.salida-nueva > #campoOtraPlaca { order: 5; }
+  #pInicio.salida-nueva > label[for="txtKmSalida"] { order: 6; }
+  #pInicio.salida-nueva > #txtKmSalida { order: 7; }
+  #pInicio.salida-nueva > #ayudaPlaca { order: 8; }
+  #pInicio.salida-nueva > #avisoKmSalida { order: 9; }
+  #pInicio.salida-nueva > #horaAuto { order: 10; }
+  #pInicio.salida-nueva > label[for="txtHoraSalida"] { order: 11; }
+  #pInicio.salida-nueva > .fila { order: 12; }
+  #pInicio.salida-nueva > #auxPlegado { order: 13; }
+  #pInicio.salida-nueva > label[for="txtAuxiliar"] { order: 14; }
+  #pInicio.salida-nueva > #txtAuxiliar { order: 15; }
+  #pInicio.salida-nueva > #mantPlaca { order: 16; }
+  #pInicio.salida-nueva > #errInicio { order: 17; }
+  #pInicio.salida-nueva > #btnIniciar { order: 19; margin-top: 16px; }
+  #pInicio.salida-nueva > label[for="txtFecha"], #pInicio.salida-nueva > #txtFecha, #pInicio.salida-nueva > p:empty { display: none; }
+  #pInicio.salida-nueva:not(.hora-abierta) > label[for="txtHoraSalida"], #pInicio.salida-nueva:not(.hora-abierta) > .fila,
+  #pInicio.salida-nueva.hora-abierta > #horaAuto,
+  #pInicio.salida-nueva:not(.aux-abierto) > label[for="txtAuxiliar"], #pInicio.salida-nueva:not(.aux-abierto) > #txtAuxiliar,
+  #pInicio.salida-nueva.aux-abierto > #auxPlegado { display: none; }
+  #pInicio.salida-nueva .ayuda { margin-top: 6px; padding-left: 20px; }
+  .pantalla-nueva button.angosto { border-radius: 800px; border: 1px solid var(--tinta); background: transparent; color: var(--tinta); min-height: 52px; padding: 0 18px; font-weight: 600; cursor: pointer; }
+  #btnIrMant { background: transparent; border: 1px solid var(--tinta); color: var(--tinta); border-radius: 800px; min-height: 48px;
+    font-family: var(--fuente-panel); font-size: 16px; font-weight: 500; width: 100%; margin-top: 10px; cursor: pointer; }
   .pantalla-nueva .auto { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 14px; margin: 14px 0 0; padding: 4px 6px 4px 14px;
     border-radius: 800px; background: var(--superficie-2); }
   .pantalla-nueva .auto .icono { color: var(--gris); }
@@ -1607,9 +1609,30 @@
   #auxPlegado .enlace { display: inline-flex; align-items: center; gap: 6px; }
 
   /* App nueva (M4): ruta sugerida en Mi día, parada sin escaneo, Mixto marcable, faltantes y cierre (maqueta piloto v2).
-     Las secciones compartidas con la app de hoy (pParada, pCierre) muestran .modo-nuevo solo con .pantalla-nueva. */
-  section.pantalla-nueva .modo-viejo { display: none !important; }
-  section:not(.pantalla-nueva) .modo-nuevo { display: none !important; }
+     Las secciones compartidas con la app de hoy (pParada, pCierre) muestran .modo-nuevo solo con sus modos activos. */
+  #pParada.modo-punto .modo-viejo, #pCierre.cierre-nuevo .modo-viejo { display: none !important; }
+  #pParada:not(.modo-punto) .modo-nuevo, #pCierre:not(.cierre-nuevo) .modo-nuevo { display: none !important; }
+  #pRuta .parada { display: block; background: var(--blanco); border: 1px solid var(--borde-fino); border-radius: var(--radio-m); padding: 12px 14px; margin-bottom: 10px; }
+  #pRuta .parada .titulo { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-weight: 700; color: var(--tinta); }
+  #pRuta .parada .titulo .num { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; border-radius: 800px; background: var(--tinta); color: var(--blanco); font-family: var(--fuente-display); font-size: 15px; line-height: 1; margin-right: 8px; padding: 0 6px; letter-spacing: 0; }
+  #pRuta .parada button[data-editar] { border: 1px solid var(--tinta); background: transparent; color: var(--tinta); border-radius: 800px; min-height: 38px; padding: 4px 14px; font-family: var(--fuente-panel); font-size: 13.5px; font-weight: 600; cursor: pointer; }
+  #pRuta .parada .det { font-size: 13px; color: var(--gris); margin: 6px 0 6px; }
+  #btnEditarSalida { background: transparent; border: 1px solid var(--estado-error); color: var(--estado-error); border-radius: 800px; min-height: 44px; padding: 6px 16px; font-family: var(--fuente-panel); font-size: 14px; font-weight: 600; margin-top: 8px; width: 100%; cursor: pointer; }
+  .barra { position: fixed; left: 0; right: 0; bottom: 0; background: var(--superficie-tarjeta); border-top: 1px solid var(--borde-fino); padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); z-index: 20; }
+  .barra .dentro { max-width: 560px; margin: 0 auto; display: flex; gap: 8px; }
+  .barra .dentro > * { flex: 1; }
+  #barraRuta #btnIrCierre { background: transparent; border: 1px solid var(--tinta); color: var(--tinta); border-radius: 800px; min-height: 52px; font-family: var(--fuente-panel); font-size: 17px; font-weight: 700; width: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .pantalla-nueva #btnEscanearFactura { background: transparent; border: 1px solid var(--tinta); color: var(--tinta); border-radius: 800px; min-height: 52px; font-family: var(--fuente-panel); font-size: 17px; font-weight: 700; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 10px 0; cursor: pointer; }
+  .pantalla-nueva #btnOtraFactura { background: transparent; border: 1px solid var(--tinta); color: var(--tinta); border-radius: 800px; min-height: 44px; padding: 6px 16px; font-family: var(--fuente-panel); font-size: 14.5px; font-weight: 600; margin-top: 10px; width: 100%; cursor: pointer; }
+  .pantalla-nueva #btnCancelarParada { background: transparent; border: 1px solid var(--tinta); color: var(--tinta); border-radius: 800px; min-height: 48px; font-family: var(--fuente-panel); font-size: 16px; font-weight: 500; width: 100%; cursor: pointer; }
+  .pantalla-nueva #btnBorrarParada { background: transparent; border: 1px solid var(--estado-error); color: var(--estado-error); border-radius: 800px; min-height: 48px; font-family: var(--fuente-panel); font-size: 16px; font-weight: 600; width: 100%; cursor: pointer; }
+  .pantalla-nueva .estados button { border-radius: 800px; border: 1px solid var(--borde-fino); background: var(--blanco); color: var(--tinta); font-family: var(--fuente-panel); min-height: 44px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .pantalla-nueva .estados button.sel[data-estado="Exitosa"] { border-color: var(--estado-ok); background: var(--estado-ok); color: var(--blanco); }
+  .pantalla-nueva .estados button.sel[data-estado="Fallida"] { border-color: var(--estado-error); background: var(--estado-error); color: var(--blanco); }
+  .pantalla-nueva .estados button.sel[data-estado^="Devolución"] { border-color: var(--serie-1); background: var(--serie-1); color: var(--blanco); }
+  .pantalla-nueva .estados button.sel[data-pago] { border-color: var(--tinta); background: var(--tinta); color: var(--blanco); }
+  .pantalla-nueva .factura button[data-quitar] { border: 1px solid var(--estado-error); color: var(--estado-error); background: transparent; border-radius: 800px; min-height: 36px; padding: 4px 12px; font-size: 13px; cursor: pointer; }
+  .pantalla-nueva .factura button[data-qr] { border: 1px solid var(--tinta); color: var(--tinta); background: transparent; border-radius: 800px; min-height: 40px; padding: 6px 14px; font-size: 14px; width: 100%; cursor: pointer; }
   .pantalla-nueva .meta-ruta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13.5px; color: var(--gris); margin: 0 0 2px; }
   .pantalla-nueva .meta-ruta b { color: var(--tinta); }
   .pantalla-nueva .meta-ruta .enlace { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; min-height: 40px; }
@@ -1706,19 +1729,20 @@
   .pantalla-nueva .faltan li small { display: block; color: var(--gris); font-size: 12.5px; }
   .pantalla-nueva .faltan li b { font-variant-numeric: tabular-nums; }
   /* Cierre nuevo: resumen para caja arriba; el regreso y el monto a cobrar en tarjetas propias */
-  #pCierre.pantalla-nueva { background: transparent; border: 0; padding: 0; }
-  #pCierre.pantalla-nueva #cierreRegreso, #pCierre.pantalla-nueva #tarjetaMontoCobrar, #pCierre.pantalla-nueva #cierreNota {
+  #pCierre.cierre-nuevo { background: transparent; border: 0; padding: 0; }
+  #pCierre.cierre-nuevo #cierreRegreso, #pCierre.cierre-nuevo #tarjetaMontoCobrar, #pCierre.cierre-nuevo #cierreNota {
     background: var(--superficie-tarjeta); border-radius: var(--radio-l); padding: 20px 18px; margin: 0 0 12px; }
-  #pCierre.pantalla-nueva #tarjetaMontoCobrar { border: 2px solid var(--serie-1); }
-  #pCierre.pantalla-nueva #tarjetaMontoCobrar .cab { font-size: 11px; letter-spacing: .11em; text-transform: uppercase; font-weight: 700; color: var(--serie-1); }
-  #pCierre.pantalla-nueva:not(.hora-abierta) .hora-regreso, #pCierre.pantalla-nueva.hora-abierta #horaRegresoAuto,
-  #pCierre.pantalla-nueva:not(.nota-abierta) #cierreNota, #pCierre.pantalla-nueva.nota-abierta #notaPlegada { display: none; }
-  #pCierre.pantalla-nueva #notaPlegada { margin: 0 0 12px 6px; }
-  #pCierre.pantalla-nueva #notaPlegada .enlace { display: inline-flex; align-items: center; gap: 6px; }
-  #pCierre.pantalla-nueva textarea { border-radius: var(--radio-m); border: 1px solid var(--borde-fino); background: var(--blanco); font-size: 16px; }
+  #pCierre.cierre-nuevo #tarjetaMontoCobrar { border: 2px solid var(--serie-1); }
+  #pCierre.cierre-nuevo #tarjetaMontoCobrar .cab { font-size: 11px; letter-spacing: .11em; text-transform: uppercase; font-weight: 700; color: var(--serie-1); }
+  #pCierre.cierre-nuevo:not(.hora-abierta) .hora-regreso, #pCierre.cierre-nuevo.hora-abierta #horaRegresoAuto,
+  #pCierre.cierre-nuevo:not(.nota-abierta) #cierreNota, #pCierre.cierre-nuevo.nota-abierta #notaPlegada { display: none; }
+  #pCierre.cierre-nuevo #notaPlegada { margin: 0 0 12px 6px; }
+  #pCierre.cierre-nuevo #notaPlegada .enlace { display: inline-flex; align-items: center; gap: 6px; }
+  .pantalla-nueva textarea { border-radius: var(--radio-m); border: 1px solid var(--borde-fino); background: var(--blanco); font-size: 16px; }
   #pCierre.pantalla-nueva #btnEnviar { background: var(--acento); border-color: var(--acento); color: var(--blanco); border-radius: 800px; min-height: 56px;
     font-size: 19px; font-weight: 700; }
   #pCierre.pantalla-nueva .ayuda { padding-left: 4px; }
+  .pantalla-nueva #instalarListo button { background: transparent; border: 1px solid var(--tinta); color: var(--tinta); border-radius: 800px; min-height: 48px; font-family: var(--fuente-panel); font-size: 15px; font-weight: 600; width: 100%; margin-top: 10px; cursor: pointer; }
   .pantalla-nueva .caja { background: var(--acento); color: var(--blanco); border-radius: var(--radio-l); padding: 18px 18px 16px; margin-bottom: 12px; }
   .pantalla-nueva .caja .paso { color: var(--blanco); }
   .pantalla-nueva .caja .grande { font-family: var(--fuente-display); font-size: 52px; line-height: .9; letter-spacing: .02em; }
@@ -1926,7 +1950,7 @@
   </section>
 
   <!-- Paso 2: inicio del día -->
-  <section id="pInicio" class="tarjeta oculto">
+  <section id="pInicio" class="tarjeta pantalla-nueva oculto">
     <p class="paso">Paso 1 de 3</p>
     <h2>Salida de bodega</h2>
     <label for="txtFecha">Fecha</label>
@@ -2042,7 +2066,7 @@
   </section>
 
   <!-- Paso 3: ruta -->
-  <section id="pRuta" class="oculto">
+  <section id="pRuta" class="pantalla-nueva oculto">
     <div class="tarjeta">
       <p class="paso">Paso 2 de 3 · Entregas</p>
       <h2 id="rutaTitulo">Ruta</h2>
@@ -2138,7 +2162,7 @@
 
   <!-- Formulario de parada. Con la app nueva (M4) es la parada sin escaneo de un punto de la ruta: la misma sección y las
        mismas validaciones, con la clase pantalla-nueva (se ven .modo-nuevo y se ocultan .modo-viejo). -->
-  <section id="pParada" class="tarjeta oculto">
+  <section id="pParada" class="tarjeta pantalla-nueva oculto">
     <p class="paso" id="paradaPaso">Entrega</p>
     <h2 id="paradaTitulo">Nueva parada</h2>
     <div id="paradaPunto" class="modo-nuevo"></div>
@@ -2203,7 +2227,7 @@
 
   <!-- Paso 4: cierre. Con la app nueva (M4): resumen para caja arriba, km de regreso con la hora puesta sola, sin gasolina
        (vive en Combustible), Monto a cobrar si es subcontratista y nota plegada; mismos campos y validaciones. -->
-  <section id="pCierre" class="tarjeta oculto">
+  <section id="pCierre" class="tarjeta pantalla-nueva oculto">
     <div id="cierreCaja" class="modo-nuevo"></div>
     <div id="cierreRegreso">
       <p class="paso modo-viejo">Paso 3 de 3</p>
@@ -2251,7 +2275,7 @@
   </section>
 
   <!-- Paso 5: enviado -->
-  <section id="pListo" class="tarjeta oculto">
+  <section id="pListo" class="tarjeta pantalla-nueva oculto">
     <p class="paso">Listo</p>
     <h2>Día enviado</h2>
     <div id="listoTexto"></div>
@@ -5427,8 +5451,9 @@
                         boton: $('btnIniciar').textContent };
   function prepararInicio() {
     var nueva = esDiaNuevo();
-    // App nueva (M2): misma pantalla y mismas validaciones, otra presentación y otro orden (CSS de #pInicio.pantalla-nueva).
-    $('pInicio').classList.toggle('pantalla-nueva', nueva);
+    // App nueva (M2): misma pantalla y mismas validaciones, otra presentación y otro orden (CSS de #pInicio.salida-nueva).
+    $('pInicio').classList.toggle('salida-nueva', nueva);
+    $('pInicio').classList.add('pantalla-nueva');
     $('pInicio').classList.remove('hora-abierta');
     $('pInicio').classList.toggle('aux-abierto', Boolean(dia.auxiliar));
     $('pInicio').querySelector('.paso').textContent = nueva ? 'Empieza el día · paso 1 de 2 · ' + fechaCorta(dia.fecha) : TEXTOS_SALIDA.paso;
@@ -5749,7 +5774,8 @@
   function abrirParada(i, pt) {
     editando = i;
     paradaPunto = pt ? pt.id : null;
-    $('pParada').classList.toggle('pantalla-nueva', Boolean(pt));
+    $('pParada').classList.toggle('modo-punto', Boolean(pt));
+    $('pParada').classList.add('pantalla-nueva');
     guardarConFaltantes = false;
     var p = i != null ? dia.paradas[i] : pt ? paradaDePunto(pt)
       : { cliente: '', direccion: '', departamento: '', municipio: '', horaLlegada: ahora(), km: '', horaSalida: '', facturas: [] };
@@ -6296,7 +6322,8 @@
   function prepararCierre() {
     // App nueva (M4): resumen para caja arriba, hora de regreso puesta sola, sin gasolina (vive en Combustible), nota plegada.
     var nueva = esDiaNuevo();
-    $('pCierre').classList.toggle('pantalla-nueva', nueva);
+    $('pCierre').classList.toggle('cierre-nuevo', nueva);
+    $('pCierre').classList.add('pantalla-nueva');
     $('pCierre').classList.toggle('hora-abierta', Boolean(dia.horaRegresoAMano));
     $('pCierre').classList.toggle('nota-abierta', Boolean(dia.notas));
     $('cierreTitulo').textContent = nueva ? 'Regreso' : 'Retorno y cierre del día';
