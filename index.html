@@ -359,6 +359,11 @@
     <input id="txtFecha" type="date">
     <label for="selPlaca">Placa del vehículo</label>
     <select id="selPlaca"></select>
+    <div id="campoOtraPlaca" class="oculto">
+      <label for="txtOtraPlaca">Escriba la placa</label>
+      <input id="txtOtraPlaca" type="text" placeholder="Ej: C123456" autocomplete="off" style="text-transform:uppercase">
+      <div id="avisoOtraPlaca"></div>
+    </div>
     <div class="ayuda" id="ayudaPlaca"></div>
     <div id="mantPlaca"></div>
     <label for="txtAuxiliar">Auxiliar <span class="opc">(opcional)</span></label>
@@ -635,6 +640,22 @@
       <div class="kpis" id="tabCostoKpis"></div>
       <p class="ayuda" id="tabCostoNota"></p>
       <figure class="grafico" hidden><figcaption>Costo por factura, día por día</figcaption><div id="grafCosto"></div></figure>
+      <div id="bloquePrecioDiesel" style="margin-top:16px;border-top:1px solid #e2e8f0;padding-top:12px;">
+        <h4 style="margin:0 0 8px 0;font-size:0.95rem;color:var(--azul-acero,#233f53);">Precio del diésel</h4>
+        <form id="frmPrecioDiesel" style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;">
+          <div>
+            <label for="txtPrecioDiesel" style="display:block;font-size:0.75rem;color:var(--gris,#495057);">Precio ($/galón)</label>
+            <input type="number" id="txtPrecioDiesel" step="0.01" min="0.01" max="20" placeholder="4.86" style="width:110px;padding:6px;border:1px solid #cbd5e1;border-radius:4px;" required>
+          </div>
+          <div>
+            <label for="txtFechaPrecioDiesel" style="display:block;font-size:0.75rem;color:var(--gris,#495057);">Desde fecha</label>
+            <input type="date" id="txtFechaPrecioDiesel" style="padding:6px;border:1px solid #cbd5e1;border-radius:4px;" required>
+          </div>
+          <button type="submit" class="boton" id="btnGuardarPrecioDiesel" style="padding:6px 12px;height:34px;">Actualizar precio del diésel</button>
+        </form>
+        <div id="avisoPrecioDiesel" class="ayuda" style="margin-top:6px;"></div>
+        <div id="listaPreciosDiesel" style="margin-top:10px;"></div>
+      </div>
     </div>
     <!-- Eficiencia operativa (Task 12): paradas por viaje, km por galón y tiempo en el cliente, de los días enviados del
          periodo. Lo calcula el servidor (tablero_); sin eficiencia (servidor anterior), la tarjeta no aparece. -->
@@ -1727,6 +1748,35 @@
   }
   $('btnTabSalir').addEventListener('click', function () { salirTablero(''); });
   $('btnTabActualizar').addEventListener('click', function () { cargarTablero(); });
+  if ($('frmPrecioDiesel')) {
+    $('frmPrecioDiesel').addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var s = sesionAdmin();
+      if (!s) { salirTablero('Su sesión del panel venció: escriba su PIN otra vez.'); return; }
+      var p = Number($('txtPrecioDiesel').value);
+      var f = $('txtFechaPrecioDiesel').value;
+      if (!p || p <= 0 || p > 20) {
+        aviso('avisoPrecioDiesel', 'error', 'El precio debe ser un número mayor que 0 y razonable (hasta $20.00).');
+        return;
+      }
+      if (!f) {
+        aviso('avisoPrecioDiesel', 'error', 'Elija una fecha válida.');
+        return;
+      }
+      $('btnGuardarPrecioDiesel').disabled = true;
+      aviso('avisoPrecioDiesel', 'ambar', 'Guardando precio...');
+      servidor('actualizarPrecioDiesel', s.token, { precio: p, desde: f }).then(function (res) {
+        $('btnGuardarPrecioDiesel').disabled = false;
+        aviso('avisoPrecioDiesel', 'verde', 'Precio actualizado: ' + fmtDinero(res.precio) + ' desde ' + fmtFecha(res.desde) + '.');
+        $('txtPrecioDiesel').value = '';
+        $('txtFechaPrecioDiesel').value = '';
+        cargarTablero();
+      }).catch(function (err) {
+        $('btnGuardarPrecioDiesel').disabled = false;
+        aviso('avisoPrecioDiesel', 'error', esc(err && err.message ? err.message : String(err)));
+      });
+    });
+  }
   function abrirTablero(datos) {
     var s = sesionAdmin();
     if (!s) { salirTablero('Su sesión del panel venció: escriba su PIN otra vez.'); return; }
@@ -1947,8 +1997,27 @@
                                    ['Precio galón', fmtDinero(c.precioGalon), '']].map(function (x) {
       return '<div class="kpi' + x[2] + '"><span>' + x[0] + '</span><b>' + x[1] + '</b></div>';
     }).join('');
-    $('tabCostoNota').textContent = 'Galones de los días enviados por el precio del galón (pestaña Configuración, celda M2), entre ' +
-      (c.entregadas ? fmtKm(c.entregadas) + (c.entregadas === 1 ? ' factura entregada.' : ' facturas entregadas.') : 'las facturas entregadas: en este periodo no hay ninguna.');
+    var desgloseViajes = '';
+    if (c.viajesReal !== undefined || c.viajesEstimado !== undefined) {
+      var nReal = c.viajesReal || 0, nEst = c.viajesEstimado || 0;
+      desgloseViajes = ' De flota propia: ' + fmtKm(nReal) + (nReal === 1 ? ' viaje usó' : ' viajes usaron') + ' gasto real y ' +
+        fmtKm(nEst) + (nEst === 1 ? ' viaje usó' : ' viajes usaron') + ' estimado (galones por precio diésel vigente).';
+    }
+    $('tabCostoNota').textContent = 'Costo de combustible de flota propia dividido entre ' +
+      (c.entregadas ? fmtKm(c.entregadas) + (c.entregadas === 1 ? ' factura entregada de flota propia.' : ' facturas entregadas de flota propia.') : 'las facturas entregadas de flota propia: en este periodo no hay ninguna.') +
+      desgloseViajes;
+    pintarPreciosDiesel(t.preciosDiesel);
+  }
+  function pintarPreciosDiesel(precios) {
+    if (!$('listaPreciosDiesel')) return;
+    if (!Array.isArray(precios) || !precios.length) {
+      $('listaPreciosDiesel').innerHTML = '<p class="ayuda">Sin historial de precios.</p>';
+      return;
+    }
+    $('listaPreciosDiesel').innerHTML = '<h5 style="margin:8px 0 4px 0;font-size:0.85rem;color:var(--azul-acero,#233f53);">Últimos precios de referencia:</h5>' +
+      tabla(['Desde', 'Precio', 'Fuente'], precios.map(function (p) {
+        return [esc(fmtFecha(p.desde)), fmtDinero(p.precio), esc(p.fuente || 'DGEHM')];
+      }), [1]);
   }
   function pintarEfectivo(t) {
     var e = t.efectivoAbordoPorPiloto;
@@ -2004,7 +2073,7 @@
               '<span class="sobre-limite">' + esc(v.servicio || 'Servicio') + '</span><br><span class="ayuda">' +
               (v.porTiempo ? 'por tiempo' : 'pasado ' + fmtKm(v.pasadoKm) + ' km') + '</span>'];
     }), [2]) : '';
-    $('tabMantVencidoNota').textContent = 'Viajes que salieron con la placa con el mantenimiento vencido ese día (por km o por tiempo, con el historial de ese momento). ' +
+    $('tabMantVencidoNota').textContent = 'Viajes de flota propia que salieron con la placa con el mantenimiento vencido ese día (por km o por tiempo, con el historial de ese momento). ' +
       'Solo es una medición: la app sigue dejando elegir la placa, con el aviso de siempre.';
   }
   function pintarPareto(t) {
@@ -2061,7 +2130,7 @@
                                         ['Tiempo en cliente', t.tiempoCicloCliente == null ? 'Sin dato' : fmtKm(Math.round(t.tiempoCicloCliente)) + ' min']].map(function (x) {
       return '<div class="kpi"><span>' + x[0] + '</span><b>' + x[1] + '</b></div>';
     }).join('');
-    $('tabEficienciaNota').textContent = 'De los días enviados: ' + fmtKm(e.paradas) + (e.paradas === 1 ? ' parada' : ' paradas') + ' con factura en ' +
+    $('tabEficienciaNota').textContent = 'De los días enviados (combustible y km por galón: flota propia): ' + fmtKm(e.paradas) + (e.paradas === 1 ? ' parada' : ' paradas') + ' con factura en ' +
       fmtKm(e.viajes) + (e.viajes === 1 ? ' viaje' : ' viajes') + '; ' + fmtKm(e.km) + ' km con ' + fmtKm(e.galones) + (e.galones === 1 ? ' galón' : ' galones') +
       '. Tiempo en cliente: de la llegada a la salida, en ' + fmtKm(e.paradasConTiempo) + (e.paradasConTiempo === 1 ? ' parada' : ' paradas') +
       ' (la última de cada viaje y las que no tienen hora de salida no se miden).';
@@ -2510,10 +2579,78 @@
       '<span>' + (dia.placa ? 'Placa ' + esc(dia.placa) : '') + '</span></div>' : '';
   }
 
+  function normalizarPlaca(placa) {
+    var s = placa && typeof placa === 'object' && placa.placa ? placa.placa : placa;
+    return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  }
+
+  function esFormatoPlacaValido(placa) {
+    var n = normalizarPlaca(placa);
+    return /^[A-Z]{1,3}[0-9A-Z]{3,7}$/.test(n) && n.length >= 5 && n.length <= 8;
+  }
+
+  function esPlacaPropiaEnConfig(placa) {
+    var n = normalizarPlaca(placa);
+    for (var i = 0; i < (config.placas || []).length; i++) {
+      var p = config.placas[i];
+      if (normalizarPlaca(p.placa) === n) {
+        return !p.tipo || p.tipo === 'Propia';
+      }
+    }
+    return false;
+  }
+
+  function placaSeleccionada() {
+    if ($('selPlaca').value === '__otra__') {
+      return normalizarPlaca($('txtOtraPlaca').value);
+    }
+    return $('selPlaca').value;
+  }
+
+  function pintarPlacasInicio() {
+    var esSub = esSubcontratado();
+    var placas = (config.placas || []).filter(function (p) {
+      if (esSub) {
+        return p.tipo === 'Subcontratada' && p.dueno === dia.piloto;
+      }
+      return !p.tipo || p.tipo === 'Propia';
+    });
+    var html = '<option value="">Seleccione…</option>' + placas.map(function (p) {
+      return '<option value="' + esc(p.placa) + '">' + esc(p.placa) + '</option>';
+    }).join('');
+    if (esSub) {
+      html += '<option value="__otra__">Otra placa…</option>';
+    }
+    $('selPlaca').innerHTML = html;
+  }
+
   // ------------------------------------------------------------ inicio del día
   function prepararInicio() {
+    pintarPlacasInicio();
     $('txtFecha').value = dia.fecha;
-    $('selPlaca').value = dia.placa || '';
+    if (dia.placa) {
+      var existe = false;
+      for (var i = 0; i < $('selPlaca').options.length; i++) {
+        if ($('selPlaca').options[i].value === dia.placa) { existe = true; break; }
+      }
+      if (existe) {
+        $('selPlaca').value = dia.placa;
+        $('campoOtraPlaca').classList.add('oculto');
+        $('txtOtraPlaca').value = '';
+      } else if (esSubcontratado()) {
+        $('selPlaca').value = '__otra__';
+        $('campoOtraPlaca').classList.remove('oculto');
+        $('txtOtraPlaca').value = dia.placa;
+      } else {
+        $('selPlaca').value = '';
+        $('campoOtraPlaca').classList.add('oculto');
+        $('txtOtraPlaca').value = '';
+      }
+    } else {
+      $('selPlaca').value = '';
+      $('campoOtraPlaca').classList.add('oculto');
+      $('txtOtraPlaca').value = '';
+    }
     $('txtAuxiliar').value = dia.auxiliar || '';
     $('txtKmSalida').value = dia.kmSalida || '';
     $('txtHoraSalida').value = dia.horaSalida || ahora();
@@ -2533,7 +2670,7 @@
     return f < p.ultimoFecha ? 'antes' : (f === p.ultimoFecha ? 'mismo' : 'despues');
   }
   function actualizarPlaca() {
-    var placa = $('selPlaca').value, p = datosPlaca(placa), u = p ? p.ultimoKm : null, rel = relacionConUltimo(p);
+    var placa = placaSeleccionada(), p = datosPlaca(placa), u = p ? p.ultimoKm : null, rel = relacionConUltimo(p);
     $('ayudaPlaca').textContent = !u ? '' : (rel === 'antes' ? 'Hay un registro posterior de esta placa: ' : 'Último registro de esta placa: ') +
       textoUltimoRegistro(placa) + '.';
     // El km que puso la app se cambia con la placa o la fecha; el que escribió el piloto no se toca.
@@ -2545,7 +2682,7 @@
     revisarKmSalida();
   }
   function revisarKmSalida() {
-    var placa = $('selPlaca').value, p = datosPlaca(placa), u = p ? p.ultimoKm : null, rel = relacionConUltimo(p), k = num($('txtKmSalida').value);
+    var placa = placaSeleccionada(), p = datosPlaca(placa), u = p ? p.ultimoKm : null, rel = relacionConUltimo(p), k = num($('txtKmSalida').value);
     if (!u || k == null || rel === 'antes') aviso('avisoKmSalida');
     else if (configGuardadaEl && k === u && k === kmAutollenado) {
       aviso('avisoKmSalida', 'ambar', 'Sin conexión con la oficina: este es el último km que conoce este teléfono (' + esc(textoUltimoRegistro(placa)) +
@@ -2564,7 +2701,33 @@
     kmConfirmado = null;
     if ($('btnConfirmarKm')) aviso('errInicio');
   }
-  $('selPlaca').addEventListener('change', function () { olvidarKmConfirmado(); actualizarPlaca(); });
+  $('selPlaca').addEventListener('change', function () {
+    var esOtra = $('selPlaca').value === '__otra__';
+    $('campoOtraPlaca').classList.toggle('oculto', !esOtra);
+    if (esOtra) {
+      $('txtOtraPlaca').focus();
+    } else {
+      $('txtOtraPlaca').value = '';
+      aviso('avisoOtraPlaca');
+    }
+    olvidarKmConfirmado();
+    actualizarPlaca();
+  });
+  $('txtOtraPlaca').addEventListener('input', function () {
+    this.value = this.value.toUpperCase();
+    var val = normalizarPlaca(this.value);
+    if (!val) {
+      aviso('avisoOtraPlaca');
+    } else if (esPlacaPropiaEnConfig(val)) {
+      aviso('avisoOtraPlaca', 'ambar', 'Esta placa está registrada como propia de Logistik, no pertenece a ' + esc(dia.piloto) + '. El servidor marcará la fila para revisión.');
+    } else if (!esFormatoPlacaValido(val)) {
+      aviso('avisoOtraPlaca', 'ambar', 'Formato de placa: 5 a 8 caracteres (letras y números, por ejemplo C123456).');
+    } else {
+      aviso('avisoOtraPlaca');
+    }
+    olvidarKmConfirmado();
+    actualizarPlaca();
+  });
   ['input', 'change'].forEach(function (evento) {
     $('txtFecha').addEventListener(evento, function () { olvidarKmConfirmado(); actualizarPlaca(); });
   });
@@ -2572,7 +2735,15 @@
 
   $('btnIniciar').addEventListener('click', function () {
     var errores = [];
-    var placa = $('selPlaca').value;
+    var sel = $('selPlaca').value;
+    var placa = sel;
+    var otraPlaca = sel === '__otra__';
+    if (otraPlaca) {
+      var otra = normalizarPlaca($('txtOtraPlaca').value);
+      if (!otra) errores.push('Escriba la placa.');
+      else if (!esFormatoPlacaValido(otra)) errores.push('La placa no tiene un formato válido (5 a 8 caracteres, letras y números).');
+      else placa = otra;
+    }
     var u = ultimoKmPlaca(placa), k = num($('txtKmSalida').value), rel = relacionConUltimo(datosPlaca(placa));
     if (!$('txtFecha').value) errores.push('Escriba la fecha.');
     if (!placa) errores.push('Seleccione la placa.');
@@ -2595,7 +2766,8 @@
     }
     aviso('errInicio');
     dia.fecha = $('txtFecha').value;
-    dia.placa = $('selPlaca').value;
+    dia.placa = placa;
+    dia.otraPlaca = otraPlaca;
     dia.auxiliar = $('txtAuxiliar').value.trim();
     dia.kmSalida = k;
     dia.horaSalida = $('txtHoraSalida').value;
@@ -3264,6 +3436,7 @@
     // Solo el subcontratado lo manda; sin el campo, el servidor lo toma como una app anterior (no lo exige).
     if (esSubcontratado()) dia.montoCobrar = $('txtMontoCobrar').value.trim(); else delete dia.montoCobrar;
   }
+  var placaPropiaConfirmada = false;
   $('btnEnviar').addEventListener('click', function () {
     leerCierre();
     var errores = [];
@@ -3276,6 +3449,17 @@
     $('txtMontoCobrar').classList.toggle('falta', sinMonto);
     if (sinMonto) errores.push('Escriba el monto a cobrar por el viaje (mayor que $0).');
     if (errores.length) { aviso('errCierre', 'error', errores.join('<br>')); return; }
+
+    var alertaPropia = esSubcontratado() && dia.otraPlaca && esPlacaPropiaEnConfig(dia.placa);
+    if (alertaPropia && !placaPropiaConfirmada) {
+      aviso('errCierre', 'ambar', 'Aviso: la placa ' + esc(dia.placa) + ' pertenece a la flota propia de Logistik, no a ' + esc(dia.piloto) +
+        '. El viaje quedará marcado para revisión en la oficina.<br><button class="chico" type="button" id="btnConfirmarPlacaPropia">Entendido, enviar de todos modos</button>');
+      $('btnConfirmarPlacaPropia').addEventListener('click', function () {
+        placaPropiaConfirmada = true;
+        $('btnEnviar').click();
+      });
+      return;
+    }
     guardarBorrador();
     var envio = JSON.parse(JSON.stringify(dia));
     delete envio.iniciado;
@@ -3581,7 +3765,9 @@
     var incluye = config.incluyeMant || {};
     ['Menor', 'Intermedio', 'Mayor'].forEach(function (x) { $('mantIncluye' + x).textContent = incluye[x] || ''; });
     var placa = $('mantSelPlaca').value;
-    $('mantSelPlaca').innerHTML = '<option value="">Seleccione…</option>' + config.placas.map(function (p) {
+    $('mantSelPlaca').innerHTML = '<option value="">Seleccione…</option>' + config.placas.filter(function (p) {
+      return !p.tipo || p.tipo === 'Propia';
+    }).map(function (p) {
       return '<option value="' + esc(p.placa) + '">' + esc(p.placa) + '</option>';
     }).join('');
     var guardado = leerJSON(CLAVE_MANT, null);
