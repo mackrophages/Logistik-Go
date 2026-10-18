@@ -705,6 +705,39 @@
   body { overflow-x: clip; }
   input, select, textarea { scroll-margin-top: 70px; scroll-margin-bottom: 70px; }
 
+  /* Carga de combustible (Tarea 32): primera pantalla del piloto con el diseño Caldera del panel (variables por rol). */
+  .acceso-combustible { display: flex; justify-content: flex-end; margin: 0 0 10px; }
+  button.btn-combustible { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 16px; border-radius: 800px;
+    background: var(--superficie-tarjeta); border: 1px solid var(--tinta); color: var(--tinta); font-family: var(--fuente-panel); font-size: 15px; }
+  #pCombustible { background: var(--superficie-tarjeta); border: 0; border-radius: var(--radio-l); padding: 22px 18px; color: var(--tinta);
+    font-family: var(--fuente-panel); }
+  #pCombustible .paso { color: var(--acento); }
+  #pCombustible h2 { font-family: var(--fuente-display); font-weight: 400; font-size: 34px; line-height: .95; letter-spacing: .02em;
+    text-transform: uppercase; color: var(--tinta); margin-bottom: 14px; }
+  #pCombustible label { color: var(--tinta); font-weight: 600; }
+  #pCombustible .ayuda { color: var(--gris); }
+  #pCombustible input, #pCombustible select { min-height: 52px; padding: 12px 20px; border-radius: 100px; border: 1px solid var(--borde-fino);
+    background: var(--blanco); color: var(--tinta); font-size: 18px; }
+  #pCombustible input.codigo { font-size: 13px; letter-spacing: 0; padding-left: 14px; padding-right: 14px; }
+  #pCombustible input:focus, #pCombustible select:focus { outline: 3px solid var(--resaltado); border-color: var(--tinta); }
+  #pCombustible input.autollenado { background: var(--superficie-2); border-color: var(--acento); }
+  #pCombustible .fila input { padding-left: 14px; padding-right: 10px; font-size: 16px; }
+  #pCombustible .montos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  #pCombustible .montos input { padding: 12px 12px; text-align: right; }
+  #pCombustible button.escanear, #pCombustible button.primario { background: var(--acento); border: 1px solid var(--acento); color: var(--blanco);
+    border-radius: 800px; min-height: 56px; width: 100%; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  #pCombustible button.fantasma { background: transparent; border: 1px solid var(--tinta); color: var(--tinta); border-radius: 800px; width: 100%;
+    margin-top: 10px; }
+  #pCombustible .cuadre { margin: 12px 0 4px; }
+  #pCombustible .cuadre:empty { display: none; }
+  #pCombustible .cuadre { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: var(--radio-m); border: 2px solid var(--borde-fino);
+    background: var(--superficie-2); color: var(--tinta); font-size: 15px; font-weight: 600; }
+  #pCombustible .cuadre.ok { border-color: var(--estado-ok); }
+  #pCombustible .cuadre.ok .icono { color: var(--estado-ok); }
+  #pCombustible .cuadre.no { border-color: var(--estado-error); }
+  #pCombustible .cuadre.no .icono { color: var(--estado-error); }
+  #pCombustible .cuadre .icono { flex: none; margin-top: 1px; }
+
   /* Pantallas del piloto en horizontal (Task 21): teléfono montado de lado en el carro (~390 px de alto) */
   @media (orientation: landscape) and (max-height: 500px) {
     header .marca { padding: 4px 12px; gap: 8px; }
@@ -726,6 +759,12 @@
     .estados button { min-height: 36px; padding: 4px; font-size: 13px; }
     .resumen div { padding: 8px 10px; }
     .resumen b { font-size: 20px; }
+    .acceso-combustible { margin-bottom: 6px; }
+    button.btn-combustible { min-height: 34px; padding: 4px 12px; font-size: 13.5px; }
+    #pCombustible { padding: 14px 16px; }
+    #pCombustible h2 { font-size: 26px; }
+    #pCombustible input, #pCombustible select { min-height: 42px; padding: 7px 16px; font-size: 16px; }
+    #pCombustible button.escanear, #pCombustible button.primario { min-height: 44px; font-size: 16px; }
   }
 
   /* Panel de la oficina en horizontal o pantalla ancha (Task 21): 2 columnas para los gráficos, mapa a todo el ancho */
@@ -776,6 +815,11 @@
   <div id="mensajeGlobal"></div>
   <div id="pendientes" class="aviso ambar pendientes oculto"></div>
   <div id="rechazados" class="aviso error oculto"></div>
+  <div id="cargasPendientes" class="aviso ambar pendientes oculto"></div>
+  <!-- Combustible (servidor 22): fuera de la ruta, para el piloto propio con sesión (antes, durante y después de la ruta) -->
+  <div id="accesoCombustible" class="acceso-combustible oculto">
+    <button type="button" id="btnCombustible" class="btn-combustible">Combustible</button>
+  </div>
 
   <!-- Paso 0: cargando -->
   <section id="pCargando" class="cargando"><div class="girador"></div>Cargando Logistik Go…</section>
@@ -871,6 +915,40 @@
     <button class="primario" id="btnGuardarMant">Guardar mantenimiento</button>
     <p></p>
     <button class="secundario" id="btnVolverMant">Volver</button>
+  </section>
+
+  <!-- Carga de combustible: la registra el piloto propio en la bomba, escaneando la factura (DTE con QR) -->
+  <section id="pCombustible" class="tarjeta oculto">
+    <p class="paso">Combustible</p>
+    <h2>Carga de combustible</h2>
+    <button class="escanear" id="btnEscanearCombustible" type="button">Escanear factura de combustible</button>
+    <p class="ayuda">Foto de la factura de la bomba, completa y con el código QR visible. La app llena lo que lea; revise y escriba lo que falte.</p>
+    <div id="combAvisoLectura"></div>
+    <label for="combCodigo">Código de generación</label>
+    <input id="combCodigo" class="codigo" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Sale del QR">
+    <label for="combControl">Número de control</label>
+    <input id="combControl" class="codigo" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false">
+    <div class="fila">
+      <div><label for="combFecha">Fecha</label><input id="combFecha" type="date"></div>
+      <div><label for="combHora">Hora</label><input id="combHora" type="time"></div>
+    </div>
+    <label for="combProducto">Producto <span class="opc">(opcional)</span></label>
+    <input id="combProducto" type="text" autocomplete="off" autocapitalize="characters" list="listaProductosComb" maxlength="80">
+    <datalist id="listaProductosComb"><option value="DIESEL"><option value="REGULAR"><option value="SUPER"></datalist>
+    <label for="combPlaca">Placa</label>
+    <select id="combPlaca"></select>
+    <label for="combKm">Km del odómetro</label>
+    <input id="combKm" type="number" inputmode="numeric" min="0" step="1">
+    <div id="combAvisoKm"></div>
+    <div class="montos">
+      <div><label for="combGalones">Galones</label><input id="combGalones" type="number" inputmode="decimal" min="0" step="0.001"></div>
+      <div><label for="combPrecio">Precio $</label><input id="combPrecio" type="number" inputmode="decimal" min="0" step="0.01"></div>
+      <div><label for="combTotal">Total $</label><input id="combTotal" type="number" inputmode="decimal" min="0" step="0.01"></div>
+    </div>
+    <div id="combCuadre" class="cuadre" aria-live="polite"></div>
+    <div id="errComb"></div>
+    <button class="primario" id="btnGuardarCarga" type="button">Guardar carga</button>
+    <button class="fantasma" id="btnVolverComb" type="button">Volver</button>
   </section>
 
   <!-- Paso 3: ruta -->
@@ -1129,6 +1207,7 @@
       <h3 style="margin-top:0" class="cap-periodo" data-titulo="Costo por factura"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" x2="15" y1="22" y2="22"/><line x1="4" x2="14" y1="9" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></svg>Costo por factura (este mes)</h3>
       <div class="kpis" id="tabCostoKpis"></div>
       <p class="ayuda" id="tabCostoNota"></p>
+      <div id="tabCostoCargas"></div>
       <figure class="grafico" hidden><figcaption>Costo por factura, día por día</figcaption><div id="grafCosto"></div></figure>
       <div id="bloquePrecioDiesel" style="margin-top:16px;border-top:1px solid #e2e8f0;padding-top:12px;">
         <h4 style="margin:0 0 8px 0;font-size:0.95rem;color:var(--azul-acero,#233f53);">Precio del diésel</h4>
@@ -1326,6 +1405,7 @@
   <button type="button" id="btnCancelarLectura">Cancelar y escribir a mano</button>
 </div>
 <input type="file" id="fotoFactura" accept="image/*" capture="environment" class="oculto">
+<input type="file" id="fotoCombustible" accept="image/*" capture="environment" class="oculto">
 <canvas id="lienzo" class="oculto"></canvas>
 <div id="toast" class="oculto" role="status" aria-live="polite"></div>
 
@@ -1345,6 +1425,9 @@
   var CLAVE_MANT = 'kmCelasa.mant.v1';             // formulario de mantenimiento a medio llenar
   var CLAVE_DEPTO = 'kmCelasa.depto.v1';           // último departamento elegido (para la primera parada del día)
   var CLAVE_SESION = 'kmCelasa.sesion.v1';         // { piloto, token, vence }: la sesión que dio el servidor con el PIN (el PIN no se guarda)
+  var CLAVE_CARGAS = 'kmCelasa.cargas.v1';         // cargas de combustible sin enviar (sin señal): se envían solas al volver
+  var CLAVE_FORM_COMB = 'kmCelasa.combForm.v1';    // carga de combustible a medio llenar (por si el teléfono recarga al usar la cámara)
+  var CLAVE_PLACA_COMB = 'kmCelasa.combPlaca.v1';  // { piloto: placa } de su última carga de combustible
 
   // Los 14 departamentos y sus 262 municipios de siempre (desde mayo de 2024, "distritos" de los 44 municipios nuevos;
   // las facturas siguen usando estos nombres). La misma lista está en Codigo.gs: una prueba revisa que sean iguales.
@@ -1412,7 +1495,7 @@
   // ------------------------------------------------------------ utilidades
   function $(id) { return document.getElementById(id); }
   function mostrar(id) {
-    ['pCargando', 'pIngreso', 'pInicio', 'pRuta', 'pParada', 'pCierre', 'pListo', 'pMant', 'pTablero'].forEach(function (s) {
+    ['pCargando', 'pIngreso', 'pInicio', 'pRuta', 'pParada', 'pCierre', 'pListo', 'pMant', 'pCombustible', 'pTablero'].forEach(function (s) {
       $(s).classList.toggle('oculto', s !== id);
     });
     document.body.classList.toggle('en-tablero', id === 'pTablero');
@@ -1430,7 +1513,8 @@
       if (typeof iniciarObservadorSecciones === 'function') iniciarObservadorSecciones();
     }
     $('barraRuta').classList.toggle('oculto', id !== 'pRuta');
-    $('btnCerrarSesion').classList.toggle('oculto', ['pInicio', 'pMant', 'pRuta', 'pParada', 'pCierre', 'pListo'].indexOf(id) < 0);
+    $('btnCerrarSesion').classList.toggle('oculto', ['pInicio', 'pMant', 'pCombustible', 'pRuta', 'pParada', 'pCierre', 'pListo'].indexOf(id) < 0);
+    pintarAccesoCombustible(id);
     // Registrar mantenimiento: desde la salida de bodega, si el servidor ya lo sabe hacer.
     $('btnIrMant').classList.toggle('oculto', id !== 'pInicio' || !(config.version >= 5));
     window.scrollTo(0, 0);
@@ -2169,7 +2253,11 @@
         (isNaN(d.getTime()) ? '' : ' (del ' + fmtFecha(hoyISO(d)) + ')') + '. Lo que registre se enviará cuando haya señal.');
     } else {
       reintentarPendientes();
+      reintentarCargas();
     }
+    // Carga de combustible abierta cuando el teléfono recargó la página (pasa al volver de la cámara): sigue ahí.
+    var formComb = leerJSON(CLAVE_FORM_COMB, null);
+    if (formComb && formComb.abierta && formComb.piloto === pilotoConSesion() && puedeCargarCombustible()) abrirCombustible(formComb.volverA);
   }
   /**
    * Abierta desde el enlace viejo (script.google.com): si la app instalable ya está publicada, invita a cambiarse. El
@@ -2186,7 +2274,8 @@
     }, function () { /* todavía no está publicada, o sin señal */ });
   }
   function algoEnEsteTelefono() {
-    return Boolean(leerJSON(CLAVE_PENDIENTES, []).length || leerJSON(CLAVE_RECHAZADOS, []).length || (dia && dia.iniciado));
+    return Boolean(leerJSON(CLAVE_PENDIENTES, []).length || leerJSON(CLAVE_RECHAZADOS, []).length || leerJSON(CLAVE_CARGAS, []).length ||
+      (dia && dia.iniciado));
   }
   function pintarAppNueva() {
     if (!appNuevaPublicada) return;
@@ -2206,6 +2295,7 @@
     if (sesionAdmin() && config.version >= 11 && pantallaActual() === 'pIngreso' && !(dia && dia.iniciado)) { aviso('mensajeGlobal'); abrirTablero(null); }
     if (!config.pilotos.length) return;
     reintentarPendientes();
+    reintentarCargas();
     if (avancePendiente()) mandarAvance();
   });
 
@@ -2594,8 +2684,12 @@
                                    ['Precio galón', fmtDinero(c.precioGalon), '']].map(function (x) {
       return '<div class="kpi' + x[2] + '"><span>' + x[0] + '</span><b>' + x[1] + '</b></div>';
     }).join('');
-    var desgloseViajes = '';
-    if (c.viajesReal !== undefined || c.viajesEstimado !== undefined) {
+    var desgloseViajes = '', k = t.cargasCombustible;
+    // Servidor 22: con cargas de combustible en el periodo, galones y costo salen de ellas (no de Hojas de ruta).
+    if (c.fuente === 'cargas' && k) {
+      desgloseViajes = ' Con ' + fmtKm(k.cargas) + (k.cargas === 1 ? ' carga de combustible registrada' : ' cargas de combustible registradas') +
+        ' por los pilotos en el periodo' + (k.revisar ? ' (' + fmtKm(k.revisar) + ' para revisar)' : '') + ': los galones y el costo salen de ellas.';
+    } else if (c.viajesReal !== undefined || c.viajesEstimado !== undefined) {
       var nReal = c.viajesReal || 0, nEst = c.viajesEstimado || 0;
       desgloseViajes = ' De flota propia: ' + fmtKm(nReal) + (nReal === 1 ? ' viaje usó' : ' viajes usaron') + ' gasto real y ' +
         fmtKm(nEst) + (nEst === 1 ? ' viaje usó' : ' viajes usaron') + ' estimado (galones por precio diésel vigente).';
@@ -2603,6 +2697,10 @@
     $('tabCostoNota').textContent = 'Costo de combustible de flota propia dividido entre ' +
       (c.entregadas ? fmtKm(c.entregadas) + (c.entregadas === 1 ? ' factura entregada de flota propia.' : ' facturas entregadas de flota propia.') : 'las facturas entregadas de flota propia: en este periodo no hay ninguna.') +
       desgloseViajes;
+    $('tabCostoCargas').innerHTML = c.fuente === 'cargas' && k ? tabla(['Placa', 'Cargas', 'Galones', 'Km/galón'], k.porPlaca.map(function (x) {
+      return [esc(x.placa), fmtKm(x.cargas), fmtKm(x.galones), x.kmPorGalon == null ? 'Sin tramo' : fmtKm(x.kmPorGalon)];
+    }), [1, 2, 3]) + '<p class="ayuda">Km por galón: km entre dos cargas de la misma placa / galones de la segunda (se supone que cada carga ' +
+      'llena el tanque). Placas subcontratadas fuera.</p>' : '';
     pintarPreciosDiesel(t.preciosDiesel);
   }
   function pintarPreciosDiesel(precios) {
@@ -4210,6 +4308,10 @@
     var rech = leerJSON(CLAVE_RECHAZADOS, []);
     $('rechazados').classList.toggle('oculto', !rech.length);
     $('rechazados').textContent = rech.length ? rech.length + ' día(s) rechazados guardados en este teléfono. Avise a la oficina. Toque aquí para volver a intentar.' : '';
+    var cargas = leerJSON(CLAVE_CARGAS, []);
+    $('cargasPendientes').classList.toggle('oculto', !cargas.length);
+    $('cargasPendientes').textContent = cargas.length ? cargas.length + (cargas.length === 1 ? ' carga' : ' cargas') +
+      ' de combustible sin enviar por falta de señal. Toque aquí para reintentar.' : '';
     pintarAppNueva();
   }
   /**
@@ -4557,6 +4659,314 @@
   }
   $('btnGuardarMant').addEventListener('click', guardarMant);
 
+  // ------------------------------------------------------------ carga de combustible (servidor 22)
+  // Fuera de la ruta: el piloto propio con sesión la registra antes, durante o después de la ruta, escaneando la factura
+  // de la bomba. No toca el día en curso. Sin señal queda en el teléfono (CLAVE_CARGAS) con su ID y se envía sola al volver.
+  var combVolverA = 'pInicio', combId = null;
+  function pilotoConSesion() {
+    if (dia && dia.piloto) return dia.piloto;
+    var s = leerJSON(CLAVE_SESION, null);
+    return s && s.piloto && Number(s.vence) > Date.now() ? s.piloto : null;
+  }
+  /** Solo pilotos propios: el combustible de un subcontratado va en su flete (el servidor manda la lista de subcontratados). */
+  function puedeCargarCombustible() {
+    var p = pilotoConSesion();
+    return Boolean(p && config.version >= 22 && (config.subcontratados || []).indexOf(p) < 0);
+  }
+  function pintarAccesoCombustible(id) {
+    $('accesoCombustible').classList.toggle('oculto', ['pInicio', 'pRuta', 'pCierre', 'pListo'].indexOf(id) < 0 || !puedeCargarCombustible());
+  }
+  $('btnCombustible').innerHTML = icono('bomba') + '<span>Combustible</span>';
+  $('btnEscanearCombustible').insertAdjacentHTML('afterbegin', icono('bomba', { tam: 24 }));
+  function placasPropias() {
+    return config.placas.filter(function (p) { return p.tipo !== 'Subcontratada'; });
+  }
+  /** La placa del día en curso; si no hay día, la de su última carga o la de su último viaje. */
+  function placaCombustible(piloto) {
+    var propias = placasPropias().map(function (p) { return p.placa; });
+    var ultima = (leerJSON(CLAVE_PLACA_COMB, {}) || {})[piloto];
+    var deViaje = placasPropias().filter(function (p) { return p.ultimoPiloto === piloto; })
+      .sort(function (a, b) { return String(b.ultimoFecha || '') < String(a.ultimoFecha || '') ? -1 : 1; })[0];
+    return [dia && dia.placa, ultima, deViaje && deViaje.placa].filter(function (x) { return x && propias.indexOf(x) >= 0; })[0] || '';
+  }
+  var CAMPOS_COMB = ['combCodigo', 'combControl', 'combFecha', 'combHora', 'combProducto', 'combPlaca', 'combKm', 'combGalones', 'combPrecio', 'combTotal'];
+  function guardarFormComb() {
+    var datos = { id: combId, piloto: pilotoConSesion(), abierta: pantallaActual() === 'pCombustible', volverA: combVolverA, campos: {}, auto: [] };
+    CAMPOS_COMB.forEach(function (id) {
+      datos.campos[id] = $(id).value;
+      if ($(id).classList.contains('autollenado')) datos.auto.push(id);
+    });
+    escribirJSON(CLAVE_FORM_COMB, datos);
+  }
+  function abrirCombustible(volverA) {
+    var piloto = pilotoConSesion();
+    if (!piloto) return;
+    var actual = pantallaActual();
+    combVolverA = volverA || (actual && actual !== 'pCombustible' ? actual : combVolverA);
+    $('combPlaca').innerHTML = '<option value="">Seleccione…</option>' + placasPropias().map(function (p) {
+      return '<option value="' + esc(p.placa) + '">' + esc(p.placa) + '</option>';
+    }).join('');
+    var g = leerJSON(CLAVE_FORM_COMB, null);
+    CAMPOS_COMB.forEach(function (id) { $(id).value = ''; $(id).classList.remove('autollenado'); });
+    if (g && g.piloto === piloto && g.id) {
+      // Lo que quedó escrito (sin terminar, o la app se recargó): sigue ahí, con el mismo ID para no duplicar.
+      combId = g.id;
+      CAMPOS_COMB.forEach(function (id) { $(id).value = (g.campos || {})[id] || ''; });
+      (g.auto || []).forEach(function (id) { if ($(id)) $(id).classList.add('autollenado'); });
+    } else {
+      combId = nuevoId();
+      // Fecha y hora de ahora mientras no se lea la factura (la lectura las reemplaza; lo que escriba el piloto, no).
+      $('combFecha').value = hoyISO();
+      $('combHora').value = ahora();
+      $('combFecha').classList.add('autollenado');
+      $('combHora').classList.add('autollenado');
+      $('combPlaca').value = placaCombustible(piloto);
+    }
+    aviso('errComb');
+    aviso('combAvisoLectura');
+    revisarKmComb();
+    pintarCuadre();
+    mostrar('pCombustible');
+    guardarFormComb();
+  }
+  function volverDeCombustible() {
+    var g = leerJSON(CLAVE_FORM_COMB, null);
+    if (g) { g.abierta = false; escribirJSON(CLAVE_FORM_COMB, g); }
+    var destino = combVolverA;
+    // Sin día en curso (por ejemplo, después de enviarlo) no hay salida, ruta ni cierre a donde volver.
+    if (!dia && ['pInicio', 'pRuta', 'pCierre'].indexOf(destino) >= 0) destino = 'pListo';
+    if (dia && dia.iniciado && destino === 'pInicio') destino = 'pRuta';
+    mostrar(destino || 'pInicio');
+  }
+  $('btnCombustible').addEventListener('click', function () { aviso('mensajeGlobal'); abrirCombustible(); });
+  $('btnVolverComb').addEventListener('click', volverDeCombustible);
+  CAMPOS_COMB.forEach(function (id) {
+    $(id).addEventListener('input', function () {
+      $(id).classList.remove('autollenado'); // lo escrito por el piloto no lo reemplaza otra lectura
+      aviso('errComb');
+      if (id === 'combCodigo') {
+        var f = formatearCodigo($(id).value);
+        if (f !== $(id).value) $(id).value = f;
+      }
+      if (id === 'combPlaca' || id === 'combKm') revisarKmComb();
+      if (id === 'combGalones' || id === 'combPrecio' || id === 'combTotal') pintarCuadre();
+      guardarFormComb();
+    });
+  });
+  $('combPlaca').addEventListener('change', function () { revisarKmComb(); guardarFormComb(); });
+
+  /** Km de referencia de la placa: el último de los viajes o de su última carga, el más alto. */
+  function kmReferenciaComb(placa) {
+    var p = datosPlaca(placa);
+    if (!p) return null;
+    var a = p.ultimoKm, b = p.kmCarga;
+    return a == null ? (b == null ? null : b) : (b == null ? a : Math.max(a, b));
+  }
+  /** Aviso inmediato (no bloquea: el servidor la guarda para revisar), con las mismas reglas que registrarCargaCombustible. */
+  function revisarKmComb() {
+    var placa = $('combPlaca').value, k = num($('combKm').value), p = datosPlaca(placa), ref = kmReferenciaComb(placa), txt = '';
+    if (k != null && ref != null && k < ref) {
+      txt = 'Es menor que el último km conocido de esta placa (' + fmtKm(ref) + ' km). Revise el odómetro; si marca eso, guárdela igual: la oficina la revisa.';
+    } else if (k != null && p && p.kmCarga != null && config.maxKmEntreCargas && k - p.kmCarga > config.maxKmEntreCargas) {
+      txt = 'Son ' + fmtKm(k - p.kmCarga) + ' km desde la última carga de esta placa (' + fmtKm(p.kmCarga) + ' km). Revise el número.';
+    }
+    $('combAvisoKm').innerHTML = txt ? '<div class="aviso ambar">' + esc(txt) + '</div>' : '';
+  }
+  /** Galones x precio contra el total, con la tolerancia que manda el servidor (config.cuadreCarga). null sin los tres. */
+  function cuadreComb() {
+    var g = num($('combGalones').value), p = num($('combPrecio').value), t = num($('combTotal').value), r = config.cuadreCarga;
+    if (!r || g == null || p == null || t == null || g <= 0 || p <= 0 || t <= 0) return null;
+    var calculado = Math.round(g * p * 100) / 100, diferencia = Math.round((t - calculado) * 100) / 100;
+    return { cuadra: Math.abs(diferencia) <= Math.max(r.tolerancia, t * r.porcentaje) + 1e-9, calculado: calculado, diferencia: diferencia };
+  }
+  function pintarCuadre() {
+    var c = cuadreComb(), el = $('combCuadre');
+    el.className = 'cuadre' + (c ? (c.cuadra ? ' ok' : ' no') : '');
+    el.innerHTML = !c ? '' : c.cuadra
+      ? icono('check') + '<span>Cuadra: galones × precio = $' + c.calculado.toFixed(2) + '</span>'
+      : icono('alerta') + '<span>No cuadra por $' + Math.abs(c.diferencia).toFixed(2) + ' (galones × precio = $' + c.calculado.toFixed(2) +
+        '). Revise los números; si la factura dice eso, guárdela igual: la oficina la revisa.</span>';
+  }
+
+  /** Lo leído de la foto: lo que el piloto escribió no se reemplaza; lo que llenó una lectura anterior, sí. */
+  function aplicarLecturaComb(datos, textoQr, motivo, tipoMotivo) {
+    var qr = leerQR(textoQr), leidos = [];
+    function poner(id, valor, nombre) {
+      if (valor == null || valor === '') return;
+      var el = $(id);
+      if (el.value.trim() && !el.classList.contains('autollenado')) return;
+      el.value = valor;
+      el.classList.add('autollenado');
+      leidos.push(nombre);
+    }
+    poner('combCodigo', qr.codigo || datos.codigo, 'código de generación');
+    poner('combControl', datos.numeroControl, 'número de control');
+    poner('combFecha', qr.fecha || datos.fechaEmision, 'fecha');
+    poner('combHora', datos.horaEmision, 'hora');
+    poner('combProducto', datos.producto, 'producto');
+    poner('combGalones', datos.galones, 'galones');
+    poner('combPrecio', datos.precio, 'precio');
+    poner('combTotal', datos.total, 'total');
+    var faltan = [['combCodigo', 'código de generación'], ['combControl', 'número de control'], ['combGalones', 'galones'], ['combPrecio', 'precio'],
+                  ['combTotal', 'total']].filter(function (x) { return !$(x[0]).value.trim(); }).map(function (x) { return x[1]; });
+    var texto = (motivo ? motivo + ' ' : '') + (leidos.length ? 'Se leyó: ' + leidos.join(', ') + '.' : 'No se pudo leer la factura: tome la foto más cerca, con buena luz.') +
+      (faltan.length ? ' Escriba: ' + faltan.join(', ') + '.' : ' Revise que todo coincida con la factura.');
+    aviso('combAvisoLectura', tipoMotivo || (faltan.length ? 'ambar' : 'ok'), esc(texto));
+    pintarCuadre();
+  }
+  $('btnEscanearCombustible').addEventListener('click', function () {
+    guardarFormComb();
+    $('fotoCombustible').value = '';
+    $('fotoCombustible').click();
+  });
+  $('fotoCombustible').addEventListener('change', function (ev) {
+    var archivo = ev.target.files && ev.target.files[0];
+    if (!archivo) return;
+    var lectura = ++lecturaActual, textoQr = '', url = URL.createObjectURL(archivo);
+    function vigente() { return lectura === lecturaActual; }
+    function terminar(datos, motivo, tipo) {
+      if (!vigente()) return;
+      lecturaActual++;
+      clearTimeout(reloj);
+      try { URL.revokeObjectURL(url); } catch (e) {}
+      procesando('');
+      aplicarLecturaComb(datos || {}, textoQr, motivo, tipo);
+      guardarFormComb();
+    }
+    var reloj = setTimeout(function () { terminar({}, 'La lectura tardó demasiado.', 'ambar'); }, 60000);
+    cancelarLectura = function () { terminar({}, 'Lectura cancelada.', 'info'); };
+    procesando('Buscando el código QR…');
+    var img = new Image();
+    img.onerror = function () { terminar({}, 'No se pudo abrir la foto.', 'error'); };
+    img.onload = function () {
+      var ancho = img.naturalWidth, alto = img.naturalHeight;
+      buscarQR(img, ancho, alto).then(function (qr) {
+        if (!vigente()) return;
+        textoQr = qr || '';
+        var foto = fotoReducida(img, ancho, alto), piloto = pilotoConSesion();
+        procesando('Leyendo galones, precio y total…');
+        return conPin(piloto, function () {
+          var c = credencial(piloto);
+          return servidor('leerFactura', foto, textoQr, c.token || c.pin || '', piloto, { combustible: true });
+        }).then(function (datos) { terminar(datos); }, function (e) {
+          if (esErrorDeRed(e) && !/Demasiados intentos/i.test(e.message)) terminar({}, 'Sin señal: no se pudo leer el texto de la factura.', 'ambar');
+          else terminar({}, 'No se pudo leer el texto de la factura (' + e.message + ').', 'ambar');
+        });
+      }).catch(function (e) {
+        terminar({}, 'No se pudo procesar la foto (' + (e && e.message ? e.message : e) + ').', 'error');
+      });
+    };
+    img.src = url;
+  });
+
+  /** Manda una carga ({ piloto, ...carga }) con la credencial actual del piloto; si la sesión venció, pide el PIN. */
+  function enviarCarga(p) {
+    var carga = JSON.parse(JSON.stringify(p));
+    delete carga.piloto;
+    return conPin(p.piloto, function () {
+      return servidor('registrarCargaCombustible', Object.assign({ piloto: p.piloto }, credencial(p.piloto)), carga);
+    });
+  }
+  function anotarKmCarga(p) {
+    var placa = datosPlaca(p.placa);
+    if (placa && (placa.kmCarga == null || p.km > placa.kmCarga)) placa.kmCarga = p.km;
+  }
+  function guardarCarga() {
+    var piloto = pilotoConSesion();
+    var c = { id: combId, fecha: $('combFecha').value, hora: $('combHora').value, placa: $('combPlaca').value, producto: $('combProducto').value.trim(),
+              precio: num($('combPrecio').value), galones: num($('combGalones').value), total: num($('combTotal').value),
+              codigo: $('combCodigo').value.trim().toUpperCase(), control: $('combControl').value.trim(), km: num($('combKm').value) };
+    var errores = [];
+    if (!piloto) errores.push('Su sesión terminó: vuelva a entrar con su PIN.');
+    if (!c.codigo) errores.push('Escanee la factura o escriba el código de generación.');
+    else if (!FORMATO_CODIGO.test(c.codigo)) errores.push('El código de generación está incompleto: revíselo o escanee el QR otra vez.');
+    if (!c.fecha) errores.push('Escriba la fecha de la factura.');
+    else if (c.fecha > hoyISO()) errores.push('La fecha no puede ser de un día que no ha llegado.');
+    if (!c.placa) errores.push('Elija la placa.');
+    if (c.km == null || c.km <= 0 || Math.floor(c.km) !== c.km) errores.push('Escriba el km del odómetro (solo números enteros).');
+    [['galones', 'los galones'], ['precio', 'el precio'], ['total', 'el total']].forEach(function (x) {
+      if (c[x[0]] == null || c[x[0]] <= 0) errores.push('Escriba ' + x[1] + '.');
+    });
+    if (errores.length) { aviso('errComb', 'error', errores.map(esc).join('<br>')); return; }
+    var pendiente = Object.assign({ piloto: piloto }, c);
+    $('btnGuardarCarga').disabled = true;
+    $('btnGuardarCarga').textContent = 'Guardando…';
+    aviso('errComb');
+    enviarCarga(pendiente).then(function (r) {
+      terminarCarga(r || {}, pendiente);
+    }, function (e) {
+      if (!esErrorDeRed(e)) { aviso('errComb', 'error', esc(e && e.message ? e.message : String(e))); return; }
+      var cola = leerJSON(CLAVE_CARGAS, []).filter(function (x) { return x.id !== pendiente.id; });
+      cola.push(pendiente);
+      escribirJSON(CLAVE_CARGAS, cola);
+      terminarCarga({ pendiente: true, sinSesion: esSesionVencida(e) }, pendiente);
+    }).then(function () {
+      $('btnGuardarCarga').disabled = false;
+      $('btnGuardarCarga').textContent = 'Guardar carga';
+    });
+  }
+  $('btnGuardarCarga').addEventListener('click', guardarCarga);
+  function terminarCarga(r, p) {
+    try { localStorage.removeItem(CLAVE_FORM_COMB); } catch (e) {}
+    combId = null;
+    var placas = leerJSON(CLAVE_PLACA_COMB, {}) || {};
+    placas[p.piloto] = p.placa;
+    escribirJSON(CLAVE_PLACA_COMB, placas);
+    var html;
+    if (r.pendiente && r.sinSesion) {
+      html = '<div class="aviso ambar">La carga quedó guardada en este teléfono: falta escribir su PIN para enviarla. Toque el aviso de cargas sin enviar.</div>';
+    } else if (r.pendiente) {
+      html = '<div class="aviso ambar">Sin señal: la carga quedó guardada en este teléfono y se envía sola cuando vuelva la señal.</div>';
+    } else if (r.duplicado) {
+      html = '<div class="aviso info">' + esc(r.mensaje) + '</div>';
+    } else {
+      anotarKmCarga(p);
+      guardarConfig();
+      html = '<div class="aviso ok">' + esc(r.prueba ? r.mensaje : 'Se guardó la carga de ' + p.galones + ' galones ($' + p.total.toFixed(2) + ') de la placa ' +
+        p.placa + ' a los ' + fmtKm(p.km) + ' km.' + (r.kmPorGalon != null ? ' Rendimiento del tramo: ' + r.kmPorGalon + ' km por galón' +
+        (r.aproximado ? ' (aproximado)' : '') + '.' : '')) + '</div>';
+      if (r.motivos && r.motivos.length) html += '<div class="aviso ambar"><b>La oficina va a revisar:</b><br>' + r.motivos.map(esc).join('<br>') + '</div>';
+    }
+    $('mensajeGlobal').innerHTML = html;
+    pintarPendientes();
+    if (pantallaActual() === 'pCombustible') volverDeCombustible();
+  }
+  /** Manda las cargas que quedaron sin señal, una a la vez, con su ID (el servidor no duplica un reintento). */
+  var enviandoCargas = false;
+  function quitarCargaPendiente(id) {
+    escribirJSON(CLAVE_CARGAS, leerJSON(CLAVE_CARGAS, []).filter(function (x) { return x.id !== id; }));
+  }
+  function reintentarCargas() {
+    var cola = leerJSON(CLAVE_CARGAS, []);
+    if (enviandoCargas || !cola.length || !(config.version >= 22)) return;
+    enviandoCargas = true;
+    var problemas = [], enviadas = 0, cadena = Promise.resolve();
+    cola.forEach(function (p) {
+      cadena = cadena.then(function () {
+        if (!leerJSON(CLAVE_CARGAS, []).some(function (x) { return x.id === p.id; })) return;
+        return enviarCarga(p).then(function () {
+          quitarCargaPendiente(p.id);
+          anotarKmCarga(p);
+          enviadas++;
+        }, function (e) {
+          if (esErrorDeRed(e)) return;
+          // Rechazada (por ejemplo, esa factura ya estaba registrada): se avisa con sus datos para que la oficina la ubique.
+          quitarCargaPendiente(p.id);
+          problemas.push('La carga de combustible del ' + fmtFecha(p.fecha) + ' (placa ' + p.placa + ', $' + Number(p.total).toFixed(2) + ') no se guardó: ' +
+            (e && e.message ? e.message : String(e)) + ' Avise a la oficina.');
+        });
+      });
+    });
+    cadena.then(function () {
+      enviandoCargas = false;
+      if (enviadas) guardarConfig();
+      pintarPendientes();
+      if (problemas.length) aviso('mensajeGlobal', 'error', problemas.map(esc).join('<br>'));
+      else if (enviadas && !leerJSON(CLAVE_CARGAS, []).length) aviso('mensajeGlobal', 'ok', 'Se enviaron las cargas de combustible que estaban pendientes.');
+    });
+  }
+  $('cargasPendientes').addEventListener('click', function () { noPedirPinHasta = 0; reintentarCargas(); });
+
   // ------------------------------------------------------------ app instalada: el gesto "atrás" no la cierra
   var relojToast = null;
   function mostrarToast(texto) {
@@ -4566,7 +4976,7 @@
     relojToast = setTimeout(function () { $('toast').classList.add('oculto'); }, 4500);
   }
   function pantallaActual() {
-    var ids = ['pCargando', 'pIngreso', 'pInicio', 'pRuta', 'pParada', 'pCierre', 'pListo', 'pMant', 'pTablero'];
+    var ids = ['pCargando', 'pIngreso', 'pInicio', 'pRuta', 'pParada', 'pCierre', 'pListo', 'pMant', 'pCombustible', 'pTablero'];
     for (var i = 0; i < ids.length; i++) if (!$(ids[i]).classList.contains('oculto')) return ids[i];
     return '';
   }
@@ -4591,6 +5001,7 @@
       guardaPuesta = false;
       if (!hayAlgoEnCurso()) return;
       if (pantallaActual() === 'pMant') { mostrar('pInicio'); return; }
+      if (pantallaActual() === 'pCombustible') { volverDeCombustible(); return; }
       mostrarToast('Para salir de la app use el botón de inicio del teléfono. Lo que lleva del día queda guardado.');
     });
   }
