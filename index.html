@@ -97,8 +97,22 @@
   .aviso.info { background: var(--naranja-claro); color: var(--naranja-texto); border-color: #f6d5c7; border-left-color: var(--naranja); }
   .aviso.neutro { background: var(--fondo-suave); color: var(--gris); border-left-color: var(--gris); }
   .oculto { display: none !important; }
-  .dialogo { position: fixed; inset: 0; z-index: 50; background: rgba(20, 30, 40, .55); display: flex; align-items: center; justify-content: center; padding: 16px; }
-  .dialogo .tarjeta { width: 100%; max-width: 420px; margin: 0; }
+  .dialogo { position: fixed; inset: 0; z-index: 50; background: rgba(7, 6, 7, .55); display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
+  .dialogo .tarjeta { width: 100%; max-width: 440px; margin: 0; background: var(--superficie-tarjeta); border: 0; border-radius: var(--radio-l); padding: 22px 18px; color: var(--tinta); font-family: var(--fuente-panel); box-shadow: 0 18px 40px rgba(7, 6, 7, .25); }
+  .dialogo h2 { font-family: var(--fuente-display); font-weight: 400; font-size: 28px; line-height: 1; letter-spacing: .02em; text-transform: uppercase; color: var(--tinta); margin: 0 0 10px; }
+  .dialogo label { font-family: var(--fuente-panel); color: var(--tinta); font-weight: 600; font-size: 14px; margin-top: 10px; display: block; }
+  .dialogo .ayuda { color: var(--gris); font-size: 13.5px; }
+  .dialogo input, .dialogo select { min-height: 48px; border-radius: 100px; border: 1px solid var(--borde-fino); background: var(--blanco); color: var(--tinta); font-family: var(--fuente-panel); font-size: 16px; padding: 10px 18px; width: 100%; box-sizing: border-box; }
+  .dialogo textarea { border-radius: var(--radio-m); border: 1px solid var(--borde-fino); background: var(--blanco); color: var(--tinta); font-family: var(--fuente-panel); font-size: 15px; padding: 10px 16px; width: 100%; box-sizing: border-box; }
+  .dialogo input:focus, .dialogo select:focus, .dialogo textarea:focus { outline: 3px solid var(--resaltado); border-color: var(--tinta); }
+  .dialogo button.primario { background: var(--acento); border: 1px solid var(--acento); color: var(--blanco); border-radius: 800px; min-height: 52px; font-size: 16px; font-weight: 700; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--fuente-panel); }
+  .dialogo button.secundario, .dialogo button.fantasma { background: transparent; border: 1px solid var(--tinta); color: var(--tinta); border-radius: 800px; min-height: 52px; font-size: 16px; font-weight: 600; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--fuente-panel); }
+  .dialogo button.chico { min-height: 44px; padding: 6px 16px; font-size: 14px; border-radius: 800px; width: auto; }
+  .dialogo .fila { display: flex; gap: 10px; margin-top: 12px; }
+  .dialogo .fila > button { flex: 1; margin: 0; }
+  .dialogo button.primario.peligro { background: var(--estado-error); border-color: var(--estado-error); }
+  .dialogo .btn-icono-top { color: var(--tinta); border: 1px solid var(--borde-fino); border-radius: 50%; width: 36px; height: 36px; min-width: 36px; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; background: transparent; cursor: pointer; }
+  .dialogo .btn-icono-top:hover { background: var(--superficie-2); }
   .modo-prueba { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 6px; background: #fff2cc; color: #7f6000; font-size: 12px; font-weight: 700; }
   .incluye { display: block; margin: 2px 0 0 24px; font-size: 12.5px; font-weight: 400; color: var(--gris); }
   .parada { border: 1px solid var(--linea); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; background: #fff; }
@@ -134,13 +148,14 @@
     padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); z-index: 6; box-shadow: 0 -4px 12px rgba(35, 63, 83, .06); }
   .barra .dentro { max-width: 560px; margin: 0 auto; display: flex; gap: 8px; }
   .barra .dentro > * { flex: 1; }
-  #escaner { position: fixed; inset: 0; background: rgba(0, 49, 99, .96); z-index: 20; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; padding: 16px; color: #fff; gap: 12px; text-align: center; }
-  #escaner { font-size: 17px; font-weight: 600; }
-  #escaner .girador { border-color: rgba(255, 255, 255, .25); border-top-color: var(--naranja); }
-  #escaner button { background: transparent; color: #fff; border: 2px solid rgba(255, 255, 255, .6); margin-top: 8px; }
+  #escaner { position: fixed; inset: 0; background: rgba(7, 6, 7, .92); z-index: 20; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 16px; color: var(--blanco); gap: 12px; text-align: center;
+    font-family: var(--fuente-panel); font-size: 17px; font-weight: 600; backdrop-filter: blur(4px); }
+  #escaner .girador { border-color: rgba(255, 255, 255, .25); border-top-color: var(--acento); }
+  #escaner button { background: transparent; color: var(--blanco); border: 1px solid var(--superficie-tarjeta);
+    border-radius: 800px; min-height: 48px; padding: 8px 24px; font-family: var(--fuente-panel); font-size: 15px; font-weight: 600; margin-top: 8px; cursor: pointer; }
   .cargando { text-align: center; padding: 48px 0; color: var(--gris); }
-  .girador { width: 34px; height: 34px; border-radius: 50%; border: 4px solid var(--acero-claro); border-top-color: var(--naranja);
+  .girador { width: 34px; height: 34px; border-radius: 50%; border: 4px solid var(--borde-fino); border-top-color: var(--acento);
     animation: girar .9s linear infinite; margin: 0 auto 12px; }
   @keyframes girar { to { transform: rotate(360deg); } }
   .pendientes { cursor: pointer; }
@@ -152,7 +167,20 @@
   button.secundario { width: 100%; }
   .mant { font-size: 13.5px; margin-top: 6px; }
   #toast { position: fixed; left: 16px; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 30; max-width: 528px; margin: 0 auto;
-    background: var(--acero); color: #fff; border-radius: 8px; padding: 12px 14px; font-size: 14.5px; box-shadow: 0 4px 16px rgba(0, 0, 0, .2); }
+    background: var(--tinta); color: var(--blanco); border-radius: 800px; padding: 14px 22px; font-family: var(--fuente-panel); font-size: 14.5px; font-weight: 500; text-align: center; box-shadow: 0 8px 24px rgba(7, 6, 7, .3); }
+  #bandeja .aviso, #appNueva .aviso, #mensajeGlobal .aviso {
+    border: 2px solid var(--estado-alerta); border-radius: var(--radio-m); background: var(--superficie-2); color: var(--tinta);
+    font-family: var(--fuente-panel); font-size: 15px; font-weight: 600; padding: 12px 16px; margin: 10px 0;
+  }
+  #bandeja .aviso.error, #appNueva .aviso.error, #mensajeGlobal .aviso.error { border-color: var(--estado-error); }
+  #bandeja .aviso.ok, #appNueva .aviso.ok, #mensajeGlobal .aviso.ok { border-color: var(--estado-ok); }
+  #bandeja .aviso.info, #bandeja .aviso.neutro, #appNueva .aviso.info, #mensajeGlobal .aviso.neutro { border-color: var(--borde-fino); }
+  #bandeja .aviso button, #appNueva .aviso button, #mensajeGlobal .aviso button {
+    display: inline-flex; align-items: center; justify-content: center; border-radius: 800px; border: 1px solid var(--tinta);
+    background: transparent; color: var(--tinta); min-height: 44px; padding: 6px 18px; font-family: var(--fuente-panel);
+    font-size: 15px; font-weight: 600; margin-top: 8px; cursor: pointer; width: auto;
+  }
+  #bandeja .aviso button:hover, #appNueva .aviso button:hover, #mensajeGlobal .aviso button:hover { background: var(--superficie-tarjeta); }
   /* Panel de la oficina (administradores). */
   button.enlace { border: 0; background: none; color: var(--acero); text-decoration: underline; font-weight: 600; font-size: 14px; padding: 6px 0;
     min-height: 0; width: auto; }
@@ -1492,8 +1520,16 @@
   .pantalla-nueva .ayuda { color: var(--gris); }
   .pantalla-nueva input, .pantalla-nueva select { min-height: 52px; padding: 12px 20px; border-radius: 100px; border: 1px solid var(--borde-fino);
     background: var(--blanco); color: var(--tinta); font-size: 18px; }
-  .pantalla-nueva input:focus, .pantalla-nueva select:focus { outline: 3px solid var(--resaltado); border-color: var(--tinta); }
+  .pantalla-nueva textarea { border-radius: var(--radio-m); border: 1px solid var(--borde-fino); background: var(--blanco);
+    color: var(--tinta); font-family: var(--fuente-panel); font-size: 16px; padding: 12px 18px; width: 100%; box-sizing: border-box; }
+  .pantalla-nueva input:focus, .pantalla-nueva select:focus, .pantalla-nueva textarea:focus { outline: 3px solid var(--resaltado); border-color: var(--tinta); }
   .pantalla-nueva input.autollenado, .pantalla-nueva select.autollenado { background: var(--superficie-2); border-color: var(--acento); }
+  .pantalla-nueva .opciones { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 12px; }
+  .pantalla-nueva .opciones label { display: flex; align-items: center; gap: 10px; font-weight: 600; margin: 0; padding: 12px 18px;
+    border: 1px solid var(--borde-fino); border-radius: var(--radio-m); background: var(--blanco); cursor: pointer; color: var(--tinta); font-size: 15px; }
+  .pantalla-nueva .opciones label:has(input:checked) { border-color: var(--tinta); background: var(--superficie-2); }
+  .pantalla-nueva .opciones label span { font-weight: 400; color: var(--gris); font-size: 13px; }
+  .pantalla-nueva .opciones input[type="radio"] { width: 18px; height: 18px; min-height: 18px; margin: 0; accent-color: var(--acento); }
   .pantalla-nueva button { font-family: var(--fuente-panel); }
   .pantalla-nueva button:focus-visible, .cabecera button:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2px; }
   .pantalla-nueva button.primario { background: var(--acento); border: 1px solid var(--acento); color: var(--blanco); border-radius: 800px;
@@ -1936,36 +1972,36 @@
 
 
   <!-- Mantenimiento: lo registra el piloto cuando el vehículo sale del taller -->
-  <section id="pMant" class="tarjeta oculto">
-    <p class="paso">Mantenimiento</p>
-    <h2>Registrar un mantenimiento</h2>
-    <p class="ayuda">Anótelo cuando el vehículo salga del taller. La oficina lo ve en la pestaña «Historial mantenimiento».</p>
-    <label for="mantSelPlaca">Placa del vehículo</label>
-    <select id="mantSelPlaca"></select>
-    <div id="mantEstado"></div>
-    <label>Servicio</label>
-    <div class="opciones" id="mantServicio">
-      <label><input type="radio" name="mantServicio" value="Menor"> Menor <span id="mantCadaMenor"></span><span class="incluye" id="mantIncluyeMenor"></span></label>
-      <label id="mantOpcionIntermedio" class="oculto"><input type="radio" name="mantServicio" value="Intermedio"> Intermedio <span id="mantCadaIntermedio"></span><span class="incluye" id="mantIncluyeIntermedio"></span></label>
-      <label><input type="radio" name="mantServicio" value="Mayor"> Mayor <span id="mantCadaMayor"></span><span class="incluye" id="mantIncluyeMayor"></span></label>
-      <label><input type="radio" name="mantServicio" value="Otro"> Otro <span>(reparación, llantas, frenos…)</span></label>
+  <section id="pMant" class="pantalla-nueva oculto">
+    <div class="tarjeta">
+      <p class="paso">Mantenimiento</p>
+      <h2>Registrar un mantenimiento</h2>
+      <p class="ayuda">Anótelo cuando el vehículo salga del taller. La oficina lo ve en la pestaña «Historial mantenimiento».</p>
+      <label for="mantSelPlaca">Placa del vehículo</label>
+      <select id="mantSelPlaca"></select>
+      <div id="mantEstado"></div>
+      <label>Servicio</label>
+      <div class="opciones" id="mantServicio">
+        <label><input type="radio" name="mantServicio" value="Menor"> Menor <span id="mantCadaMenor"></span><span class="incluye" id="mantIncluyeMenor"></span></label>
+        <label id="mantOpcionIntermedio" class="oculto"><input type="radio" name="mantServicio" value="Intermedio"> Intermedio <span id="mantCadaIntermedio"></span><span class="incluye" id="mantIncluyeIntermedio"></span></label>
+        <label><input type="radio" name="mantServicio" value="Mayor"> Mayor <span id="mantCadaMayor"></span><span class="incluye" id="mantIncluyeMayor"></span></label>
+        <label><input type="radio" name="mantServicio" value="Otro"> Otro <span>(reparación, llantas, frenos…)</span></label>
+      </div>
+      <label for="mantFecha">Fecha</label>
+      <input id="mantFecha" type="date">
+      <label for="mantKm">Kilometraje del odómetro</label>
+      <input id="mantKm" type="number" inputmode="numeric" min="0" step="1">
+      <div id="mantAvisoKm"></div>
+      <label for="mantTaller">Taller o lugar <span class="opc">(opcional)</span></label>
+      <input id="mantTaller" type="text" autocomplete="off" maxlength="120">
+      <label for="mantCosto">Costo $ <span class="opc">(opcional)</span></label>
+      <input id="mantCosto" type="number" inputmode="decimal" min="0" step="0.01">
+      <label for="mantNotas">Qué se hizo <span class="opc">(opcional)</span></label>
+      <textarea id="mantNotas" rows="2" maxlength="500"></textarea>
+      <div id="errMant"></div>
+      <button class="primario" id="btnGuardarMant" style="margin-top:16px">Guardar mantenimiento</button>
+      <button class="fantasma" id="btnVolverMant">Volver</button>
     </div>
-    <label for="mantFecha">Fecha</label>
-    <input id="mantFecha" type="date">
-    <label for="mantKm">Kilometraje del odómetro</label>
-    <input id="mantKm" type="number" inputmode="numeric" min="0" step="1">
-    <div id="mantAvisoKm"></div>
-    <label for="mantTaller">Taller o lugar <span class="opc">(opcional)</span></label>
-    <input id="mantTaller" type="text" autocomplete="off" maxlength="120">
-    <label for="mantCosto">Costo $ <span class="opc">(opcional)</span></label>
-    <input id="mantCosto" type="number" inputmode="decimal" min="0" step="0.01">
-    <label for="mantNotas">Qué se hizo <span class="opc">(opcional)</span></label>
-    <textarea id="mantNotas" rows="2" maxlength="500"></textarea>
-    <div id="errMant"></div>
-    <p></p>
-    <button class="primario" id="btnGuardarMant">Guardar mantenimiento</button>
-    <p></p>
-    <button class="secundario" id="btnVolverMant">Volver</button>
   </section>
 
   <!-- Carga de combustible: la registra el piloto propio en la bomba, escaneando la factura (DTE con QR) -->
@@ -2556,10 +2592,8 @@
     <label for="txtPinSesion">PIN</label>
     <input id="txtPinSesion" type="password" inputmode="numeric" autocomplete="off" maxlength="8">
     <div id="errPinSesion"></div>
-    <p></p>
-    <button class="primario" type="button" id="btnPinSesion">Continuar</button>
-    <p></p>
-    <button class="secundario" type="button" id="btnPinSesionNo">Ahora no</button>
+    <button class="primario" type="button" id="btnPinSesion" style="margin-top:16px">Continuar</button>
+    <button class="fantasma" type="button" id="btnPinSesionNo" style="margin-top:10px">Ahora no</button>
   </div>
 </div>
 
@@ -2585,10 +2619,9 @@
     <input id="txtTransMontoFac" type="number" step="0.01" min="0" placeholder="0.00">
     <div id="difTransFac" class="ayuda" style="margin-top:6px"></div>
     <div id="errFacTrans"></div>
-    <p></p>
-    <div class="fila">
+    <div class="fila" style="margin-top:16px">
       <button class="primario" type="button" id="btnGuardarFacTrans">Registrar pago</button>
-      <button class="secundario" type="button" id="btnCancelarFacTrans">Cancelar</button>
+      <button class="secundario fantasma" type="button" id="btnCancelarFacTrans">Cancelar</button>
     </div>
   </div>
 </div>
@@ -2607,10 +2640,9 @@
     <label for="txtTransCajaNota">Nota <span class="opc">(opcional)</span></label>
     <textarea id="txtTransCajaNota" rows="2" placeholder="Detalle adicional del pago"></textarea>
     <div id="errCajaTrans"></div>
-    <p></p>
-    <div class="fila">
+    <div class="fila" style="margin-top:16px">
       <button class="primario" type="button" id="btnGuardarCajaTrans">Registrar pago</button>
-      <button class="secundario" type="button" id="btnCancelarCajaTrans">Cancelar</button>
+      <button class="secundario fantasma" type="button" id="btnCancelarCajaTrans">Cancelar</button>
     </div>
   </div>
 </div>
@@ -2623,10 +2655,9 @@
     <label for="txtTransAnularMotivo">Motivo de anulación <span class="opc">(obligatorio)</span></label>
     <textarea id="txtTransAnularMotivo" rows="2" placeholder="Escriba el motivo de la anulación"></textarea>
     <div id="errAnularTrans"></div>
-    <p></p>
-    <div class="fila">
+    <div class="fila" style="margin-top:16px">
       <button class="primario peligro" type="button" id="btnConfirmarAnularTrans">Anular pago</button>
-      <button class="secundario" type="button" id="btnCancelarAnularTrans">Cancelar</button>
+      <button class="secundario fantasma" type="button" id="btnCancelarAnularTrans">Cancelar</button>
     </div>
   </div>
 </div>
@@ -2745,7 +2776,7 @@
     // App nueva (M2): el día que empezó con «App nueva: Sí» se ve así hasta enviarse, aunque la oficina cambie el interruptor.
     var nueva = esDiaNuevo() && ['pCargando', 'pIngreso', 'pTablero', 'pListo'].indexOf(id) < 0;
     document.body.classList.toggle('app-nueva', nueva);
-    document.body.classList.toggle('caldera', nueva || id === 'pCargando' || id === 'pIngreso');
+    document.body.classList.toggle('caldera', nueva || id === 'pCargando' || id === 'pIngreso' || id === 'pMant' || id === 'pCombustible' || Boolean($(id) && $(id).classList.contains('pantalla-nueva')));
     $('cabeceraNueva').classList.toggle('oculto', !nueva);
     if (nueva) pintarCabecera(id);
     else $('bandeja').classList.remove('abierta');
