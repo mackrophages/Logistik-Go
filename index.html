@@ -14,6 +14,9 @@
 <meta name="application-name" content="Logistik Go">
 <script>window.LOGISTIK_API = "https://script.google.com/macros/s/AKfycbzVGOD0syOC3EBGlKKUr4GfvNyWnOPFpWhCfU3QZGmLaTlcXuc-JSkaHbFieAYv9-iT/exec";</script>
 <meta name="theme-color" content="#233f53">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
 <style>
   /* Identidad visual Logistik S.A. (misma paleta y componentes que los reportes de Coordinación Logística) */
   :root {
@@ -22,14 +25,25 @@
     --gris: #495057; --texto: #202124; --linea: #e3e6e8; --fondo-suave: #f7f8f9; --blanco: #fff;
     --ok: #137333; --ok-bg: #e6f4ea; --alerta: #b06000; --alerta-bg: #fef7e0;
     --error: #c5221f; --error-bg: #fce8e6; --info: #1a73e8; --info-bg: #e8f0fe;
-    /* Panel de la oficina (Task 20): la estructura de docs/diseno-mintlify.md (Inter, tinta casi negra, superficies y bordes
-       finos, radios 8/12/16, píldoras) con la paleta de Logistik de arriba; el verde de Mintlify no se usa. Única lista de
-       estos tokens: solo los usa #pTablero (las pantallas de los pilotos no cambian). El semáforo sigue con --ok, --alerta y
-       --error: los tonos de Mintlify no dan contraste AA como texto sobre blanco. --sin-dato: el gris neutro del mapa. */
-    --tinta: #171717; --superficie: #fafafa; --superficie-2: #f7f7f7; --borde-fino: #e5e5e5;
-    --radio-s: 8px; --radio-m: 12px; --radio-l: 16px;
-    --fuente-panel: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    --sin-dato: #d3d8dd;
+    /* Panel de la oficina (Tarea 25 Parte B: diseno Caldera) */
+    --superficie-pagina: #e2e2df;
+    --superficie-tarjeta: #f7f6f2;
+    --tinta: #070607;
+    --acento: #f15923;
+    --serie-1: #524ae9;
+    --serie-2: #f15923;
+    --serie-3: #1baf7a;
+    --estado-ok: #0ca30c;
+    --estado-alerta: #fab219;
+    --estado-error: #d03b3b;
+    --sin-dato: #cccccc;
+    --resaltado: #f5f28e;
+    --borde-fino: #d8d8d5;
+    --superficie: var(--superficie-tarjeta);
+    --superficie-2: #eeeeea;
+    --radio-s: 12px; --radio-m: 16px; --radio-l: 24px;
+    --fuente-display: "Bebas Neue", "Impact", "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
+    --fuente-panel: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--fondo-suave); color: var(--texto);
@@ -215,34 +229,184 @@
   .leyenda .muestra.ok { background: var(--ok); } .leyenda .muestra.alerta { background: var(--alerta); } .leyenda .muestra.error { background: var(--error); }
   .leyenda .muestra.acero { background: var(--acero); } .leyenda .muestra.naranja { background: var(--naranja); }
   .grafico .fuente { font-size: 11.5px; margin: 6px 0 0; }
-  /* Panel de la oficina (Task 20): estructura tipo Mintlify con los tokens de :root. Todo bajo #pTablero. */
+  /* Panel de la oficina (Tarea 25 Parte B: diseno Caldera). Todo bajo #pTablero. */
+  body.en-tablero,
+  body:has(#pTablero:not(.oculto)) {
+    background-color: var(--superficie-pagina);
+    color: var(--tinta);
+  }
+  body.en-tablero main,
+  body:has(#pTablero:not(.oculto)) main {
+    background: transparent;
+  }
   #pTablero { font-family: var(--fuente-panel); color: var(--tinta); }
-  #pTablero .tarjeta { border-color: var(--borde-fino); border-radius: var(--radio-l); padding: 20px 18px; margin-bottom: 16px; }
-  #pTablero h2 { font-size: 22px; letter-spacing: -.02em; font-weight: 600; }
-  #pTablero h3 { font-size: 15px; font-weight: 600; letter-spacing: -.005em; margin: 22px 0 10px; }
-  #pTablero .paso, #pTablero .grafico figcaption, #pTablero .kpi span, #pTablero table.tabla th, #pTablero .linea-tiempo button.dia .cuando,
-    #pTablero .regiones .region .nombre { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
+  #pTablero .tarjeta {
+    background-color: var(--superficie-tarjeta);
+    border: 1px solid var(--borde-fino);
+    border-radius: 24px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: none;
+    color: var(--tinta);
+  }
+  @media (min-width: 700px), (orientation: landscape) and (min-width: 600px) {
+    #pTablero .tarjeta {
+      border-radius: 40px;
+      padding: 40px;
+    }
+  }
+  #pTablero h2 {
+    font-family: var(--fuente-display);
+    font-size: 32px;
+    letter-spacing: 0.02em;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--tinta);
+    margin: 0 0 12px;
+  }
+  #pTablero h3 {
+    font-family: var(--fuente-display);
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--tinta);
+    margin: 20px 0 10px;
+  }
+  #pTablero .paso, #pTablero .grafico figcaption, #pTablero .kpi span, #pTablero table.tabla th, #pTablero .linea-tiempo button.dia .cuando {
+    font-family: var(--fuente-panel);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--tinta);
+  }
+  #pTablero .regiones .region .nombre {
+    font-family: var(--fuente-panel);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--acero);
+  }
   #pTablero .ayuda { color: var(--gris); }
   #pTablero .kpis { gap: 10px; }
-  /* Borde fino en tres lados: el superior conserva el color que lleva (destacado, responsable, semáforo). */
   #pTablero .kpi, #pTablero .regiones .region, #pTablero .linea-tiempo button.dia {
-    border-left-color: var(--borde-fino); border-right-color: var(--borde-fino); border-bottom-color: var(--borde-fino); border-radius: var(--radio-m); }
-  #pTablero .kpi { background: var(--superficie); padding: 10px 12px; }
-  #pTablero .linea-tiempo button.dia[aria-pressed="true"] { border-color: var(--naranja); }
-  #pTablero .kpi b { font-weight: 600; letter-spacing: -.01em; }
-  #pTablero .enruta { border-top-color: var(--borde-fino); border-right-color: var(--borde-fino); border-bottom-color: var(--borde-fino); border-radius: var(--radio-m); }
-  #pTablero .linea-tiempo button.dia { background: var(--blanco); }
-  #pTablero .enruta { background: var(--superficie); }
-  #pTablero table.tabla th { border-bottom: 1px solid var(--borde-fino); color: var(--gris); }
-  #pTablero table.tabla td { border-bottom-color: var(--borde-fino); }
-  #pTablero button { border-radius: 9999px; font-weight: 600; }
-  #pTablero button.chico { border-color: var(--borde-fino); color: var(--tinta); background: var(--blanco); }
+    border-left-color: var(--borde-fino);
+    border-right-color: var(--borde-fino);
+    border-bottom-color: var(--borde-fino);
+    border-radius: 16px;
+    box-shadow: none;
+  }
+  #pTablero .kpi {
+    background-color: var(--superficie-tarjeta);
+    padding: 12px 14px;
+    color: var(--tinta);
+  }
+  #pTablero .kpi b {
+    font-family: var(--fuente-display);
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--tinta);
+    display: block;
+    line-height: 1.1;
+  }
+  #pTablero .kpi span {
+    color: var(--tinta);
+    font-family: var(--fuente-panel);
+    font-weight: 500;
+  }
+  /* UNA sola tarjeta naranja (#f15923) para el KPI principal del periodo (OTIF) */
+  #pTablero .kpi.otif {
+    background-color: var(--acento) !important;
+    border-color: var(--acento) !important;
+    border-radius: 20px !important;
+  }
+  #pTablero .kpi.otif b {
+    color: #ffffff !important;
+    font-family: var(--fuente-display) !important;
+    font-size: 44px !important;
+    line-height: 1 !important;
+    letter-spacing: 0.02em !important;
+    font-weight: 400 !important;
+  }
+  #pTablero .kpi.otif span {
+    color: var(--tinta) !important;
+    font-family: var(--fuente-panel) !important;
+    font-weight: 500 !important;
+  }
+  /* El resto de KPI en tarjetas Ash White */
+  #pTablero .kpi.destacado {
+    background-color: var(--superficie-tarjeta);
+    border-top: 4px solid var(--naranja);
+  }
+  #pTablero .kpi.destacado b {
+    color: var(--acero);
+  }
+  #pTablero .kpi.resp-ventas { border-top: 4px solid var(--naranja); }
+  #pTablero .kpi.resp-bodega { border-top: 4px solid var(--acero); }
+  #pTablero .kpi.resp-transporte { border-top: 4px solid var(--marino); }
+  #pTablero .kpi.resp-revisar { border-top: 4px solid var(--gris); }
+  #pTablero .enruta {
+    background-color: var(--superficie-tarjeta);
+    border: 1px solid var(--borde-fino);
+    border-radius: 16px;
+  }
+  #pTablero .linea-tiempo button.dia {
+    background-color: var(--superficie-tarjeta);
+    color: var(--tinta);
+  }
+  #pTablero .linea-tiempo button.dia b {
+    font-family: var(--fuente-display);
+    letter-spacing: 0.02em;
+    font-size: 16px;
+    font-weight: 400;
+  }
+  /* Pixel Glare #f5f28e como resaltado puntual (dia elegido en la linea de tiempo, fila enfocada) */
+  #pTablero .linea-tiempo button.dia[aria-pressed="true"] {
+    background-color: var(--resaltado) !important;
+    border-color: var(--naranja) !important;
+  }
+  #pTablero table.tabla tr:focus,
+  #pTablero table.tabla tr.enfocada,
+  #pTablero table.tabla tbody tr:hover {
+    background-color: var(--resaltado);
+  }
+  #pTablero table.tabla th { border-bottom: 1px solid var(--borde-fino); color: var(--gris); font-family: var(--fuente-panel); }
+  #pTablero table.tabla td { border-bottom-color: var(--borde-fino); font-family: var(--fuente-panel); }
+  /* Botones e inputs tipo pildora */
+  #pTablero button { border-radius: 9999px; font-weight: 500; font-family: var(--fuente-panel); }
+  #pTablero button.chico { border-color: var(--borde-fino); color: var(--tinta); background: var(--superficie-tarjeta); }
   #pTablero button.chico:hover { background: var(--superficie-2); }
-  #pTablero #btnTabActualizar { background: var(--acero); border-color: var(--acero); color: #fff; }
+  #pTablero #btnTabActualizar { background: var(--marino); border-color: var(--marino); color: #fff; }
   #pTablero .pildoras button, #pTablero .periodo-nav button { border-color: var(--borde-fino); }
-  #pTablero .grafico { background: var(--superficie); border: 1px solid var(--borde-fino); border-radius: var(--radio-m); padding: 12px 10px 10px; }
-  #pTablero .grafico-tarjeta .grafico { background: var(--blanco); border: 0; padding: 0; }
-  #pTablero input { border-radius: var(--radio-s); }
+  #pTablero .pildoras, #pTablero .fila, #pTablero .periodo-nav { gap: 10px; }
+  #pTablero .grafico { background-color: var(--superficie-tarjeta); border: 1px solid var(--borde-fino); border-radius: 20px; padding: 14px 12px; }
+  #pTablero .grafico-tarjeta .grafico { background-color: var(--superficie-tarjeta); border: 0; padding: 0; }
+  #pTablero input, #pTablero select {
+    border-radius: 9999px;
+    font-family: var(--fuente-panel);
+    font-weight: 500;
+    background-color: var(--superficie-tarjeta);
+    border: 1px solid var(--borde-fino);
+    color: var(--tinta);
+    padding: 8px 16px;
+  }
+  #pTablero input:focus, #pTablero select:focus { outline: 3px solid rgba(241, 89, 35, .28); border-color: var(--acento); }
+  #pTablero .regiones .region b { font-family: var(--fuente-display); font-size: 24px; letter-spacing: 0.02em; font-weight: 400; color: var(--tinta); display: block; }
+  #pTablero .leyenda { display: flex; flex-wrap: wrap; gap: 12px; list-style: none; padding: 0; margin: 12px 0 0; font-size: 12px; font-family: var(--fuente-panel); color: var(--tinta); }
+  #pTablero .leyenda li { display: inline-flex; align-items: center; gap: 6px; color: var(--tinta); }
+  #pTablero .leyenda .muestra { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+  #pTablero .leyenda .muestra.serie-1 { background: var(--serie-1); }
+  #pTablero .leyenda .muestra.serie-2 { background: var(--serie-2); }
+  #pTablero .leyenda .muestra.serie-3 { background: var(--serie-3); }
+  #pTablero .leyenda .muestra.ok { background: var(--estado-ok); }
+  #pTablero .leyenda .muestra.alerta { background: var(--estado-alerta); }
+  #pTablero .leyenda .muestra.error { background: var(--estado-error); }
+  #pTablero .leyenda .muestra.sin-dato { background: repeating-linear-gradient(45deg, var(--sin-dato), var(--sin-dato) 2px, var(--superficie-pagina) 2px, var(--superficie-pagina) 4px); }
+  #pTablero svg text { fill: var(--tinta) !important; font-family: var(--fuente-panel) !important; }
+  #pTablero #grafOtifDiario circle:hover { r: 8px; }
   /* App instalada: sin "jalar para recargar" ni rebote que saque al piloto de lo que está haciendo. */
   /* overflow-x: hidden en html y body convertía al body en contenedor de desplazamiento propio y en el teléfono
      (dentro del marco de Apps Script) dejaba de desplazarse; clip recorta sin crear ese contenedor. */
