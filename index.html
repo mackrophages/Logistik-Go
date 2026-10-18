@@ -22,6 +22,14 @@
     --gris: #495057; --texto: #202124; --linea: #e3e6e8; --fondo-suave: #f7f8f9; --blanco: #fff;
     --ok: #137333; --ok-bg: #e6f4ea; --alerta: #b06000; --alerta-bg: #fef7e0;
     --error: #c5221f; --error-bg: #fce8e6; --info: #1a73e8; --info-bg: #e8f0fe;
+    /* Panel de la oficina (Task 20): la estructura de docs/diseno-mintlify.md (Inter, tinta casi negra, superficies y bordes
+       finos, radios 8/12/16, píldoras) con la paleta de Logistik de arriba; el verde de Mintlify no se usa. Única lista de
+       estos tokens: solo los usa #pTablero (las pantallas de los pilotos no cambian). El semáforo sigue con --ok, --alerta y
+       --error: los tonos de Mintlify no dan contraste AA como texto sobre blanco. --sin-dato: el gris neutro del mapa. */
+    --tinta: #171717; --superficie: #fafafa; --superficie-2: #f7f7f7; --borde-fino: #e5e5e5;
+    --radio-s: 8px; --radio-m: 12px; --radio-l: 16px;
+    --fuente-panel: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --sin-dato: #d3d8dd;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--fondo-suave); color: var(--texto);
@@ -197,6 +205,44 @@
   .estado-mant.vencido { background: #F4CCCC; color: #8a1c13; } .estado-mant.proximo { background: #FFF2CC; color: #7a5b00; }
   .estado-mant.revisar { background: #F9CB9C; color: #6b3500; } .estado-mant.por_confirmar { background: #CFE2F3; color: #0b3d63; }
   .estado-mant.ok { background: #D9EAD3; color: #1e5b25; } .estado-mant.sin_registro { background: #EFEFEF; color: #555; }
+  /* Gráficos del panel (Task 20): cada uno en su <figure>, con leyenda en HTML (el texto no depende solo del color). */
+  .grafico { margin: 14px 0 6px; min-width: 0; }
+  .grafico figcaption { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--gris); margin-bottom: 4px; }
+  .grafico .ts-chart-host { color: var(--texto); font-size: 12px; max-width: 100%; }
+  .leyenda { display: flex; flex-wrap: wrap; gap: 4px 14px; list-style: none; margin: 6px 0 0; padding: 0; font-size: 12.5px; color: var(--gris); }
+  .leyenda li { display: flex; align-items: center; gap: 6px; }
+  .leyenda .muestra { width: 12px; height: 12px; border-radius: 3px; background: var(--sin-dato); flex: none; }
+  .leyenda .muestra.ok { background: var(--ok); } .leyenda .muestra.alerta { background: var(--alerta); } .leyenda .muestra.error { background: var(--error); }
+  .leyenda .muestra.acero { background: var(--acero); } .leyenda .muestra.naranja { background: var(--naranja); }
+  .grafico .fuente { font-size: 11.5px; margin: 6px 0 0; }
+  /* Panel de la oficina (Task 20): estructura tipo Mintlify con los tokens de :root. Todo bajo #pTablero. */
+  #pTablero { font-family: var(--fuente-panel); color: var(--tinta); }
+  #pTablero .tarjeta { border-color: var(--borde-fino); border-radius: var(--radio-l); padding: 20px 18px; margin-bottom: 16px; }
+  #pTablero h2 { font-size: 22px; letter-spacing: -.02em; font-weight: 600; }
+  #pTablero h3 { font-size: 15px; font-weight: 600; letter-spacing: -.005em; margin: 22px 0 10px; }
+  #pTablero .paso, #pTablero .grafico figcaption, #pTablero .kpi span, #pTablero table.tabla th, #pTablero .linea-tiempo button.dia .cuando,
+    #pTablero .regiones .region .nombre { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
+  #pTablero .ayuda { color: var(--gris); }
+  #pTablero .kpis { gap: 10px; }
+  /* Borde fino en tres lados: el superior conserva el color que lleva (destacado, responsable, semáforo). */
+  #pTablero .kpi, #pTablero .regiones .region, #pTablero .linea-tiempo button.dia {
+    border-left-color: var(--borde-fino); border-right-color: var(--borde-fino); border-bottom-color: var(--borde-fino); border-radius: var(--radio-m); }
+  #pTablero .kpi { background: var(--superficie); padding: 10px 12px; }
+  #pTablero .linea-tiempo button.dia[aria-pressed="true"] { border-color: var(--naranja); }
+  #pTablero .kpi b { font-weight: 600; letter-spacing: -.01em; }
+  #pTablero .enruta { border-top-color: var(--borde-fino); border-right-color: var(--borde-fino); border-bottom-color: var(--borde-fino); border-radius: var(--radio-m); }
+  #pTablero .linea-tiempo button.dia { background: var(--blanco); }
+  #pTablero .enruta { background: var(--superficie); }
+  #pTablero table.tabla th { border-bottom: 1px solid var(--borde-fino); color: var(--gris); }
+  #pTablero table.tabla td { border-bottom-color: var(--borde-fino); }
+  #pTablero button { border-radius: 9999px; font-weight: 600; }
+  #pTablero button.chico { border-color: var(--borde-fino); color: var(--tinta); background: var(--blanco); }
+  #pTablero button.chico:hover { background: var(--superficie-2); }
+  #pTablero #btnTabActualizar { background: var(--acero); border-color: var(--acero); color: #fff; }
+  #pTablero .pildoras button, #pTablero .periodo-nav button { border-color: var(--borde-fino); }
+  #pTablero .grafico { background: var(--superficie); border: 1px solid var(--borde-fino); border-radius: var(--radio-m); padding: 12px 10px 10px; }
+  #pTablero .grafico-tarjeta .grafico { background: var(--blanco); border: 0; padding: 0; }
+  #pTablero input { border-radius: var(--radio-s); }
   /* App instalada: sin "jalar para recargar" ni rebote que saque al piloto de lo que está haciendo. */
   html, body { overscroll-behavior: none; }
 </style>
@@ -468,6 +514,13 @@
       <div class="linea-tiempo periodo-datos" id="tabEvolucion" aria-label="Día por día"></div>
     </div>
     <div class="periodo-datos">
+    <!-- Gráficos (Task 20): isla React con TanStack Charts (graficos/, compilada a Graficos.html). El panel pide el código con
+         un <script> solo al abrirse (pintarGraficos); cada <figure> queda oculta hasta que su gráfico tiene datos. Las tablas
+         y tarjetas siguen: son el respaldo accesible y la referencia exacta. -->
+    <div class="tarjeta grafico-tarjeta" hidden id="tabMapaTarjeta">
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="OTIF por departamento">OTIF por departamento (este mes)</h3>
+      <figure class="grafico" hidden><div id="grafMapa"></div></figure>
+    </div>
     <div class="tarjeta"><h3 style="margin-top:0">Hoy</h3><div class="kpis" id="tabHoy"></div>
       <h3 class="cap-periodo" data-titulo="">Este mes</h3><div class="kpis" id="tabMes"></div></div>
     <!-- Efectivo a bordo (Task 13): de hoy, por piloto, lo cobrado en efectivo (el Contado se paga en caja, no cuenta); en rojo el que pasa el límite
@@ -487,7 +540,8 @@
         <h3 style="margin-top:0" class="cap-periodo" data-titulo="OTIF">OTIF (este mes)</h3>
         <div class="kpis" id="tabOtifKpis"></div>
         <p class="ayuda" id="tabOtifNota"></p>
-        <h3>Por región</h3><div class="regiones" id="tabRegiones"></div>
+        <figure class="grafico" hidden><figcaption>OTIF día por día</figcaption><div id="grafOtifDiario"></div></figure>
+        <h3>Por región</h3><figure class="grafico" hidden><div id="grafOtifRegion"></div></figure><div class="regiones" id="tabRegiones"></div>
       </div>
       <h3 class="cap-periodo" data-titulo="Departamentos">Departamentos (este mes)</h3><div class="tabla-scroll" id="tabDeptos"></div>
     </div>
@@ -516,6 +570,7 @@
       <h3 style="margin-top:0" class="cap-periodo" data-titulo="Costo por factura">Costo por factura (este mes)</h3>
       <div class="kpis" id="tabCostoKpis"></div>
       <p class="ayuda" id="tabCostoNota"></p>
+      <figure class="grafico" hidden><figcaption>Costo por factura, día por día</figcaption><div id="grafCosto"></div></figure>
     </div>
     <!-- Eficiencia operativa (Task 12): paradas por viaje, km por galón y tiempo en el cliente, de los días enviados del
          periodo. Lo calcula el servidor (tablero_); sin eficiencia (servidor anterior), la tarjeta no aparece. -->
@@ -553,6 +608,7 @@
     <div class="tarjeta oculto" id="tabParetoTarjeta">
       <h3 style="margin-top:0" class="cap-periodo" data-titulo="Pareto 80/20 de clientes">Pareto 80/20 de clientes (este mes)</h3>
       <p id="tabParetoResumen"></p>
+      <figure class="grafico" hidden><figcaption>Cada cliente y el acumulado</figcaption><div id="grafPareto"></div></figure>
       <div class="tabla-scroll" id="tabPareto"></div>
       <p class="ayuda" id="tabParetoNota"></p>
     </div>
@@ -561,6 +617,7 @@
          (tablero_, con canalDeVendedor_); sin porCanal (servidor anterior), no aparece. -->
     <div class="tarjeta oculto" id="tabCanalTarjeta">
       <h3 style="margin-top:0" class="cap-periodo" data-titulo="Facturas por canal">Facturas por canal (este mes)</h3>
+      <figure class="grafico" hidden><figcaption>Parte de las facturas y del monto</figcaption><div id="grafCanal"></div></figure>
       <div class="tabla-scroll" id="tabCanal"></div>
       <p class="ayuda" id="tabCanalNota"></p>
     </div>
@@ -570,6 +627,7 @@
     <div class="tarjeta oculto" id="tabMotivosTarjeta">
       <h3 style="margin-top:0" class="cap-periodo" data-titulo="Novedades por responsabilidad">Novedades por responsabilidad (este mes)</h3>
       <div class="kpis" id="tabResponsabilidadKpis"></div>
+      <figure class="grafico" hidden><figcaption>Por proceso de origen</figcaption><div id="grafNovedades"></div></figure>
       <div class="tabla-scroll" id="tabMotivos"></div>
       <p class="ayuda" id="tabMotivosNota"></p>
     </div>
@@ -1860,6 +1918,39 @@
       '. Tiempo en cliente: de la llegada a la salida, en ' + fmtKm(e.paradasConTiempo) + (e.paradasConTiempo === 1 ? ' parada' : ' paradas') +
       ' (la última de cada viaje y las que no tienen hora de salida no se miden).';
   }
+  /**
+   * Gráficos del panel (Task 20, servidor 19): el código (Graficos.html, isla React con TanStack Charts) se pide con un
+   * <script> la primera vez que se pinta el panel, nunca en las pantallas de los pilotos. Desde el enlace de Apps Script la
+   * dirección viene en el tablero (urlGraficos, la /exec del servidor); la app instalable usa la suya (LOGISTIK_API). Un
+   * servidor anterior a la versión 19 (sin umbralesSemaforo) no tiene el recurso: no se pide. Si no carga (sin señal), se
+   * reintenta en la próxima actualización; mientras tanto el panel queda con sus tablas y tarjetas.
+   */
+  var cargandoGraficos = false;
+  function urlGraficos(t) {
+    if (!t || !t.umbralesSemaforo) return '';
+    return window.LOGISTIK_API ? window.LOGISTIK_API + '?recurso=graficos' : (t.urlGraficos || '');
+  }
+  function pintarGraficos(t) {
+    if (window.LogistikGraficos) {
+      window.LogistikGraficos.pintar(t, {
+        contenedores: { mapa: $('grafMapa'), otifDiario: $('grafOtifDiario'), otifRegion: $('grafOtifRegion'), novedades: $('grafNovedades'),
+                        pareto: $('grafPareto'), canal: $('grafCanal'), costo: $('grafCosto') },
+        alElegirDia: function (fecha) { elegirPeriodo({ tipo: 'dia', fecha: fecha }); },
+        formato: FORMATO_GRAFICOS
+      });
+      return;
+    }
+    var url = urlGraficos(t);
+    if (!url || cargandoGraficos) return;
+    cargandoGraficos = true;
+    var s = document.createElement('script');
+    s.src = url;
+    s.async = true;
+    s.onload = function () { cargandoGraficos = false; if (window.LogistikGraficos && ultimoTablero) pintarGraficos(ultimoTablero); };
+    s.onerror = function () { cargandoGraficos = false; s.parentNode.removeChild(s); };
+    document.head.appendChild(s);
+  }
+  var FORMATO_GRAFICOS = { dinero: fmtDinero, numero: fmtKm };
   function pintarTablero(t) {
     if (!t) return;
     ultimoTablero = t;
@@ -1899,6 +1990,7 @@
     pintarCanales(t);
     pintarMotivos(t);
     pintarOtif(t);
+    pintarGraficos(t);
     $('tabRecientes').innerHTML = tabla(['Fecha', 'Piloto', 'Placa', 'Km', 'Facturas', 'Monto', 'Revisar'], t.recientes.map(function (v) {
       return [esc(fmtFecha(v.fecha)), esc(v.piloto), esc(v.placa), fmtKm(v.km), fmtKm(v.facturas), fmtDinero(v.monto),
               v.revisar ? '<span class="estado-mant proximo">' + v.revisar + (v.revisar === 1 ? ' fila' : ' filas') + '</span>' : ''];
