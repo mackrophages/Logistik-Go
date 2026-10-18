@@ -1633,6 +1633,57 @@
       align-items: start;
     }
   }
+
+  /* Carga en bodega (Tarea M3, Etapa A) en Caldera */
+  #pCarga .contador { font-family: var(--fuente-display); letter-spacing: .02em; line-height: .9; margin: 4px 0 2px; }
+  #pCarga .contador .g { display: block; font-size: 64px; color: var(--tinta); }
+  #pCarga .contador .s { display: block; font-size: 26px; color: var(--gris); margin-top: 4px; }
+  #pCarga .contador .s b { color: var(--tinta); font-weight: 400; }
+  .cargada { background: var(--superficie-tarjeta); border: 1px solid var(--borde-fino); border-left: 5px solid var(--borde-fino); border-radius: var(--radio-m);
+    padding: 12px 14px; margin-top: 8px; font-family: var(--fuente-panel); }
+  .cargada.Industria { border-left-color: var(--serie-1); }
+  .cargada.nueva { animation: llega 1.6s ease-out; }
+  @keyframes llega { from { background: var(--resaltado); } to { background: var(--superficie-tarjeta); } }
+  .cargada .fila1 { display: flex; align-items: baseline; gap: 8px; }
+  .cargada .cli { flex: 1; min-width: 0; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 16px; color: var(--tinta); }
+  .cargada .monto { font-family: var(--fuente-display); font-size: 24px; line-height: 1; letter-spacing: .02em; flex: none; color: var(--tinta); }
+  .cargada .det { font-size: 13px; color: var(--gris); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 3px; }
+  .cargada .chips { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .cargada .chip { font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 800px; background: var(--superficie-2); color: var(--gris); display: inline-flex; align-items: center; gap: 4px; }
+  .cargada .chip.canal { background: var(--superficie-2); color: var(--tinta); }
+  .cargada .chip.ok { background: rgba(58, 165, 138, .15); color: var(--estado-ok); }
+  .cargada .chip.pend { background: rgba(204, 154, 34, .15); color: var(--estado-alerta); }
+  .bloque { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; font-size: 13px; background: var(--superficie-2);
+    border-radius: var(--radio-s); padding: 8px 12px; margin-top: 8px; color: var(--tinta); }
+  .bloque dt { font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--gris); font-weight: 700; padding-top: 2px; }
+  .bloque dd { margin: 0; overflow-wrap: anywhere; color: var(--tinta); font-weight: 500; }
+  .pantalla-nueva .resumen div { border: 1px solid var(--borde-fino); border-radius: var(--radio-s); padding: 10px 12px;
+    background: var(--superficie-2); font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--gris); font-weight: 700; }
+  .pantalla-nueva .resumen b { font-family: var(--fuente-display); font-size: 26px; color: var(--tinta); letter-spacing: .02em;
+    text-transform: none; line-height: 1; margin-top: 4px; display: block; }
+  .pantalla-nueva .resumen div:first-child b { color: var(--acento); }
+  .resumen-canal { width: 100%; border-collapse: collapse; font-size: 14.5px; margin-top: 10px; font-family: var(--fuente-panel); }
+  .resumen-canal th { text-align: left; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--gris); padding: 8px 6px; font-weight: 700; border-bottom: 1px solid var(--borde-fino); }
+  .resumen-canal th:not(:first-child), .resumen-canal td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+  .resumen-canal td { padding: 10px 6px; border-top: 1px solid var(--borde-fino); color: var(--tinta); }
+  #hojaDondeEntrega { position: fixed; inset: 0; z-index: 70; }
+  .velo { position: absolute; inset: 0; background: rgba(7, 6, 7, .55); }
+  .hoja { position: absolute; left: 10px; right: 10px; top: 74px; max-height: calc(100vh - 100px); overflow-y: auto; z-index: 80;
+    background: var(--superficie-tarjeta); border-radius: var(--radio-l); padding: 22px 18px 20px; box-shadow: 0 18px 40px rgba(7, 6, 7, .25);
+    font-family: var(--fuente-panel); color: var(--tinta); }
+  .hoja .paso { color: var(--acento); }
+  .hoja h2 { font-family: var(--fuente-display); font-size: 32px; line-height: 1; letter-spacing: .02em; text-transform: uppercase; color: var(--tinta); margin: 0 0 8px; }
+  .opcion { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; background: var(--superficie-tarjeta); border: 1px solid var(--tinta);
+    border-radius: var(--radio-m); padding: 12px 16px; margin-top: 8px; cursor: pointer; min-height: 60px; color: var(--tinta); }
+  .opcion:hover { background: var(--superficie-2); }
+  .opcion span { flex: 1; min-width: 0; font-weight: 700; font-size: 15.5px; line-height: 1.25; }
+  .opcion small { display: block; font-weight: 500; font-size: 12.5px; color: var(--gris); }
+  .opcion.otro { border-style: dashed; }
+  #dlgQrEntrega.dialogo { position: fixed; inset: 0; z-index: 50; background: rgba(7, 6, 7, .55); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  #dlgQrEntrega .tarjeta { width: 100%; max-width: 440px; margin: 0; background: var(--superficie-tarjeta); border: 0; border-radius: var(--radio-l); padding: 22px 18px; color: var(--tinta); font-family: var(--fuente-panel); }
+  #dlgQrEntrega .btn-icono { width: 36px; height: 36px; min-height: 36px; border-radius: 50%; border: 1px solid var(--tinta); background: transparent; color: var(--tinta); display: inline-flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; cursor: pointer; flex: none; }
+  #visorQrEntrega { margin: 16px auto; padding: 20px 16px; border: 2px dashed var(--borde-fino); border-radius: var(--radio-m); background: var(--superficie-tarjeta); text-align: center; }
+  #fichaQrEntrega { background: var(--superficie-2); padding: 12px 14px; border-radius: var(--radio-s); margin-bottom: 12px; text-align: left; border: 1px solid var(--borde-fino); font-size: 13.5px; }
 </style>
 </head>
 <body class="caldera">
@@ -1748,16 +1799,6 @@
     <div id="diaAcciones"></div>
   </section>
 
-  <!-- App nueva (M2): marcador de la carga en bodega hasta que llegue M3 -->
-  <section id="pCarga" class="pantalla-nueva oculto">
-    <div class="tarjeta">
-      <p class="paso">Empieza el día · paso 2 de 2 · Carga en bodega</p>
-      <h2>Carga en bodega</h2>
-      <div class="cuadre"><span data-icono="paquete"></span><div>Carga en bodega (próximamente)<small>Aquí va a escanear sus facturas antes de
-        salir. Por ahora, toque Terminar carga y registre sus paradas en la ruta como siempre.</small></div></div>
-    </div>
-    <button class="primario" type="button" id="btnTerminarCarga">Terminar carga</button>
-  </section>
 
   <!-- Mantenimiento: lo registra el piloto cuando el vehículo sale del taller -->
   <section id="pMant" class="tarjeta oculto">
@@ -1842,6 +1883,83 @@
       <p class="ayuda">Agregue una parada por cada lugar donde se detuvo. Si entregó varias facturas en el mismo lugar, agréguelas dentro de la misma parada.</p>
     </div>
     <button class="peligro chico" id="btnEditarSalida">Corregir datos de salida</button>
+  </section>
+
+  <!-- Carga en bodega (Tarea M3, Etapa A): solo para pilotos con App nueva = Sí -->
+  <section id="pCarga" class="pantalla-nueva oculto">
+    <!-- Vista principal de carga -->
+    <div id="vistaCargaPrincipal">
+      <div class="tarjeta">
+        <p class="paso">Empieza el día · Carga en bodega</p>
+        <div class="contador" aria-live="polite">
+          <span class="g" id="cargaContadorFacturas">0 facturas</span>
+          <span class="s"><b id="cargaContadorMonto">$0.00</b> · <b id="cargaContadorPuntos">0</b> puntos</span>
+        </div>
+        <p class="ayuda">Puntos de entrega = paradas. Varias facturas del mismo cliente y lugar van juntas.</p>
+      </div>
+      <div id="avisoCarga"></div>
+      <button class="primario" id="btnEscanearCarga" type="button">Escanear factura</button>
+      <input type="file" id="fotoFacturaCarga" accept="image/*" capture="environment" class="oculto">
+      <button class="fantasma" id="btnTerminarCarga" type="button">Terminar carga</button>
+      <h3 style="margin-top:18px">Escaneadas · la última arriba</h3>
+      <div id="listaCargadas">
+        <div class="vacio" id="cargaVacia">Escanee la primera factura. La lista crece aquí.</div>
+      </div>
+      <p class="ayuda" style="margin-top:12px">Sin señal, la carga queda en el teléfono y se envía sola.</p>
+    </div>
+
+    <!-- Vista de resumen al terminar carga -->
+    <div id="vistaResumenCarga" class="oculto">
+      <div class="tarjeta">
+        <p class="paso" id="resumenHoraCarga">Carga terminada</p>
+        <h2>Su carga de hoy</h2>
+        <div class="resumen" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:10px 0">
+          <div>Facturas<b id="resumenFacturas">0</b></div>
+          <div>Puntos<b id="resumenPuntos">0</b></div>
+          <div>Monto<b id="resumenMonto">$0.00</b></div>
+        </div>
+        <table class="resumen-canal" id="tablaResumenCanal">
+          <thead><tr><th>Canal</th><th>Facturas</th><th>Puntos</th></tr></thead>
+          <tbody id="filasResumenCanal"></tbody>
+        </table>
+        <div id="avisoIndustriaResumen"></div>
+        <div id="avisoUbicarResumen"></div>
+        <div class="aviso ok" id="avisoOficinaResumen" style="margin-top:12px">La oficina recibió su plan del día</div>
+      </div>
+      <button class="primario" id="btnVerRutaSugerida" type="button">Ver mi ruta sugerida</button>
+      <button class="fantasma" id="btnEscanearOtraCarga" type="button">Escanear otra factura</button>
+    </div>
+
+    <!-- Diálogo: QR de entrega para Industria -->
+    <div id="dlgQrEntrega" class="dialogo oculto">
+      <div class="tarjeta" style="max-height:90vh; overflow-y:auto; text-align:center">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
+          <button class="btn-icono" id="btnCerrarQrEntrega" type="button" aria-label="Cerrar">✕</button>
+          <span id="tituloQrEntrega" style="font-family:var(--fuente-display); font-size:24px; letter-spacing:.02em; text-transform:uppercase">Carga · factura</span>
+          <span style="width:36px"></span>
+        </div>
+        <div class="ficha" id="fichaQrEntrega"></div>
+        <div class="visor" id="visorQrEntrega">
+          <p style="font-size:18px; font-weight:700; margin:0 0 6px">Escanee el QR de entrega</p>
+          <small style="color:var(--gris); display:block; margin-bottom:14px">Está en el bloque de envío impreso (Envío, Calle, Recibe, Cel).</small>
+          <button class="primario" id="btnSimularQrEntrega" type="button">Escanear QR de entrega</button>
+          <input type="file" id="fotoQrEntrega" accept="image/*" capture="environment" class="oculto">
+        </div>
+        <button class="fantasma" id="btnSinQrEntrega" type="button" style="width:100%; margin-top:10px">No trae QR</button>
+        <small style="display:block; color:var(--gris); margin-top:8px">La factura queda marcada para la oficina. Puede seguir cargando.</small>
+      </div>
+    </div>
+
+    <!-- Hoja desplegable: ¿Dónde se entrega? -->
+    <div id="hojaDondeEntrega" class="oculto">
+      <div class="velo" id="veloDonde"></div>
+      <div class="hoja" role="dialog" aria-label="¿Dónde se entrega?">
+        <p class="paso" id="dondeDteMonto">Factura leída</p>
+        <h2>¿Dónde se entrega?</h2>
+        <p class="ayuda" id="dondeAyuda" style="margin:0 0 8px"></p>
+        <div id="dondeOpciones"></div>
+      </div>
+    </div>
   </section>
 
   <!-- Formulario de parada -->
@@ -2466,7 +2584,7 @@
   var PANTALLAS = ['pCargando', 'pIngreso', 'pInicio', 'pDia', 'pCarga', 'pRuta', 'pParada', 'pCierre', 'pListo', 'pMant', 'pCombustible', 'pTablero'];
   function mostrar(id) {
     PANTALLAS.forEach(function (s) {
-      $(s).classList.toggle('oculto', s !== id);
+      if ($(s)) $(s).classList.toggle('oculto', s !== id);
     });
     document.body.classList.toggle('en-tablero', id === 'pTablero');
     // App nueva (M2): el día que empezó con «App nueva: Sí» se ve así hasta enviarse, aunque la oficina cambie el interruptor.
@@ -5273,7 +5391,7 @@
     pintarQuien();
     pintarRuta();
     if (!dia.nueva) mostrar('pRuta');
-    else if (dia.fase === 'carga') mostrar('pCarga');
+    else if (dia.fase === 'carga') abrirCargaBodega();
     else mostrarDia();
     mandarAvance();
   });
@@ -6154,17 +6272,12 @@
     if (acc === 'salida') {
       prepararInicio();
       mostrar('pInicio');
-    } else if (acc === 'carga') mostrar('pCarga');
+    } else if (acc === 'carga') abrirCargaBodega();
     else if (acc === 'ruta') { pintarRuta(); mostrar('pRuta'); }
     else if (acc === 'cierre') { prepararCierre(); mostrar('pCierre'); }
     else if (acc === 'porCerrar' || acc === 'seguirRuta') { dia.fase = acc === 'porCerrar' ? 'porCerrar' : 'ruta'; guardarBorrador(); mostrarDia(); }
     else if (acc === 'combustible') { aviso('mensajeGlobal'); abrirCombustible('pDia'); }
     else if (acc === 'mant') prepararMant();
-  });
-  $('btnTerminarCarga').addEventListener('click', function () {
-    dia.fase = 'ruta';
-    guardarBorrador();
-    mostrarDia();
   });
   /** Día enviado (o guardado para enviarse solo): Mi día queda CERRADO y el piloto sigue adentro para otro viaje. */
   function cerrarDiaNuevo(envio, html) {
@@ -6916,7 +7029,7 @@
     relojToast = setTimeout(function () { $('toast').classList.add('oculto'); }, 4500);
   }
   function pantallaActual() {
-    for (var i = 0; i < PANTALLAS.length; i++) if (!$(PANTALLAS[i]).classList.contains('oculto')) return PANTALLAS[i];
+    for (var i = 0; i < PANTALLAS.length; i++) if ($(PANTALLAS[i]) && !$(PANTALLAS[i]).classList.contains('oculto')) return PANTALLAS[i];
     return '';
   }
   function hayAlgoEnCurso() {
@@ -6941,6 +7054,7 @@
       if (!hayAlgoEnCurso()) return;
       if (pantallaActual() === 'pMant') { volverDeMant(); return; }
       if (pantallaActual() === 'pCombustible') { volverDeCombustible(); return; }
+      if (pantallaActual() === 'pCarga') { mostrar('pRuta'); return; }
       mostrarToast('Para salir de la app use el botón de inicio del teléfono. Lo que lleva del día queda guardado.');
     });
   }
@@ -6950,6 +7064,567 @@
     var b = ev.target.closest('[data-ahora]');
     if (b) { $(b.getAttribute('data-ahora')).value = ahora(); $(b.getAttribute('data-ahora')).dispatchEvent(new Event('input')); }
   });
+
+  // ------------------------------------------------------------ carga en bodega (Tarea M3, Etapa A)
+  var CLAVE_CARGA_BODEGA_ACTUAL = 'kmCelasa.cargaBodegaActual.v1';
+  var CLAVE_CARGA_BODEGA_PENDIENTE = 'kmCelasa.cargaBodegaPendiente.v1';
+  var cargaBodega = null;
+  var cargaFacturaPendienteQr = null;
+  var cargaFacturaPendienteDonde = null;
+  var ultimaRutaServidor = null;
+
+  function dinero(m) {
+    var n = Number(m);
+    return isNaN(n) ? '$0.00' : '$' + n.toFixed(2);
+  }
+
+  function canalDeVendedor(codigo) {
+    if (!codigo) return '';
+    var v = String(codigo).trim().toUpperCase();
+    if (config && config.vendedores && typeof config.vendedores === 'object' && v in config.vendedores) {
+      return config.vendedores[v];
+    }
+    if (/^I/i.test(v)) return 'Industria';
+    if (/^M/i.test(v)) return 'Mayoreo';
+    if (/^R/i.test(v)) return 'Retail';
+    return '';
+  }
+
+  function resumenCargaBodega() {
+    if (!cargaBodega || !cargaBodega.facturas) {
+      return { n: 0, monto: 0, puntos: 0, canal: { Retail: [0, {}], Mayoreo: [0, {}], Industria: [0, {}] }, ind: 0, conQr: 0, ubicar: 0 };
+    }
+    var puntos = {}, monto = 0, canal = { Retail: [0, {}], Mayoreo: [0, {}], Industria: [0, {}] }, conQr = 0, ind = 0, ubicar = {};
+    cargaBodega.facturas.forEach(function (f) {
+      var c = f.canal || 'Retail';
+      if (!canal[c]) canal[c] = [0, {}];
+      var k = f.puntoId || f.qrEntrega || (f.sinQr ? 'sinqr-' + f.codigo : (f.cliente ? f.cliente.trim().toLowerCase() : f.codigo));
+      puntos[k] = 1;
+      monto += Number(f.monto) || 0;
+      canal[c][0]++;
+      canal[c][1][k] = 1;
+      if (c === 'Industria') {
+        ind++;
+        if (f.qrEntrega) conQr++;
+      }
+      if (f.sinQr || f.porUbicar || !f.puntoId && c !== 'Industria') {
+        ubicar[k] = 1;
+      }
+    });
+    return {
+      n: cargaBodega.facturas.length,
+      monto: monto,
+      puntos: Object.keys(puntos).length,
+      canal: canal,
+      ind: ind,
+      conQr: conQr,
+      ubicar: Object.keys(ubicar).length
+    };
+  }
+
+  function pintarContadoresCarga() {
+    var r = resumenCargaBodega();
+    if ($('cargaContadorFacturas')) $('cargaContadorFacturas').textContent = r.n + ' factura' + (r.n === 1 ? '' : 's');
+    if ($('cargaContadorMonto')) $('cargaContadorMonto').textContent = dinero(r.monto);
+    if ($('cargaContadorPuntos')) $('cargaContadorPuntos').textContent = r.puntos;
+  }
+
+  function pintarListaCargadas(nuevaIndex) {
+    pintarContadoresCarga();
+    if (!cargaBodega || !cargaBodega.facturas || !cargaBodega.facturas.length) {
+      $('listaCargadas').innerHTML = '<div class="vacio" id="cargaVacia">Escanee la primera factura. La lista crece aquí.</div>';
+      return;
+    }
+    var html = '';
+    for (var i = cargaBodega.facturas.length - 1; i >= 0; i--) {
+      var f = cargaBodega.facturas[i];
+      var c = f.canal || 'Retail';
+      var esNueva = i === nuevaIndex;
+      html += '<div class="cargada ' + esc(c) + (esNueva ? ' nueva' : '') + '">' +
+        '<div class="fila1"><span class="cli">' + esc(f.cliente || 'Sin nombre de cliente') + '</span><span class="monto">' + dinero(f.monto) + '</span></div>' +
+        '<div class="det"><span>' + (i + 1) + '. DTE ' + esc(f.numeroControl || f.control || f.codigo) + '</span><span class="chip canal">' + esc(c) + '</span></div>' +
+        '<div class="chips">';
+      if (c === 'Industria' && f.qrEntrega) {
+        html += '<span class="chip ok">Ubicación de entrega ' + icono('check', { tam: 13, grueso: 2.8 }) + '</span></div>';
+        if (f.envio || f.recibe || f.cel) {
+          html += '<dl class="bloque">' +
+            (f.envio ? '<dt>Envío</dt><dd>' + esc(f.envio) + '</dd>' : '') +
+            (f.recibe ? '<dt>Recibe</dt><dd>' + esc(f.recibe) + '</dd>' : '') +
+            (f.cel ? '<dt>Cel</dt><dd>' + esc(f.cel) + '</dd>' : '') +
+            '</dl>';
+        }
+      } else if (f.sinQr) {
+        html += '<span class="chip pend">' + icono('alerta', { tam: 13, grueso: 2.2 }) + 'Sin QR: marcada para la oficina</span></div>';
+      } else if (f.puntoNombre) {
+        html += '<span class="chip">' + icono('pin', { tam: 13, grueso: 2.2 }) + esc(f.puntoNombre) + '</span></div>';
+      } else {
+        html += '<span class="chip pend">' + icono('pin', { tam: 13, grueso: 2.2 }) + 'Por ubicar (se aprende al entregar)</span></div>';
+      }
+      html += '</div>';
+    }
+    $('listaCargadas').innerHTML = html;
+  }
+
+  function guardarCargaBodegaActual() {
+    escribirJSON(CLAVE_CARGA_BODEGA_ACTUAL, cargaBodega);
+  }
+
+  function abrirCargaBodega() {
+    var piloto = pilotoConSesion();
+    if (!piloto) return;
+    cargaBodega = leerJSON(CLAVE_CARGA_BODEGA_ACTUAL, null);
+    if (!cargaBodega || cargaBodega.piloto !== piloto) {
+      cargaBodega = {
+        id: 'carga-' + hoyISO() + '-' + nuevoId(),
+        fecha: hoyISO(),
+        placa: (dia && dia.placa) || $('selPlaca').value || '',
+        piloto: piloto,
+        facturas: [],
+        loteEnviado: 0
+      };
+      guardarCargaBodegaActual();
+    }
+    $('vistaCargaPrincipal').classList.remove('oculto');
+    $('vistaResumenCarga').classList.add('oculto');
+    $('dlgQrEntrega').classList.add('oculto');
+    $('hojaDondeEntrega').classList.add('oculto');
+    aviso('avisoCarga');
+    pintarListaCargadas();
+    mostrar('pCarga');
+    reintentarCargasBodega();
+  }
+
+  var CLAVE_RUTA_CARGA = 'kmCelasa.rutaCarga.v1';
+  function guardarRutaCarga(ruta) {
+    if (ruta == null) {
+      try { localStorage.removeItem(CLAVE_RUTA_CARGA); } catch (e) {}
+    } else {
+      escribirJSON(CLAVE_RUTA_CARGA, ruta);
+    }
+  }
+  function leerRutaCarga() {
+    return leerJSON(CLAVE_RUTA_CARGA, null);
+  }
+
+  function alTerminarCarga(ruta) {
+    guardarRutaCarga(ruta);
+    dia = dia || { piloto: pilotoConSesion(), iniciado: true, paradas: [] };
+    dia.iniciado = true;
+    dia.fase = 'ruta';
+    if (ruta && Array.isArray(ruta.puntos) && ruta.puntos.length) {
+      dia.paradas = ruta.puntos.map(function (p) {
+        return {
+          cliente: p.cliente || p.nombre || '',
+          direccion: p.direccion || '',
+          departamento: p.departamento || '',
+          municipio: p.municipio || '',
+          horaLlegada: '',
+          km: '',
+          horaSalida: '',
+          facturas: (p.facturas || []).map(function (f) {
+            return {
+              codigo: f.codigo || '',
+              control: f.control || f.numeroControl || '',
+              numeroControl: f.numeroControl || '',
+              monto: f.monto || '',
+              cliente: f.cliente || p.cliente || '',
+              vendedor: f.vendedor || '',
+              canal: f.canal || p.canal || '',
+              pago: 'Al contado',
+              estado: 'Exitosa'
+            };
+          })
+        };
+      });
+    }
+    guardarBorrador();
+    if (dia.nueva) {
+      mostrarDia();
+    } else {
+      mostrar('pRuta');
+      pintarRuta();
+    }
+  }
+
+  function enviarLoteCargaBodega(esFinal) {
+    if (!cargaBodega) return Promise.resolve(null);
+    var facturasLote = cargaBodega.facturas.slice();
+    var loteNum = ++cargaBodega.loteEnviado;
+    var payload = {
+      id: cargaBodega.id,
+      fecha: cargaBodega.fecha,
+      placa: cargaBodega.placa || (dia && dia.placa) || '',
+      lote: loteNum,
+      final: Boolean(esFinal),
+      facturas: facturasLote.map(function (f) {
+        return {
+          codigo: f.codigo || '',
+          control: f.control || f.numeroControl || '',
+          numeroControl: f.numeroControl || '',
+          cliente: f.cliente || '',
+          nit: f.nit || '',
+          canal: f.canal || '',
+          vendedor: f.vendedor || '',
+          monto: Number(f.monto) || 0,
+          qrEntrega: f.qrEntrega || '',
+          sinQr: Boolean(f.sinQr),
+          puntoId: f.puntoId || '',
+          envio: f.envio || '',
+          calle: f.calle || '',
+          recibe: f.recibe || '',
+          cel: f.cel || ''
+        };
+      })
+    };
+    guardarCargaBodegaActual();
+
+    var piloto = cargaBodega.piloto || pilotoConSesion();
+    var c = credencial(piloto);
+    return servidor('registrarCarga', conSesion() ? { piloto: piloto, token: c.token } : { piloto: piloto, pin: c.pin || dia.pin }, payload)
+      .then(function (r) {
+        if (r && r.puntos) ultimaRutaServidor = r;
+        var avisos = [];
+        if (r && r.rechazadas && r.rechazadas.length) {
+          avisos.push('Factura rechazada: ' + r.rechazadas.map(function (x) {
+            return (x.factura || 'DTE') + ' (la cargó ' + (x.piloto || 'otro piloto') + ')';
+          }).join(', '));
+        }
+        if (r && r.repetidas && r.repetidas.length) {
+          avisos.push('Factura repetida: ' + r.repetidas.map(function (x) {
+            return (x.factura || 'DTE') + ' (' + (x.motivo || 'ya registrada en otra carga de hoy') + ')';
+          }).join(', '));
+        }
+        if (avisos.length) {
+          aviso('avisoCarga', 'ambar', avisos.join('. '));
+        } else {
+          aviso('avisoCarga');
+        }
+        return r;
+      }, function (e) {
+        var cola = leerJSON(CLAVE_CARGA_BODEGA_PENDIENTE, []);
+        cola.push({ cred: { piloto: piloto, token: c.token, pin: c.pin || dia.pin }, payload: payload });
+        escribirJSON(CLAVE_CARGA_BODEGA_PENDIENTE, cola);
+        aviso('avisoCarga', 'info', 'Sin señal: la carga quedó guardada en el teléfono y se enviará al recuperar la conexión.');
+        return null;
+      });
+  }
+
+  function reintentarCargasBodega() {
+    var cola = leerJSON(CLAVE_CARGA_BODEGA_PENDIENTE, []);
+    if (!cola || !cola.length) return Promise.resolve();
+    var item = cola[0];
+    return servidor('registrarCarga', item.cred, item.payload).then(function (r) {
+      if (r && r.puntos) ultimaRutaServidor = r;
+      var nuevaCola = leerJSON(CLAVE_CARGA_BODEGA_PENDIENTE, []);
+      nuevaCola.shift();
+      escribirJSON(CLAVE_CARGA_BODEGA_PENDIENTE, nuevaCola);
+      if (nuevaCola.length > 0) return reintentarCargasBodega();
+    }).catch(function () {
+      // Sigue sin red
+    });
+  }
+
+  function agregarFacturaACarga(factura) {
+    if (!cargaBodega) abrirCargaBodega();
+    var existe = cargaBodega.facturas.some(function (f) {
+      if (factura.codigo && f.codigo && factura.codigo === f.codigo) return true;
+      if (factura.numeroControl && f.numeroControl && factura.numeroControl === f.numeroControl) return true;
+      return false;
+    });
+    if (existe) {
+      aviso('avisoCarga', 'ambar', 'Esta factura ya está en su lista de carga.');
+      return;
+    }
+    cargaBodega.facturas.push(factura);
+    guardarCargaBodegaActual();
+    var nuevoIdx = cargaBodega.facturas.length - 1;
+    pintarListaCargadas(nuevoIdx);
+
+    // Enviar lote cada 10 facturas
+    if (cargaBodega.facturas.length % 10 === 0) {
+      enviarLoteCargaBodega(false);
+    }
+  }
+
+  function pedirQrEntregaIndustria(factura) {
+    cargaFacturaPendienteQr = factura;
+    $('tituloQrEntrega').textContent = 'Carga · factura ' + (cargaBodega.facturas.length + 1);
+    $('fichaQrEntrega').innerHTML = '<div><b>' + esc(factura.cliente || 'Industria') + '</b><br>' +
+      'DTE ' + esc(factura.numeroControl || factura.control || factura.codigo) + ' · ' + dinero(factura.monto) + '</div>' +
+      '<span class="chip canal" style="margin-top:4px">Industria</span>';
+    $('dlgQrEntrega').classList.remove('oculto');
+  }
+
+  function pedirDondeSeEntrega(factura, puntos) {
+    cargaFacturaPendienteDonde = factura;
+    $('dondeDteMonto').textContent = 'Factura leída · DTE ' + esc(factura.numeroControl || factura.control || factura.codigo) + ' · ' + dinero(factura.monto);
+    $('dondeAyuda').textContent = esc(factura.cliente || '') + ' tiene ' + puntos.length + ' puntos conocidos. Un toque.';
+    var html = puntos.map(function (p) {
+      return '<button class="opcion" type="button" data-punto="' + esc(p.id) + '">' +
+        icono('pin', { tam: 22 }) +
+        '<span>' + esc(p.nombre || p.direccion || 'Punto conocido') +
+        '<small>' + esc(p.direccion || '') + (p.usos ? ' · usado ' + p.usos + ' veces' : '') + '</small></span></button>';
+    }).join('');
+    html += '<button class="opcion otro" type="button" data-punto="__nuevo__">' +
+      icono('pin', { tam: 22 }) +
+      '<span>Otro punto de entrega<small>Queda por ubicar y se aprende al entregar</small></span></button>';
+    $('dondeOpciones').innerHTML = html;
+    $('hojaDondeEntrega').classList.remove('oculto');
+  }
+
+  function procesarNuevaFacturaCarga(f) {
+    var canal = f.canal || canalDeVendedor(f.vendedor);
+    if (!f.canal && canal) f.canal = canal;
+    if (canal === 'Industria' && !f.qrEntrega && !f.sinQr) {
+      pedirQrEntregaIndustria(f);
+      return Promise.resolve(f);
+    }
+    var piloto = pilotoConSesion();
+    var c = credencial(piloto);
+    if (f.cliente && canal !== 'Industria') {
+      return servidor('consultarPuntosCliente', conSesion() ? { piloto: piloto, token: c.token } : { piloto: piloto, pin: c.pin || dia.pin }, { cliente: f.cliente, nit: f.nit })
+        .then(function (puntos) {
+          if (Array.isArray(puntos) && puntos.length > 1) {
+            pedirDondeSeEntrega(f, puntos);
+          } else {
+            if (puntos && puntos.length === 1) {
+              f.puntoId = puntos[0].id;
+              f.puntoNombre = puntos[0].nombre;
+            }
+            agregarFacturaACarga(f);
+          }
+          return f;
+        }).catch(function () {
+          agregarFacturaACarga(f);
+          return f;
+        });
+    } else {
+      agregarFacturaACarga(f);
+      return Promise.resolve(f);
+    }
+  }
+
+  function mostrarVistaResumenCarga() {
+    var r = resumenCargaBodega();
+    $('resumenHoraCarga').textContent = 'Carga terminada · ' + ahora();
+    $('resumenFacturas').textContent = r.n;
+    $('resumenPuntos').textContent = r.puntos;
+    $('resumenMonto').textContent = dinero(r.monto);
+    var canales = ['Retail', 'Mayoreo', 'Industria'];
+    var htmlCanal = canales.map(function (c) {
+      var cant = r.canal[c] ? r.canal[c][0] : 0;
+      var pts = r.canal[c] ? Object.keys(r.canal[c][1]).length : 0;
+      return '<tr><td>' + esc(c) + '</td><td>' + cant + '</td><td>' + pts + '</td></tr>';
+    }).join('');
+    $('filasResumenCanal').innerHTML = htmlCanal;
+
+    if (r.ind) {
+      if (r.conQr === r.ind) {
+        $('avisoIndustriaResumen').innerHTML = '<div class="cuadre ok">' + icono('circuloCheck') + '<div>Industria: ' + r.conQr + ' de ' + r.ind + ' con QR de entrega</div></div>';
+      } else {
+        $('avisoIndustriaResumen').innerHTML = '<div class="cuadre alerta">' + icono('alerta') + '<div>Industria: ' + (r.ind - r.conQr) + ' sin QR de entrega<small>Marcada para la oficina. Puede salir igual.</small></div></div>';
+      }
+    } else {
+      $('avisoIndustriaResumen').innerHTML = '';
+    }
+
+    if (r.ubicar) {
+      $('avisoUbicarResumen').innerHTML = '<div class="cuadre alerta">' + icono('pin') + '<div>' + r.ubicar + ' punto' + (r.ubicar === 1 ? '' : 's') + ' por ubicar<small>Van al final de la ruta. Se aprenden al entregar.</small></div></div>';
+    } else {
+      $('avisoUbicarResumen').innerHTML = '';
+    }
+
+    $('vistaCargaPrincipal').classList.add('oculto');
+    $('vistaResumenCarga').classList.remove('oculto');
+  }
+
+  if ($('btnEscanearCarga')) {
+    $('btnEscanearCarga').addEventListener('click', function () {
+      $('fotoFacturaCarga').value = '';
+      $('fotoFacturaCarga').click();
+    });
+  }
+  if ($('fotoFacturaCarga')) {
+    $('fotoFacturaCarga').addEventListener('change', function (ev) {
+      var archivo = ev.target.files && ev.target.files[0];
+      if (!archivo) return;
+      var url = URL.createObjectURL(archivo);
+      var img = new Image();
+      img.onerror = function () {
+        aviso('avisoCarga', 'error', 'No se pudo abrir la foto de la factura.');
+      };
+      img.onload = function () {
+        var ancho = img.naturalWidth, alto = img.naturalHeight;
+        buscarQR(img, ancho, alto).then(function (qr) {
+          var textoQr = qr || '';
+          var q = leerQR(textoQr);
+          var facturaInmediata = {
+            codigo: q.codigo || ('fac-' + nuevoId()),
+            numeroControl: q.control || '',
+            control: q.control || '',
+            cliente: '',
+            nit: '',
+            monto: 0,
+            vendedor: '',
+            canal: ''
+          };
+          procesarNuevaFacturaCarga(facturaInmediata);
+
+          var foto = fotoReducida(img, ancho, alto);
+          var piloto = pilotoConSesion();
+          var c = credencial(piloto);
+          servidor('leerFactura', foto, textoQr, conSesion() ? (c.token || c.pin || '') : dia.pin, piloto, { carga: true, bloqueEnvio: true })
+            .then(function (datos) {
+              if (datos) {
+                if (datos.cliente) facturaInmediata.cliente = datos.cliente;
+                if (datos.total) facturaInmediata.monto = datos.total;
+                if (datos.numeroControl && !facturaInmediata.numeroControl) facturaInmediata.numeroControl = datos.numeroControl;
+                if (datos.control && !facturaInmediata.control) facturaInmediata.control = datos.control;
+                if (datos.vendedor) {
+                  facturaInmediata.vendedor = datos.vendedor;
+                  var can = canalDeVendedor(datos.vendedor);
+                  if (can) facturaInmediata.canal = can;
+                }
+                if (datos.envio) facturaInmediata.envio = datos.envio;
+                if (datos.calle) facturaInmediata.calle = datos.calle;
+                if (datos.recibe) facturaInmediata.recibe = datos.recibe;
+                if (datos.cel) facturaInmediata.cel = datos.cel;
+                guardarCargaBodegaActual();
+                pintarListaCargadas();
+              }
+            }).catch(function () {
+              // Sin señal o falla OCR
+            });
+        }).catch(function (e) {
+          aviso('avisoCarga', 'error', 'No se pudo leer el código QR de la factura.');
+        });
+      };
+      img.src = url;
+    });
+  }
+
+  if ($('btnTerminarCarga')) {
+    $('btnTerminarCarga').addEventListener('click', function () {
+      if (!cargaBodega || !cargaBodega.facturas || !cargaBodega.facturas.length) {
+        alTerminarCarga(ultimaRutaServidor || []);
+        return;
+      }
+      $('btnTerminarCarga').disabled = true;
+      enviarLoteCargaBodega(true).then(function (r) {
+        $('btnTerminarCarga').disabled = false;
+        mostrarVistaResumenCarga();
+      }).catch(function () {
+        $('btnTerminarCarga').disabled = false;
+        mostrarVistaResumenCarga();
+      });
+    });
+  }
+
+  if ($('btnVerRutaSugerida')) {
+    $('btnVerRutaSugerida').addEventListener('click', function () {
+      alTerminarCarga(ultimaRutaServidor);
+    });
+  }
+
+  if ($('btnEscanearOtraCarga')) {
+    $('btnEscanearOtraCarga').addEventListener('click', function () {
+      $('vistaResumenCarga').classList.add('oculto');
+      $('vistaCargaPrincipal').classList.remove('oculto');
+    });
+  }
+
+  if ($('btnCerrarQrEntrega')) {
+    $('btnCerrarQrEntrega').addEventListener('click', function () {
+      $('dlgQrEntrega').classList.add('oculto');
+      if (cargaFacturaPendienteQr) {
+        agregarFacturaACarga(cargaFacturaPendienteQr);
+        cargaFacturaPendienteQr = null;
+      }
+    });
+  }
+
+  if ($('btnSinQrEntrega')) {
+    $('btnSinQrEntrega').addEventListener('click', function () {
+      $('dlgQrEntrega').classList.add('oculto');
+      if (cargaFacturaPendienteQr) {
+        cargaFacturaPendienteQr.sinQr = true;
+        agregarFacturaACarga(cargaFacturaPendienteQr);
+        cargaFacturaPendienteQr = null;
+      }
+    });
+  }
+
+  if ($('btnSimularQrEntrega')) {
+    $('btnSimularQrEntrega').addEventListener('click', function () {
+      $('fotoQrEntrega').value = '';
+      $('fotoQrEntrega').click();
+    });
+  }
+
+  if ($('fotoQrEntrega')) {
+    $('fotoQrEntrega').addEventListener('change', function (ev) {
+      var archivo = ev.target.files && ev.target.files[0];
+      if (!archivo) return;
+      var url = URL.createObjectURL(archivo);
+      var img = new Image();
+      img.onload = function () {
+        buscarQR(img, img.naturalWidth, img.naturalHeight).then(function (qr) {
+          $('dlgQrEntrega').classList.add('oculto');
+          if (cargaFacturaPendienteQr) {
+            cargaFacturaPendienteQr.qrEntrega = qr || '';
+            agregarFacturaACarga(cargaFacturaPendienteQr);
+            cargaFacturaPendienteQr = null;
+          }
+        });
+      };
+      img.src = url;
+    });
+  }
+
+  if ($('dondeOpciones')) {
+    $('dondeOpciones').addEventListener('click', function (ev) {
+      var btn = ev.target.closest('button[data-punto]');
+      if (!btn) return;
+      var puntoId = btn.getAttribute('data-punto');
+      var nombre = btn.querySelector('span') ? btn.querySelector('span').firstChild.textContent : '';
+      $('hojaDondeEntrega').classList.add('oculto');
+      if (cargaFacturaPendienteDonde) {
+        cargaFacturaPendienteDonde.puntoId = puntoId;
+        cargaFacturaPendienteDonde.puntoNombre = nombre;
+        agregarFacturaACarga(cargaFacturaPendienteDonde);
+        cargaFacturaPendienteDonde = null;
+      }
+    });
+  }
+
+  if ($('veloDonde')) {
+    $('veloDonde').addEventListener('click', function () {
+      $('hojaDondeEntrega').classList.add('oculto');
+      if (cargaFacturaPendienteDonde) {
+        cargaFacturaPendienteDonde.puntoId = '__nuevo__';
+        agregarFacturaACarga(cargaFacturaPendienteDonde);
+        cargaFacturaPendienteDonde = null;
+      }
+    });
+  }
+
+  window.__simularLecturaFacturaCarga = function (datos) {
+    procesarNuevaFacturaCarga(datos);
+  };
+  window.__simularLecturaQrEntrega = function (url) {
+    if (cargaFacturaPendienteQr) {
+      cargaFacturaPendienteQr.qrEntrega = url;
+      $('dlgQrEntrega').classList.add('oculto');
+      agregarFacturaACarga(cargaFacturaPendienteQr);
+      cargaFacturaPendienteQr = null;
+    }
+  };
+  window.__reintentarCargasBodega = reintentarCargasBodega;
+  window.__enviarLoteCargaBodega = enviarLoteCargaBodega;
+  window.guardarRutaCarga = guardarRutaCarga;
+  window.leerRutaCarga = leerRutaCarga;
+  window.abrirCargaBodega = abrirCargaBodega;
+  window.alTerminarCarga = alTerminarCarga;
 
   iniciarApp();
 })();
