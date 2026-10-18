@@ -1447,6 +1447,8 @@
   #pIngreso .aviso.error .icono { color: var(--estado-error); }
   #pIngreso .aviso.ambar { border-color: var(--estado-alerta); }
   #pIngreso .aviso.ambar .icono { color: var(--estado-alerta); }
+  .pie-version { margin: 14px 0 0; font-family: var(--fuente-panel); font-size: 12px; font-weight: 500; line-height: 1.3;
+    color: var(--gris); text-align: center; }
   @media (min-width: 600px) {
     #pIngreso { margin-top: 32px; border-radius: 40px; padding: 36px 40px; }
   }
@@ -1565,6 +1567,133 @@
   #auxPlegado { margin-top: 6px; }
   #auxPlegado .enlace { display: inline-flex; align-items: center; gap: 6px; }
 
+  /* App nueva (M4): ruta sugerida en Mi día, parada sin escaneo, Mixto marcable, faltantes y cierre (maqueta piloto v2).
+     Las secciones compartidas con la app de hoy (pParada, pCierre) muestran .modo-nuevo solo con .pantalla-nueva. */
+  section.pantalla-nueva .modo-viejo { display: none !important; }
+  section:not(.pantalla-nueva) .modo-nuevo { display: none !important; }
+  .pantalla-nueva .meta-ruta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13.5px; color: var(--gris); margin: 0 0 2px; }
+  .pantalla-nueva .meta-ruta b { color: var(--tinta); }
+  .pantalla-nueva .meta-ruta .enlace { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; min-height: 40px; }
+  .pantalla-nueva .separador { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--gris); font-weight: 700;
+    margin: 14px 2px 0; display: flex; align-items: center; gap: 6px; }
+  .pantalla-nueva .parada { display: flex; align-items: stretch; gap: 0; background: var(--blanco); border: 1px solid var(--borde-fino);
+    border-radius: var(--radio-m); padding: 0; margin: 8px 0 0; overflow: hidden; }
+  .pantalla-nueva .parada button.abrir { flex: 1; min-width: 0; display: block; text-align: left; background: transparent; border: 0; border-radius: 0;
+    padding: 11px 14px; min-height: 0; color: var(--tinta); font-weight: 400; font-size: 15px; }
+  .pantalla-nueva .parada .titulo { display: flex; align-items: baseline; gap: 8px; font-weight: 700; color: var(--tinta); }
+  .pantalla-nueva .parada .n { font-family: var(--fuente-display); font-weight: 400; font-size: 22px; line-height: 1; color: var(--naranja-texto); flex: none; }
+  .pantalla-nueva .parada .cli { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pantalla-nueva .parada .h { font-size: 13px; color: var(--gris); font-weight: 500; flex: none; }
+  .pantalla-nueva .parada .det { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--gris); margin-top: 2px; }
+  .pantalla-nueva .parada .det .icono { flex: none; }
+  .pantalla-nueva .parada.hecha { background: var(--superficie-tarjeta); }
+  .pantalla-nueva .parada.hecha .n { color: var(--gris); }
+  .pantalla-nueva .parada.siguiente { border: 2px solid var(--acento); }
+  .pantalla-nueva .parada.siguiente .h { color: var(--naranja-texto); font-weight: 700; }
+  .pantalla-nueva .parada.por-ubicar { border: 2px dashed var(--estado-alerta); }
+  .pantalla-nueva .parada .flechas { display: flex; flex-direction: column; border-left: 1px solid var(--borde-fino); }
+  .pantalla-nueva .parada .flechas button { flex: 1; min-height: 44px; width: 48px; padding: 0; border: 0; border-radius: 0; background: var(--superficie-2);
+    color: var(--tinta); display: flex; align-items: center; justify-content: center; }
+  .pantalla-nueva .parada .flechas button + button { border-top: 1px solid var(--borde-fino); }
+  .pantalla-nueva .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  .pantalla-nueva .chip { display: inline-flex; align-items: center; gap: 4px; border-radius: 800px; padding: 2px 9px; font-size: 11.5px; font-weight: 700;
+    letter-spacing: .03em; text-transform: uppercase; border: 1.5px solid var(--borde-fino); background: var(--superficie-tarjeta); color: var(--tinta); white-space: nowrap; }
+  .pantalla-nueva .chip.ok { border-color: var(--estado-ok); } .pantalla-nueva .chip.ok .icono { color: var(--estado-ok); }
+  .pantalla-nueva .chip.fallida { border-color: var(--estado-error); background: var(--superficie-tarjeta); color: var(--tinta); }
+  .pantalla-nueva .chip.fallida .icono { color: var(--estado-error); }
+  .pantalla-nueva .chip.dev { border-color: var(--serie-1); } .pantalla-nueva .chip.dev .icono { color: var(--serie-1); }
+  .pantalla-nueva .chip.pend { border-color: var(--estado-alerta); background: color-mix(in srgb, var(--resaltado) 45%, var(--blanco)); }
+  .pantalla-nueva .chip.canal { text-transform: none; letter-spacing: 0; font-weight: 600; background: var(--superficie-2); border-color: transparent; }
+  /* Parada sin escaneo */
+  #pParada.pantalla-nueva > label[for="txtKmParada"] { margin-top: 16px; }
+  #pParada.pantalla-nueva #paradaFacturasTitulo { margin-top: 20px; }
+  #pParada.pantalla-nueva #paradaFacturasTitulo + .ayuda { margin: 0; }
+  #pParada.pantalla-nueva .ayuda { padding-left: 4px; }
+  .pantalla-nueva .bloque { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; font-size: 14px; background: var(--superficie-2);
+    border-radius: var(--radio-s); padding: 8px 12px; margin: 0; }
+  .pantalla-nueva .bloque dt { font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--gris); font-weight: 700; padding-top: 3px; }
+  .pantalla-nueva .bloque dd { margin: 0; overflow-wrap: anywhere; }
+  .pantalla-nueva .dos-botones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .pantalla-nueva .dos-botones.uno { grid-template-columns: 1fr; }
+  .pantalla-nueva a.boton-fantasma { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 6px 12px;
+    border: 2px solid var(--tinta); border-radius: 800px; color: var(--tinta); text-decoration: none; font-weight: 600; font-size: 15px; line-height: 1.15; text-align: center; }
+  .pantalla-nueva a.boton-fantasma .icono { flex: none; }
+  .pantalla-nueva a.boton-fantasma small { display: block; font-weight: 500; font-size: 13px; color: var(--gris); font-variant-numeric: tabular-nums; }
+  .pantalla-nueva a.boton-fantasma:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2px; }
+  .pantalla-nueva .factura { background: var(--blanco); border: 1px solid var(--borde-fino); border-left: 5px solid var(--acento); border-radius: var(--radio-m);
+    padding: 12px 12px 12px 14px; margin-top: 10px; }
+  .pantalla-nueva .factura.extra { border-left-color: var(--estado-alerta); }
+  .pantalla-nueva .factura .cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; text-transform: none; letter-spacing: 0; color: var(--tinta); }
+  .pantalla-nueva .factura .dte { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--naranja-texto); }
+  .pantalla-nueva .factura .monto { font-family: var(--fuente-display); font-size: 26px; line-height: 1; letter-spacing: .02em; margin-left: auto; }
+  .pantalla-nueva .qr { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 700; border: 1.5px solid var(--estado-ok);
+    border-radius: 800px; padding: 1px 8px; }
+  .pantalla-nueva .qr .icono { color: var(--estado-ok); }
+  .pantalla-nueva .qr.alerta { border-color: var(--estado-alerta); } .pantalla-nueva .qr.alerta .icono { color: var(--estado-alerta); }
+  .pantalla-nueva .pildoras { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .pantalla-nueva .pildoras button { border: 1px solid var(--borde-fino); background: var(--superficie-tarjeta); color: var(--tinta); border-radius: 800px;
+    min-height: 40px; padding: 4px 12px; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
+  .pantalla-nueva .pildoras button.sel { background: var(--tinta); border-color: var(--tinta); color: var(--blanco); }
+  .pantalla-nueva .pildoras button.marca { border-style: dashed; border-color: var(--tinta); }
+  .pantalla-nueva .pildoras button.marca.sel { border-style: solid; background: var(--acento); border-color: var(--acento); color: var(--blanco); }
+  .pantalla-nueva .estado-sel { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .pantalla-nueva .estado-sel label { margin: 0; font-size: 13px; }
+  .pantalla-nueva .estado-sel select { width: auto; flex: 1; min-height: 44px; padding: 6px 16px; font-size: 16px; font-weight: 700; }
+  .pantalla-nueva .estado-sel select.Exitosa { border-color: var(--estado-ok); }
+  .pantalla-nueva .estado-sel select.Fallida { border-color: var(--estado-error); }
+  .pantalla-nueva .estado-sel select.Dev { border-color: var(--serie-1); }
+  .pantalla-nueva .despliegue { border-left: 4px solid var(--serie-1); padding: 0 0 2px 10px; margin-top: 6px; }
+  .pantalla-nueva .despliegue.Fallida { border-left-color: var(--estado-error); }
+  .pantalla-nueva .despliegue label { margin-top: 10px; }
+  .pantalla-nueva .despliegue input, .pantalla-nueva .despliegue select { min-height: 44px; font-size: 16px; padding: 8px 16px; margin-top: 6px; }
+  .pantalla-nueva .mixto { border-left: 4px solid var(--acento); padding: 2px 0 2px 10px; margin-top: 10px; }
+  .pantalla-nueva .mixto p { margin: 0; font-size: 13px; color: var(--gris); }
+  .pantalla-nueva .mixto .montos { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
+  .pantalla-nueva .mixto .montos label { margin-top: 10px; }
+  .pantalla-nueva .mixto .montos input { min-height: 46px; text-align: right; padding: 8px 16px; font-size: 17px; }
+  .pantalla-nueva .mixto .cuadre { font-size: 14.5px; }
+  .pantalla-nueva .num { font-variant-numeric: tabular-nums; }
+  /* Le faltan N facturas */
+  #hojaFaltan { position: fixed; inset: 0; z-index: 40; }
+  #hojaFaltan .velo { position: absolute; inset: 0; background: color-mix(in srgb, var(--tinta) 50%, transparent); }
+  #hojaFaltan .hoja { position: absolute; left: 10px; right: 10px; top: 64px; max-width: 540px; margin: 0 auto; max-height: calc(100% - 80px); overflow-y: auto;
+    background: var(--superficie-tarjeta); border-radius: var(--radio-l); padding: 20px 18px 18px; }
+  #hojaFaltan .hoja .paso { color: var(--tinta); display: flex; align-items: center; gap: 4px; }
+  #hojaFaltan .hoja .paso .icono { color: var(--estado-alerta); }
+  #hojaFaltan h2 { font-size: 30px; }
+  .pantalla-nueva .faltan { list-style: none; padding: 0; margin: 8px 0 14px; }
+  .pantalla-nueva .faltan li { display: flex; gap: 8px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--borde-fino); font-size: 14.5px; }
+  .pantalla-nueva .faltan li span { flex: 1; min-width: 0; }
+  .pantalla-nueva .faltan li small { display: block; color: var(--gris); font-size: 12.5px; }
+  .pantalla-nueva .faltan li b { font-variant-numeric: tabular-nums; }
+  /* Cierre nuevo: resumen para caja arriba; el regreso y el monto a cobrar en tarjetas propias */
+  #pCierre.pantalla-nueva { background: transparent; border: 0; padding: 0; }
+  #pCierre.pantalla-nueva #cierreRegreso, #pCierre.pantalla-nueva #tarjetaMontoCobrar, #pCierre.pantalla-nueva #cierreNota {
+    background: var(--superficie-tarjeta); border-radius: var(--radio-l); padding: 20px 18px; margin: 0 0 12px; }
+  #pCierre.pantalla-nueva #tarjetaMontoCobrar { border: 2px solid var(--serie-1); }
+  #pCierre.pantalla-nueva #tarjetaMontoCobrar .cab { font-size: 11px; letter-spacing: .11em; text-transform: uppercase; font-weight: 700; color: var(--serie-1); }
+  #pCierre.pantalla-nueva:not(.hora-abierta) .hora-regreso, #pCierre.pantalla-nueva.hora-abierta #horaRegresoAuto,
+  #pCierre.pantalla-nueva:not(.nota-abierta) #cierreNota, #pCierre.pantalla-nueva.nota-abierta #notaPlegada { display: none; }
+  #pCierre.pantalla-nueva #notaPlegada { margin: 0 0 12px 6px; }
+  #pCierre.pantalla-nueva #notaPlegada .enlace { display: inline-flex; align-items: center; gap: 6px; }
+  #pCierre.pantalla-nueva textarea { border-radius: var(--radio-m); border: 1px solid var(--borde-fino); background: var(--blanco); font-size: 16px; }
+  #pCierre.pantalla-nueva #btnEnviar { background: var(--acento); border-color: var(--acento); color: var(--blanco); border-radius: 800px; min-height: 56px;
+    font-size: 19px; font-weight: 700; }
+  #pCierre.pantalla-nueva .ayuda { padding-left: 4px; }
+  .pantalla-nueva .caja { background: var(--acento); color: var(--blanco); border-radius: var(--radio-l); padding: 18px 18px 16px; margin-bottom: 12px; }
+  .pantalla-nueva .caja .paso { color: var(--blanco); }
+  .pantalla-nueva .caja .grande { font-family: var(--fuente-display); font-size: 52px; line-height: .9; letter-spacing: .02em; }
+  .pantalla-nueva .caja .sub { font-size: 15px; }
+  .pantalla-nueva .kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 4px 0 10px; }
+  .pantalla-nueva .kpis div { background: var(--superficie-2); border-radius: var(--radio-s); padding: 8px 10px; font-size: 12px; color: var(--gris); }
+  .pantalla-nueva .kpis b { display: block; font-family: var(--fuente-display); font-weight: 400; font-size: 30px; line-height: 1; color: var(--tinta); letter-spacing: .02em; }
+  .pantalla-nueva .formas { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .pantalla-nueva .formas td { padding: 7px 2px; border-bottom: 1px solid var(--borde-fino); }
+  .pantalla-nueva .formas td:first-child { display: flex; align-items: center; gap: 6px; }
+  .pantalla-nueva .formas td:first-child .icono { color: var(--gris); }
+  .pantalla-nueva .formas td:last-child { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .pantalla-nueva .formas tr.total td { border-bottom: 0; border-top: 2px solid var(--tinta); font-weight: 700; }
+
   /* Pantallas del piloto en horizontal (Task 21): teléfono montado de lado en el carro (~390 px de alto) */
   @media (orientation: landscape) and (max-height: 500px) {
     header .marca { padding: 4px 12px; gap: 8px; }
@@ -1600,6 +1729,7 @@
     #pIngreso h2 { font-size: 30px; }
     #pIngreso label { margin: 8px 0 4px; }
     #pIngreso button.primario { margin-top: 12px; }
+    #pIngreso .pie-version { margin-top: 8px; }
     #pCargando { padding: 28px 16px; }
   }
 
@@ -1753,6 +1883,7 @@
     </div>
     <div id="instalar" class="oculto"><p class="ayuda">Instale Logistik Go en el teléfono: abre en pantalla completa, sin la barra de Chrome.</p>
       <button class="secundario" type="button" data-instalar>Instalar la app en el teléfono</button></div>
+    <p id="pieVersionIngreso" class="pie-version oculto"></p>
   </section>
 
   <!-- Paso 2: inicio del día -->
@@ -1797,6 +1928,10 @@
       <div id="diaNota"></div>
     </div>
     <div id="diaAcciones"></div>
+    <div id="hojaFaltan" class="oculto">
+      <div class="velo" data-dia="revisar"></div>
+      <div class="hoja" role="dialog" aria-modal="true" aria-labelledby="hojaFaltanTitulo"></div>
+    </div>
   </section>
 
 
@@ -1962,32 +2097,34 @@
     </div>
   </section>
 
-  <!-- Formulario de parada -->
+  <!-- Formulario de parada. Con la app nueva (M4) es la parada sin escaneo de un punto de la ruta: la misma sección y las
+       mismas validaciones, con la clase pantalla-nueva (se ven .modo-nuevo y se ocultan .modo-viejo). -->
   <section id="pParada" class="tarjeta oculto">
-    <p class="paso">Entrega</p>
+    <p class="paso" id="paradaPaso">Entrega</p>
     <h2 id="paradaTitulo">Nueva parada</h2>
-    <button class="escanear" id="btnEscanearFactura" type="button">
+    <div id="paradaPunto" class="modo-nuevo"></div>
+    <button class="escanear modo-viejo" id="btnEscanearFactura" type="button">
       <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9Zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>
       Escanear factura
     </button>
-    <p class="ayuda">Tome una foto de la factura completa, derecha y con el código QR visible. La app llena el número de control, el monto, el código de vendedor, el cliente y la dirección; revise y corrija si hace falta.</p>
+    <p class="ayuda modo-viejo">Tome una foto de la factura completa, derecha y con el código QR visible. La app llena el número de control, el monto, el código de vendedor, el cliente y la dirección; revise y corrija si hace falta.</p>
     <div id="avisoLectura"></div>
-    <label for="txtCliente">Cliente (destinatario)</label>
-    <input id="txtCliente" type="text" autocomplete="off" placeholder="Ej.: Ferretería El Centro">
-    <label for="txtDireccion">Dirección del cliente <span class="opc">(sale de la factura)</span></label>
-    <input id="txtDireccion" type="text" autocomplete="off" placeholder="Ej.: Barrio El Centro, Santa Rosa de Lima">
-    <label for="selDepto">Departamento</label>
-    <select id="selDepto"></select>
-    <label for="selMunicipio">Municipio</label>
-    <select id="selMunicipio"></select>
-    <div id="ayudaMunicipio"></div>
+    <label for="txtCliente" class="modo-viejo">Cliente (destinatario)</label>
+    <input id="txtCliente" class="modo-viejo" type="text" autocomplete="off" placeholder="Ej.: Ferretería El Centro">
+    <label for="txtDireccion" class="modo-viejo">Dirección del cliente <span class="opc">(sale de la factura)</span></label>
+    <input id="txtDireccion" class="modo-viejo" type="text" autocomplete="off" placeholder="Ej.: Barrio El Centro, Santa Rosa de Lima">
+    <label for="selDepto" class="modo-viejo">Departamento</label>
+    <select id="selDepto" class="modo-viejo"></select>
+    <label for="selMunicipio" class="modo-viejo">Municipio</label>
+    <select id="selMunicipio" class="modo-viejo"></select>
+    <div id="ayudaMunicipio" class="modo-viejo"></div>
     <datalist id="listaMotivos">
       <option value="Cliente cerrado"><option value="No estaba quien recibe"><option value="No tenía el pago">
       <option value="Rechazó la mercadería"><option value="Dirección no encontrada"><option value="Fuera de horario de recepción">
       <option value="Producto dañado"><option value="Producto equivocado"><option value="No hizo el pedido"><option value="Pedido incompleto">
       <option value="Devolvió parte del pedido"><option value="Producto de más">
     </datalist>
-    <div class="fila">
+    <div class="fila modo-viejo">
       <div>
         <label for="txtLlegada">Hora llegada</label>
         <input id="txtLlegada" type="time">
@@ -1996,14 +2133,18 @@
     </div>
     <label for="txtKmParada">Kilometraje al llegar</label>
     <input id="txtKmParada" type="number" inputmode="numeric" min="0" step="1">
+    <p class="ayuda modo-nuevo" id="ayudaKmParada"></p>
     <div id="avisoKmParada"></div>
 
-    <h3 style="margin-top:16px">Facturas entregadas aquí</h3>
+    <h3 class="modo-viejo" style="margin-top:16px">Facturas entregadas aquí</h3>
+    <p class="paso modo-nuevo" id="paradaFacturasTitulo"></p>
+    <p class="ayuda modo-nuevo">Exitosa ya viene puesta. Solo toque la forma de pago.</p>
     <div id="listaFacturas"></div>
-    <button class="chico" id="btnOtraFactura" type="button">+ Agregar factura a mano</button>
-    <p class="ayuda">Varias facturas en el mismo lugar: toque "Escanear factura" una vez por cada una. Si aquí no entregó factura (gasolinera, almuerzo, bodega), deje la sección vacía.</p>
+    <div class="centro modo-nuevo"><button class="enlace" type="button" id="btnFacturaExtra"></button></div>
+    <button class="chico modo-viejo" id="btnOtraFactura" type="button">+ Agregar factura a mano</button>
+    <p class="ayuda modo-viejo">Varias facturas en el mismo lugar: toque "Escanear factura" una vez por cada una. Si aquí no entregó factura (gasolinera, almuerzo, bodega), deje la sección vacía.</p>
 
-    <div class="fila">
+    <div class="fila modo-viejo">
       <div>
         <label for="txtSalidaParada">Hora salida</label>
         <input id="txtSalidaParada" type="time">
@@ -2011,26 +2152,33 @@
       <button class="angosto" data-ahora="txtSalidaParada">Ahora</button>
     </div>
     <div id="errParada"></div>
-    <p></p>
+    <p class="modo-viejo"></p>
     <button class="primario" id="btnGuardarParada">Guardar parada</button>
-    <p></p>
-    <div class="fila">
+    <p class="ayuda centro modo-nuevo">Al entregar se guarda la hora de salida.</p>
+    <p class="modo-viejo"></p>
+    <div class="fila modo-viejo">
       <button id="btnCancelarParada">Cancelar</button>
       <button class="peligro oculto" id="btnBorrarParada">Borrar parada</button>
     </div>
   </section>
 
-  <!-- Paso 4: cierre -->
+  <!-- Paso 4: cierre. Con la app nueva (M4): resumen para caja arriba, km de regreso con la hora puesta sola, sin gasolina
+       (vive en Combustible), Monto a cobrar si es subcontratista y nota plegada; mismos campos y validaciones. -->
   <section id="pCierre" class="tarjeta oculto">
-    <p class="paso">Paso 3 de 3</p>
-    <h2>Retorno y cierre del día</h2>
-    <label for="txtKmRegreso">Kilometraje al regresar</label>
-    <input id="txtKmRegreso" type="number" inputmode="numeric" min="0" step="1">
-    <div id="avisoKmRegreso"></div>
-    <label for="txtHoraRegreso">Hora de regreso</label>
-    <div class="fila">
-      <input id="txtHoraRegreso" type="time">
-      <button class="angosto" data-ahora="txtHoraRegreso">Ahora</button>
+    <div id="cierreCaja" class="modo-nuevo"></div>
+    <div id="cierreRegreso">
+      <p class="paso modo-viejo">Paso 3 de 3</p>
+      <h2 id="cierreTitulo">Retorno y cierre del día</h2>
+      <label for="txtKmRegreso">Kilometraje al regresar</label>
+      <input id="txtKmRegreso" type="number" inputmode="numeric" min="0" step="1">
+      <div id="avisoKmRegreso"></div>
+      <p class="ayuda modo-nuevo" id="ayudaKmRegreso"></p>
+      <div class="auto modo-nuevo" id="horaRegresoAuto"></div>
+      <label for="txtHoraRegreso" class="hora-regreso">Hora de regreso</label>
+      <div class="fila hora-regreso">
+        <input id="txtHoraRegreso" type="time">
+        <button class="angosto" data-ahora="txtHoraRegreso">Ahora</button>
+      </div>
     </div>
     <div class="obligatorio oculto" id="tarjetaMontoCobrar">
       <div class="cab">Subcontratista · obligatorio</div>
@@ -2038,24 +2186,29 @@
       <input id="txtMontoCobrar" type="number" inputmode="decimal" min="0" step="0.01">
       <div class="ayuda">Lo que Logistik le paga por este viaje. Sin este monto no se puede enviar el día.</div>
     </div>
-    <h3 style="margin-top:16px">Gasolina <span class="opc" style="font-weight:400;color:var(--gris)">(si cargó hoy)</span></h3>
-    <div class="fila">
-      <div><label for="txtGasolina">Monto $</label><input id="txtGasolina" type="number" inputmode="decimal" min="0" step="0.01"></div>
-      <div><label for="txtGalones">Galones</label><input id="txtGalones" type="number" inputmode="decimal" min="0" step="0.001"></div>
+    <div id="cierreGasolina" class="modo-viejo">
+      <h3 style="margin-top:16px">Gasolina <span class="opc" style="font-weight:400;color:var(--gris)">(si cargó hoy)</span></h3>
+      <div class="fila">
+        <div><label for="txtGasolina">Monto $</label><input id="txtGasolina" type="number" inputmode="decimal" min="0" step="0.01"></div>
+        <div><label for="txtGalones">Galones</label><input id="txtGalones" type="number" inputmode="decimal" min="0" step="0.001"></div>
+      </div>
+      <label for="txtVale">Vale N° <span class="opc">(opcional)</span></label>
+      <input id="txtVale" type="text" autocomplete="off">
     </div>
-    <label for="txtVale">Vale N° <span class="opc">(opcional)</span></label>
-    <input id="txtVale" type="text" autocomplete="off">
-    <label for="txtNotas">Notas <span class="opc">(opcional)</span></label>
-    <textarea id="txtNotas" rows="2"></textarea>
-    <div class="resumen">
+    <div id="notaPlegada" class="modo-nuevo"></div>
+    <div id="cierreNota">
+      <label for="txtNotas">Notas <span class="opc">(opcional)</span></label>
+      <textarea id="txtNotas" rows="2"></textarea>
+    </div>
+    <div class="resumen modo-viejo">
       <div>Km del día<b id="cierreKm">–</b></div>
       <div>Facturas<b id="cierreFacturas">0</b></div>
     </div>
-    <div id="avisosCierre"></div>
+    <div id="avisosCierre" class="modo-viejo"></div>
     <div id="errCierre"></div>
     <button class="acento" id="btnEnviar">Enviar día</button>
-    <p></p>
-    <button id="btnVolverRuta" style="width:100%">Volver a la ruta</button>
+    <p class="modo-viejo"></p>
+    <button id="btnVolverRuta" class="modo-viejo" style="width:100%">Volver a la ruta</button>
   </section>
 
   <!-- Paso 5: enviado -->
@@ -2373,6 +2526,7 @@
         <p class="ayuda" id="tabTransRutasNota"></p>
       </div>
     </div>
+    <p id="pieVersionTablero" class="pie-version oculto"></p>
   </section>
 </main>
 
@@ -2571,6 +2725,7 @@
   var config = { pilotos: [], placas: [] };
   var dia = null;              // día en curso
   var editando = null;         // índice de parada en edición (null = nueva)
+  var paradaPunto = null;      // app nueva (M4): ID del punto de la ruta de la parada abierta (null = parada de siempre)
   var facturasForm = [];       // facturas del formulario de parada
   var escaneoDestino = null;   // índice de factura que recibe el QR
   var lecturaActual = 0;       // turno de la lectura en curso (una respuesta tardía de una lectura cancelada se ignora)
@@ -2643,6 +2798,12 @@
     anterior: '<path d="m15 18-6-6 6-6"/>',
     siguiente: '<path d="m9 18 6-6-6-6"/>',
     navegacion: '<polygon points="3 11 22 2 13 21 11 13 3 11"/>',
+    telefono: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+    mas: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+    nota: '<path d="M15.5 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z"/><path d="M15 3v6h6"/>',
+    flechas: '<path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/>',
+    arriba: '<path d="m18 15-6-6-6 6"/>',
+    abajo: '<path d="m6 9 6 6 6-6"/>',
     diana: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     billete: '<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
     alerta: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/>',
@@ -2701,6 +2862,14 @@
   function fmtFecha(iso) { var p = String(iso).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; }
   function nuevoId() {
     return 'app-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  }
+  /** El día como viaja al servidor (avance y envío): sin lo que solo usa el teléfono (la ruta sugerida de la app nueva, M4). */
+  function copiaParaServidor(d) {
+    var c = JSON.parse(JSON.stringify(d));
+    delete c.iniciado;
+    delete c.ruta;
+    delete c.horaRegresoAMano;
+    return c;
   }
   function guardarBorrador() {
     try { localStorage.setItem(CLAVE_BORRADOR, JSON.stringify(dia)); } catch (e) {}
@@ -3161,6 +3330,9 @@
   });
   $('btnCancelarLectura').addEventListener('click', function () { if (cancelarLectura) cancelarLectura(); });
   $('btnEscanearFactura').addEventListener('click', function () { escanearFactura(null); });
+  // Parada sin escaneo (app nueva): la factura que no salió de bodega se escanea como hoy y queda marcada (no estaba en la carga).
+  $('btnFacturaExtra').innerHTML = icono('mas', { tam: 15 }) + ' Agregar factura que no salió de bodega';
+  $('btnFacturaExtra').addEventListener('click', function () { escanearFactura(null); });
 
   // ------------------------------------------------------------ ingreso
   /** Huella SHA-256 (hexadecimal) de piloto + PIN; null si el navegador no puede calcularla. */
@@ -3309,7 +3481,7 @@
       for (var i = 0; i < vieja.placas.length; i++) if (vieja.placas[i].placa === p.placa) return vieja.placas[i];
       return p;
     });
-    return Object.assign({}, vieja, { version: c.version, urlApp: c.urlApp, pilotos: c.pilotos, hayAdministradores: c.hayAdministradores, placas: placas,
+    return Object.assign({}, vieja, { version: c.version, versionApp: c.versionApp, urlApp: c.urlApp, pilotos: c.pilotos, hayAdministradores: c.hayAdministradores, placas: placas,
                                       formasPago: c.formasPago, motivosRechazo: c.motivosRechazo, publica: true });
   }
 
@@ -3358,6 +3530,16 @@
         (e.message === MENSAJE_SERVIDOR ? '' : '<br>Revise su señal y vuelva a abrir la app.') + '</div>';
     });
   }
+  function pintarVersionApp(c) {
+    var v = c && typeof c.versionApp === 'string' ? c.versionApp.trim() : '';
+    var txt = v ? 'Logistik Go ' + v : '';
+    ['pieVersionIngreso', 'pieVersionTablero'].forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.textContent = txt;
+      el.classList.toggle('oculto', !txt);
+    });
+  }
   function pintarListas(c) {
     $('selPiloto').innerHTML = '<option value="">Seleccione…</option>' + c.pilotos.map(function (p) {
       return '<option>' + esc(p) + '</option>';
@@ -3368,6 +3550,7 @@
     // Servidor 9: todos los pilotos tienen PIN.
     $('pinOpcional').classList.toggle('oculto', c.version >= 9);
     pintarAccesoOficina(c);
+    pintarVersionApp(c);
   }
   function arrancar(c, guardadaEl, errorServidor) {
     config = c;
@@ -4428,6 +4611,7 @@
     if (!t) return;
     ultimoTablero = t;
     iniciarObservadorTablero();
+    pintarVersionApp(config);
     pintarPeriodo(t);
     $('tabGenerado').textContent = 'Actualizado: ' + (t.generado || '') + '. Se actualiza solo cada 2 minutos mientras está abierto.' +
       // Implementación de Apps Script publicada en una versión sin gráficos (Tarea 30): que se note y se sepa cómo arreglarlo.
@@ -5524,15 +5708,23 @@
   }
 
   // ------------------------------------------------------------ parada
-  function abrirParada(i) {
+  /**
+   * Abre la parada i (null = nueva). pt: el punto de la ruta (app nueva, M4): la parada sin escaneo de ese punto, con sus
+   * facturas cargadas en bodega, la hora de llegada puesta sola y el lugar que se leyó de la dirección del punto.
+   */
+  function abrirParada(i, pt) {
     editando = i;
+    paradaPunto = pt ? pt.id : null;
+    $('pParada').classList.toggle('pantalla-nueva', Boolean(pt));
     guardarConFaltantes = false;
-    var p = i == null ? { cliente: '', direccion: '', departamento: '', municipio: '', horaLlegada: ahora(), km: '', horaSalida: '', facturas: [] } : dia.paradas[i];
-    $('paradaTitulo').textContent = i == null ? 'Parada ' + (dia.paradas.length + 1) : 'Editar parada ' + (i + 1);
+    var p = i != null ? dia.paradas[i] : pt ? paradaDePunto(pt)
+      : { cliente: '', direccion: '', departamento: '', municipio: '', horaLlegada: ahora(), km: '', horaSalida: '', facturas: [] };
+    if (!pt) $('paradaPaso').textContent = 'Entrega';
+    $('paradaTitulo').textContent = pt ? pt.cliente || pt.nombre || 'Sin nombre' : i == null ? 'Parada ' + (dia.paradas.length + 1) : 'Editar parada ' + (i + 1);
     $('txtCliente').value = p.cliente;
     $('txtDireccion').value = p.municipio !== undefined ? (p.direccion || '') : '';
     ['txtCliente', 'txtDireccion'].forEach(function (id) { $(id).classList.remove('autollenado'); });
-    if (i == null) {
+    if (i == null && !pt) {
       // Parada nueva: sigue en el departamento de la anterior (o del último día); el municipio lo elige el piloto.
       var anterior = dia.paradas.length ? dia.paradas[dia.paradas.length - 1].departamento : '';
       ponerLugar(departamentoOficial(anterior || leerJSON(CLAVE_DEPTO, '')), '', false);
@@ -5549,8 +5741,16 @@
       if (f.desglosePago) f.desglosePago = desgloseEditable(f.desglosePago);
       return f;
     });
+    // Una parada ya entregada a la que la carga le sumó facturas (otra carga en bodega): se agregan las que faltan.
+    if (pt && i != null) {
+      var ya = {};
+      facturasForm.forEach(function (f) { ya[claveFacturaRuta(f)] = true; });
+      pt.facturas.forEach(function (f) { if (!ya[claveFacturaRuta(f)]) facturasForm.push(facturaDeCarga(f)); });
+    }
     $('btnBorrarParada').classList.toggle('oculto', i == null);
+    $('btnGuardarParada').textContent = pt ? 'Entregué esta parada' : 'Guardar parada';
     aviso('errParada'); aviso('avisoKmParada');
+    if (pt) pintarParadaPunto(pt);
     dibujarFacturas();
     mostrar('pParada');
   }
@@ -5597,7 +5797,26 @@
   }
   function pintarSumaMixto(j) {
     var el = document.querySelector('[data-suma="' + j + '"]');
-    if (el && facturasForm[j]) el.textContent = textoSumaMixto(facturasForm[j]);
+    if (!el || !facturasForm[j]) return;
+    if (el.classList.contains('cuadre')) el.outerHTML = cuadreMixto(facturasForm[j], j);
+    else el.textContent = textoSumaMixto(facturasForm[j]);
+  }
+  /**
+   * Cuadre del Mixto marcable (app nueva), a la vista mientras escribe: «Marque dos o más», «Faltan $X», «Sobran $X» o
+   * «Cuadra». Misma suma y tolerancia que textoSumaMixto y erroresMixto (sumaMixto, cuadraMixto).
+   */
+  function cuadreMixto(f, j) {
+    var marcadas = Object.keys(desgloseEditable(f.desglosePago)).length;
+    var suma = sumaMixto(f), monto = f.monto === '' || f.monto == null ? NaN : Number(f.monto);
+    var caja = function (clase, ic, texto, chico) {
+      return '<div class="cuadre' + clase + '" data-suma="' + j + '" aria-live="polite">' + icono(ic, { tam: 18 }) + '<div>' + texto +
+        (chico ? '<small>' + chico + '</small>' : '') + '</div></div>';
+    };
+    if (marcadas < 2) return caja('', 'alerta', 'Marque dos o más formas de pago.');
+    if (isNaN(monto)) return caja('', 'alerta', 'Suma $' + suma.toFixed(2) + '.');
+    if (cuadraMixto(suma, monto)) return caja(' ok', 'check', 'Cuadra con $' + monto.toFixed(2));
+    var dif = Math.abs(centavos(monto) - centavos(suma)) / 100;
+    return caja(' no', 'alerta', (suma < monto ? 'Faltan $' : 'Sobran $') + dif.toFixed(2), 'Suma $' + suma.toFixed(2) + ' de $' + monto.toFixed(2));
   }
   /** Lo que impide guardar un Mixto (mismo aviso de error que los demás campos de la factura). */
   function erroresMixto(f) {
@@ -5665,7 +5884,7 @@
   function guardarParadaAbierta() {
     if (!dia || $('pParada').classList.contains('oculto')) return;
     escribirJSON(CLAVE_PARADA, {
-      diaId: dia.id, editando: editando, facturas: facturasForm,
+      diaId: dia.id, editando: editando, punto: paradaPunto, facturas: facturasForm,
       cliente: $('txtCliente').value, direccion: $('txtDireccion').value, departamento: $('selDepto').value, municipio: $('selMunicipio').value,
       llegada: $('txtLlegada').value, km: $('txtKmParada').value, salida: $('txtSalidaParada').value,
       auto: ['txtCliente', 'txtDireccion', 'selDepto', 'selMunicipio'].filter(function (id) { return $(id).classList.contains('autollenado'); })
@@ -5679,7 +5898,7 @@
     var g = leerJSON(CLAVE_PARADA, null);
     if (!g || !dia || g.diaId !== dia.id) { olvidarParadaAbierta(); return false; }
     var i = g.editando != null && dia.paradas[g.editando] ? g.editando : null;
-    abrirParada(i);
+    abrirParada(i, g.punto ? puntoRuta(g.punto) : null);
     $('txtCliente').value = g.cliente || '';
     $('txtDireccion').value = g.direccion || '';
     ponerLugarGuardado(g.municipio || '', g.departamento);
@@ -5688,6 +5907,7 @@
     $('txtSalidaParada').value = g.salida || '';
     (g.auto || []).forEach(function (id) { $(id).classList.add('autollenado'); });
     facturasForm = (g.facturas || []).map(function (f) { f.auto = f.auto || {}; return f; });
+    if (paradaPunto != null) pintarParadaPunto(puntoRuta(paradaPunto));
     dibujarFacturas();
     aviso('avisoLectura', 'info', 'Se recuperó la parada que estaba llenando. Si estaba escaneando una factura, escanéela de nuevo.');
     return true;
@@ -5699,13 +5919,15 @@
       return;
     }
     $('listaFacturas').innerHTML = facturasForm.map(function (f, j) {
+      if (paradaPunto != null && f.cargada) return tarjetaCargada(f, j);
       var auto = f.auto || {};
       // Después de escanear, lo que la foto no dio queda marcado para que el piloto lo escriba.
       function clase(campo, extra) {
         var c = [extra, auto[campo] ? 'autollenado' : (f.escaneada && (f[campo] === '' || f[campo] == null) ? 'falta' : '')].filter(Boolean).join(' ');
         return c ? ' class="' + c + '"' : '';
       }
-      return '<div class="factura"><div class="cab"><span>Factura ' + (j + 1) + '</span>' +
+      return '<div class="factura' + (paradaPunto != null ? ' extra' : '') + '"><div class="cab"><span>Factura ' + (j + 1) + '</span>' +
+        (paradaPunto != null ? '<span class="qr alerta">' + icono('alerta', { tam: 12 }) + 'No salió de bodega</span>' : '') +
         '<button class="chico peligro" type="button" data-quitar="' + j + '">Quitar</button></div>' +
         '<div class="fila"><div><label>Número de control</label>' +
         '<input data-f="' + j + '" data-campo="control" type="text" inputmode="numeric" pattern="[0-9]*" value="' + esc(f.control) + '" placeholder="Ej.: 415562"' + clase('control') + '></div>' +
@@ -5795,6 +6017,13 @@
   });
   // Si el piloto corrigió el código en medio del texto, se le da formato al salir del campo.
   $('listaFacturas').addEventListener('change', function (ev) {
+    // Estado de una factura cargada (app nueva): Fallida o Devolución despliegan motivo, monto devuelto y comentario.
+    var es = ev.target.getAttribute('data-estado-sel');
+    if (es != null) {
+      var fx = facturasForm[Number(es)];
+      if (fx) { fx.estado = ev.target.value; guardarConFaltantes = false; dibujarFacturas(); guardarParadaAbierta(); }
+      return;
+    }
     var sm = ev.target.getAttribute('data-motivo');
     if (sm != null) {
       var fm = facturasForm[Number(sm)];
@@ -5818,6 +6047,21 @@
   $('listaFacturas').addEventListener('click', function (ev) {
     var q = ev.target.closest('[data-qr]'), x = ev.target.closest('[data-quitar]'), e = ev.target.closest('[data-estado]');
     var fp = ev.target.closest('[data-pago]');
+    // Mixto con formas marcables (app nueva): marcar o desmarcar una forma; solo las marcadas piden su monto.
+    var mk = ev.target.closest('[data-marca]');
+    if (mk) {
+      var par = mk.getAttribute('data-marca').split('|'), fm = facturasForm[Number(par[0])];
+      if (!fm) return;
+      fm.desglosePago = desgloseEditable(fm.desglosePago);
+      if (Object.prototype.hasOwnProperty.call(fm.desglosePago, par[1])) delete fm.desglosePago[par[1]];
+      else fm.desglosePago[par[1]] = '';
+      guardarConFaltantes = false;
+      dibujarFacturas();
+      guardarParadaAbierta();
+      var monto = document.querySelector('[data-desglose-f="' + par[0] + '"][data-desglose="' + par[1] + '"]');
+      if (monto) monto.focus();
+      return;
+    }
     if (fp) {
       var ff = facturasForm[Number(fp.getAttribute('data-fp'))];
       if (ff) { ff.formaPago = fp.getAttribute('data-pago'); ff.auto = ff.auto || {}; ff.auto.formaPago = false; guardarConFaltantes = false; dibujarFacturas(); guardarParadaAbierta(); }
@@ -5867,9 +6111,13 @@
     var errores = [];
     var k = num($('txtKmParada').value);
     var prev = kmUltimaParada(editando == null ? null : editando);
-    if (!$('txtCliente').value.trim()) errores.push('Escriba el cliente o lugar.');
-    if (!$('selDepto').value) errores.push('Elija el departamento.');
-    else if (!$('selMunicipio').value) errores.push('Elija el municipio.');
+    // La parada de un punto de la ruta (app nueva) ya trae el cliente; el municipio, si se leyó de la dirección. Sin él no se
+    // bloquea al piloto en la calle: el punto queda por ubicar.
+    if (paradaPunto == null) {
+      if (!$('txtCliente').value.trim()) errores.push('Escriba el cliente o lugar.');
+      if (!$('selDepto').value) errores.push('Elija el departamento.');
+      else if (!$('selMunicipio').value) errores.push('Elija el municipio.');
+    }
     // El km de cada parada se pide siempre, como la hora: sin él, el tramo queda en 0 y el siguiente se lleva todo. Una
     // parada guardada sin km antes de esta regla se puede corregir sin inventar uno (el servidor la marca para la oficina).
     var yaSinKm = editando != null && dia.paradas[editando] && num(dia.paradas[editando].km) == null;
@@ -5893,16 +6141,20 @@
     var vistosControl = {}, vistosCodigo = {};
     conDatos.forEach(function (x) {
       var f = x.f, n = 'Factura ' + x.n + ': ';
-      if (!f.control) errores.push(n + 'escriba el número de control.');
-      else if (!/^\d{4,9}$/.test(f.control)) errores.push(n + 'el número de control solo lleva números.');
-      else if (vistosControl[f.control]) errores.push(n + 'el control ' + f.control + ' está repetido en esta parada.');
-      if (f.monto === '' || f.monto == null) errores.push(n + 'escriba el monto (total a pagar).');
-      else if (isNaN(Number(f.monto)) || Number(f.monto) < 0) errores.push(n + 'el monto no es válido.');
-      if (f.codigo && !FORMATO_CODIGO.test(f.codigo)) {
-        errores.push(n + (f.codigo.replace(/-/g, '').length > 32 ? 'al código de generación le sobran letras o números' : 'el código de generación está incompleto') +
-          ': son 32 (8-4-4-4-12). Si no se puede leer completo, bórrelo y toque «Guardar parada»: se guarda sin código y la oficina lo completa.');
+      // Una factura cargada en bodega ya pasó por el lector y por el servidor (registrarCarga): en la calle solo se piden su
+      // estado y su forma de pago (lo que le falte ya quedó marcado en la carga para la oficina).
+      if (!f.cargada) {
+        if (!f.control) errores.push(n + 'escriba el número de control.');
+        else if (!/^\d{4,9}$/.test(f.control)) errores.push(n + 'el número de control solo lleva números.');
+        else if (vistosControl[f.control]) errores.push(n + 'el control ' + f.control + ' está repetido en esta parada.');
+        if (f.monto === '' || f.monto == null) errores.push(n + 'escriba el monto (total a pagar).');
+        else if (isNaN(Number(f.monto)) || Number(f.monto) < 0) errores.push(n + 'el monto no es válido.');
+        if (f.codigo && !FORMATO_CODIGO.test(f.codigo)) {
+          errores.push(n + (f.codigo.replace(/-/g, '').length > 32 ? 'al código de generación le sobran letras o números' : 'el código de generación está incompleto') +
+            ': son 32 (8-4-4-4-12). Si no se puede leer completo, bórrelo y toque «Guardar parada»: se guarda sin código y la oficina lo completa.');
+        }
+        else if (f.codigo && vistosCodigo[f.codigo]) errores.push(n + 'esta factura ya se escaneó en esta parada.');
       }
-      else if (f.codigo && vistosCodigo[f.codigo]) errores.push(n + 'esta factura ya se escaneó en esta parada.');
       if (f.vendedor && !FORMATO_VENDEDOR.test(f.vendedor)) errores.push(n + 'el código de vendedor se escribe como VS125.');
       if (estadoDe(f) !== 'Exitosa' && !String(f.motivo || '').trim()) {
         errores.push(n + (motivosRechazo().length ? 'elija' : 'escriba') + ' el motivo de la ' + (estadoDe(f) === 'Fallida' ? 'entrega fallida' : 'devolución') + '.');
@@ -5928,7 +6180,7 @@
       if (!f.codigo) falta.push('código de generación');
       var sinFecha = !conFechaFactura() ? [] : [f.fechaFactura ? '' : 'fecha', f.horaFactura ? '' : 'hora'].filter(Boolean);
       if (sinFecha.length) falta.push(sinFecha.join(' y ') + ' de la factura');
-      if (falta.length) porCompletar.push(n + 'falta ' + (falta.length > 2 ? falta.slice(0, -1).join(', ') + ' y ' + falta[falta.length - 1] : falta.join(' y ')) + '.');
+      if (falta.length && !f.cargada) porCompletar.push(n + 'falta ' + (falta.length > 2 ? falta.slice(0, -1).join(', ') + ' y ' + falta[falta.length - 1] : falta.join(' y ')) + '.');
       if (f.control) vistosControl[f.control] = true;
       if (f.codigo) vistosCodigo[f.codigo] = true;
     });
@@ -5955,6 +6207,8 @@
       return;
     }
     guardarConFaltantes = false;
+    // Parada sin escaneo: la hora de salida es la de tocar «Entregué esta parada» (al corregirla después no se mueve).
+    if (paradaPunto != null && !$('txtSalidaParada').value) $('txtSalidaParada').value = ahora();
     var p = {
       cliente: $('txtCliente').value.trim(), direccion: $('txtDireccion').value.trim(),
       departamento: $('selDepto').value, municipio: $('selMunicipio').value,
@@ -5967,28 +6221,38 @@
                  montoDevuelto: estadoDe(f) === 'Devolución parcial' ? Math.round(Number(f.montoDevuelto) * 100) / 100 : '',
                  formaPago: conFormaPago() ? f.formaPago || '' : undefined,
                  desglosePago: conPagoMixto() && f.formaPago === 'Mixto' ? desgloseParaEnviar(f) : undefined,
-                 fechaFactura: conFechaFactura() ? f.fechaFactura || '' : undefined,
-                 horaFactura: conFechaFactura() ? f.horaFactura || '' : undefined,
+                 // La carga en bodega (M1) no trae fecha ni hora de la factura: sin ellas el campo no se manda (como una app
+                 // anterior a la versión 12) y la fila no queda marcada por algo que el piloto no puede escribir.
+                 fechaFactura: conFechaFactura() && !(f.cargada && !f.fechaFactura) ? f.fechaFactura || '' : undefined,
+                 horaFactura: conFechaFactura() && !(f.cargada && !f.horaFactura) ? f.horaFactura || '' : undefined,
+                 cargada: f.cargada ? true : undefined,
                  cliente: f.cliente || '', direccion: f.direccion || '', auto: f.auto || {} };
       })
     };
+    if (paradaPunto != null) p.punto = paradaPunto;
+    var sugerida = paradaPunto != null ? siguientePunto() : null;
     if (editando == null) dia.paradas.push(p); else dia.paradas[editando] = p;
-    escribirJSON(CLAVE_DEPTO, p.departamento);
+    if (p.departamento) escribirJSON(CLAVE_DEPTO, p.departamento);
+    if (paradaPunto != null) alEntregarPunto(paradaPunto, sugerida);
     guardarBorrador();
     olvidarParadaAbierta();
-    pintarRuta();
-    mostrar('pRuta');
+    volverDeParada();
     mandarAvance();
   });
-  $('btnCancelarParada').addEventListener('click', function () { olvidarParadaAbierta(); mostrar('pRuta'); });
+  /** Después de guardar o cancelar una parada: Mi día si el día tiene ruta (app nueva); si no, la ruta de siempre. */
+  function volverDeParada() {
+    if (dia.ruta) { mostrarDia(); return; }
+    pintarRuta();
+    mostrar('pRuta');
+  }
+  $('btnCancelarParada').addEventListener('click', function () { olvidarParadaAbierta(); volverDeParada(); });
   $('btnBorrarParada').addEventListener('click', function () {
     if (editando == null) return;
     if (!confirm('¿Borrar esta parada?')) return;
     dia.paradas.splice(editando, 1);
     guardarBorrador();
     olvidarParadaAbierta();
-    pintarRuta();
-    mostrar('pRuta');
+    volverDeParada();
     mandarAvance();
   });
 
@@ -5996,6 +6260,12 @@
   // El servidor decide quién es subcontratado (columna Tipo de Configuración o el nombre) y manda la lista: aquí no se repite la regla.
   function esSubcontratado() { return Boolean(dia) && Array.isArray(config.subcontratados) && config.subcontratados.indexOf(dia.piloto) >= 0; }
   function prepararCierre() {
+    // App nueva (M4): resumen para caja arriba, hora de regreso puesta sola, sin gasolina (vive en Combustible), nota plegada.
+    var nueva = esDiaNuevo();
+    $('pCierre').classList.toggle('pantalla-nueva', nueva);
+    $('pCierre').classList.toggle('hora-abierta', Boolean(dia.horaRegresoAMano));
+    $('pCierre').classList.toggle('nota-abierta', Boolean(dia.notas));
+    $('cierreTitulo').textContent = nueva ? 'Regreso' : 'Retorno y cierre del día';
     $('tarjetaMontoCobrar').classList.toggle('oculto', !esSubcontratado());
     $('txtMontoCobrar').value = dia.montoCobrar != null ? dia.montoCobrar : '';
     $('txtMontoCobrar').classList.remove('falta');
@@ -6006,40 +6276,99 @@
     $('txtVale').value = dia.vale || '';
     $('txtNotas').value = dia.notas || '';
     $('cierreFacturas').textContent = totalFacturas();
-    var porCompletar = 0, sinFecha = 0, fallidas = 0, devoluciones = 0, devuelto = 0, porPago = {};
+    var r = resumenDelDia();
+    var textos = [];
+    if (r.fallidas || r.devoluciones) textos.push('<div class="aviso info">' + textoDevueltas(r) + ' en el día' + (r.devuelto ? ' ($' + r.devuelto.toFixed(2) + ' que regresan)' : '') + '.</div>');
+    var pagos = formasPago().filter(function (x) { return r.porPago[x]; });
+    if (pagos.length) textos.push('<div class="aviso info">Por forma de pago: ' + pagos.map(function (x) { return x + ' $' + r.porPago[x].toFixed(2); }).join(' · ') + '.</div>');
+    var marcadas = [];
+    if (r.porCompletar) marcadas.push('<div class="aviso ambar">' + r.porCompletar + ' factura(s) sin código de generación o sin código de vendedor. Se pueden enviar; quedarán marcadas en Registros para que la oficina las complete.</div>');
+    if (r.sinFecha) marcadas.push('<div class="aviso ambar">' + r.sinFecha + ' factura(s) sin fecha u hora de la factura. Se pueden enviar; quedarán marcadas en Registros para que la oficina las complete.</div>');
+    $('avisosCierre').innerHTML = textos.concat(marcadas).join('');
+    if (nueva) pintarCierreNuevo(r, marcadas);
+    aviso('errCierre');
+    calcularCierre();
+  }
+  function textoDevueltas(r) {
+    return [r.fallidas ? r.fallidas + ' entrega(s) fallida(s)' : '', r.devoluciones ? r.devoluciones + ' devolución(es)' : ''].filter(Boolean).join(' y ');
+  }
+  /**
+   * Las cuentas del día para el cierre, en una sola pasada (el cierre de siempre y el resumen para caja de la app nueva).
+   * porPago: lo facturado por forma (un Mixto, según su reparto). cobrado: lo que el piloto trae por forma: nada de una fallida
+   * o una devolución total y, de una parcial, la parte que se quedó el cliente.
+   */
+  function resumenDelDia() {
+    var r = { porCompletar: 0, sinFecha: 0, fallidas: 0, devoluciones: 0, devuelto: 0, porPago: {}, cobrado: {}, cheques: 0 };
     dia.paradas.forEach(function (p) {
       p.facturas.forEach(function (f) {
         var e = estadoDe(f), monto = f.monto === '' || f.monto == null ? 0 : Number(f.monto) || 0;
         // Un Mixto se reparte con lo que escribió el piloto en cada forma.
-        if (f.formaPago === 'Mixto' && conPagoMixto()) desgloseParaEnviar(f).forEach(function (x) { porPago[x.formaPago] = (porPago[x.formaPago] || 0) + x.monto; });
-        else if (f.formaPago) porPago[f.formaPago] = (porPago[f.formaPago] || 0) + monto;
-        if (!f.codigo || !f.vendedor) porCompletar++;
-        if (conFechaFactura() && (!f.fechaFactura || !f.horaFactura)) sinFecha++;
-        if (e === 'Fallida') fallidas++;
-        if (esDevolucion(e)) devoluciones++;
-        if (e === 'Fallida' || e === 'Devolución total') devuelto += monto;
-        if (e === 'Devolución parcial') devuelto += Number(f.montoDevuelto) || 0;
+        var partes = f.formaPago === 'Mixto' && conPagoMixto() ? desgloseParaEnviar(f) : f.formaPago ? [{ formaPago: f.formaPago, monto: monto }] : [];
+        var queda = e === 'Fallida' || e === 'Devolución total' ? 0
+          : e === 'Devolución parcial' && monto > 0 ? Math.max(0, monto - (Number(f.montoDevuelto) || 0)) / monto : 1;
+        partes.forEach(function (x) {
+          r.porPago[x.formaPago] = (r.porPago[x.formaPago] || 0) + x.monto;
+          r.cobrado[x.formaPago] = (r.cobrado[x.formaPago] || 0) + x.monto * queda;
+        });
+        if (queda > 0 && partes.some(function (x) { return x.formaPago === 'Cheque'; })) r.cheques++;
+        // Lo que le falte a una factura cargada en bodega ya quedó marcado en la carga: no es tarea del piloto.
+        if (!f.cargada && (!f.codigo || !f.vendedor)) r.porCompletar++;
+        if (!f.cargada && conFechaFactura() && (!f.fechaFactura || !f.horaFactura)) r.sinFecha++;
+        if (e === 'Fallida') r.fallidas++;
+        if (esDevolucion(e)) r.devoluciones++;
+        if (e === 'Fallida' || e === 'Devolución total') r.devuelto += monto;
+        if (e === 'Devolución parcial') r.devuelto += Number(f.montoDevuelto) || 0;
       });
     });
-    var textos = [];
-    if (fallidas || devoluciones) {
-      textos.push('<div class="aviso info">' + [fallidas ? fallidas + ' entrega(s) fallida(s)' : '', devoluciones ? devoluciones + ' devolución(es)' : '']
-        .filter(Boolean).join(' y ') + ' en el día' + (devuelto ? ' ($' + devuelto.toFixed(2) + ' que regresan)' : '') + '.</div>');
+    return r;
+  }
+  /** Resumen para caja del cierre nuevo: efectivo (y cheques) a entregar, por forma de pago, devoluciones y plan contra real. */
+  function pintarCierreNuevo(r, avisos) {
+    var redondo = function (n) { return Math.round((n || 0) * 100) / 100; };
+    var formas = formasPago().filter(function (x) { return r.porPago[x]; });
+    var total = formas.reduce(function (s, x) { return s + r.porPago[x]; }, 0);
+    var iconoForma = { Efectivo: 'billete', Contado: 'billetera', Transferencia: 'billetera' };
+    var html = '<div class="caja"><p class="paso">Entrega en caja · ' + esc(fechaCorta(dia.fecha)) + '</p><div class="grande">' + fmtDinero(redondo(r.cobrado.Efectivo)) + '</div>' +
+      '<div class="sub">en efectivo' + (r.cheques ? ' + ' + plural(r.cheques, 'cheque', 'cheques') + ' por ' + fmtDinero(redondo(r.cobrado.Cheque)) : '') + '</div></div>' +
+      '<div class="tarjeta"><p class="paso">Resumen del día</p><div class="kpis"><div>Km del día<b id="cierreKmNuevo">–</b></div><div>Paradas<b>' + dia.paradas.length +
+      '</b></div><div>Facturas<b>' + totalFacturas() + '</b></div></div>';
+    if (formas.length) {
+      html += '<table class="formas">' + formas.map(function (x) {
+        return '<tr><td>' + icono(iconoForma[x] || 'recibo', { tam: 16 }) + esc(x) + '</td><td>' + fmtDinero(redondo(r.porPago[x])) + '</td></tr>';
+      }).join('') + '<tr class="total"><td>Total facturado</td><td>' + fmtDinero(redondo(total)) + '</td></tr></table>';
     }
-    var pagos = formasPago().filter(function (x) { return porPago[x]; });
-    if (pagos.length) textos.push('<div class="aviso info">Por forma de pago: ' + pagos.map(function (x) { return x + ' $' + porPago[x].toFixed(2); }).join(' · ') + '.</div>');
-    if (porCompletar) textos.push('<div class="aviso ambar">' + porCompletar + ' factura(s) sin código de generación o sin código de vendedor. Se pueden enviar; quedarán marcadas en Registros para que la oficina las complete.</div>');
-    if (sinFecha) textos.push('<div class="aviso ambar">' + sinFecha + ' factura(s) sin fecha u hora de la factura. Se pueden enviar; quedarán marcadas en Registros para que la oficina las complete.</div>');
-    $('avisosCierre').innerHTML = textos.join('');
-    aviso('errCierre');
-    calcularCierre();
+    if (r.fallidas || r.devoluciones) {
+      html += '<div class="cuadre">' + icono('anterior') + '<div>' + textoDevueltas(r) + (r.devuelto ? ': ' + fmtDinero(redondo(r.devuelto)) : '') +
+        '<small>Entregue el producto en bodega.</small></div></div>';
+    }
+    if (dia.ruta) {
+      var a = avanceRuta(), completo = a.entregados === a.puntos && a.conEstado === a.facturas;
+      html += '<div class="cuadre ' + (completo ? 'ok' : 'alerta') + '">' + icono(completo ? 'check' : 'alerta') + '<div>Plan contra real: ' + a.entregados + ' de ' +
+        a.puntos + ' puntos, ' + a.conEstado + ' de ' + a.facturas + ' facturas con estado' +
+        (completo ? '' : '<small>La oficina las ve sin estado. Puede volver a Mi día y revisarlas.</small>') + '</div></div>';
+    }
+    $('cierreCaja').innerHTML = html + avisos.join('') + '</div>';
+    $('ayudaKmRegreso').textContent = 'salida: ' + fmtKm(dia.kmSalida) + ' · última parada: ' + fmtKm(kmUltimaParada());
+    $('horaRegresoAuto').innerHTML = icono('reloj', { tam: 18 }) + '<span>Regreso <b>' + esc($('txtHoraRegreso').value) + '</b> (puesta sola)</span>' +
+      '<button class="enlace" type="button" data-cierre="hora">cambiar hora</button>';
+    $('notaPlegada').innerHTML = '<button class="enlace" type="button" data-cierre="nota">' + icono('nota', { tam: 17 }) + ' + Agregar nota</button>';
   }
   function calcularCierre() {
     var k = num($('txtKmRegreso').value), ult = kmUltimaParada();
     $('cierreKm').textContent = k != null && k >= dia.kmSalida ? fmtKm(k - dia.kmSalida) : '–';
+    if ($('cierreKmNuevo')) $('cierreKmNuevo').textContent = $('cierreKm').textContent;
     if (k != null && k < ult) aviso('avisoKmRegreso', 'error', 'Es menor que el último km de la ruta (' + fmtKm(ult) + ').');
     else aviso('avisoKmRegreso');
   }
+  $('pCierre').addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-cierre]');
+    if (!b) return;
+    var acc = b.getAttribute('data-cierre');
+    $('pCierre').classList.add(acc === 'hora' ? 'hora-abierta' : 'nota-abierta');
+    $(acc === 'hora' ? 'txtHoraRegreso' : 'txtNotas').focus();
+  });
+  // La hora de regreso que el piloto cambió a mano ya no se pone sola al enviar.
+  $('txtHoraRegreso').addEventListener('input', function () { if (dia) dia.horaRegresoAMano = true; });
   $('txtKmRegreso').addEventListener('input', calcularCierre);
   $('btnVolverRuta').addEventListener('click', function () { leerCierre(); guardarBorrador(); mostrar('pRuta'); });
   function leerCierre() {
@@ -6054,6 +6383,8 @@
   }
   var placaPropiaConfirmada = false;
   $('btnEnviar').addEventListener('click', function () {
+    // App nueva: la hora de regreso es la de tocar «Enviar día», salvo que el piloto la haya cambiado a mano.
+    if (esDiaNuevo() && !dia.horaRegresoAMano) $('txtHoraRegreso').value = ahora();
     leerCierre();
     var errores = [];
     var k = dia.kmRegreso, ult = kmUltimaParada();
@@ -6077,8 +6408,7 @@
       return;
     }
     guardarBorrador();
-    var envio = JSON.parse(JSON.stringify(dia));
-    delete envio.iniciado;
+    var envio = copiaParaServidor(dia);
     $('btnEnviar').disabled = true;
     $('btnEnviar').textContent = 'Enviando…';
     conPin(envio.piloto, function () { return servidor('enviarDia', conCredencial(envio)); }).then(function (r) {
@@ -6214,16 +6544,19 @@
     return c && c.piloto === piloto && c.fecha === hoyISO() ? c : null;
   }
   /**
-   * Estado del día en Mi día. Por cerrar es el respaldo manual («Ya no tengo más entregas»): el automático (todas las
-   * facturas cargadas con estado) llega con la carga en bodega (M3 y M4).
+   * Estado del día en Mi día. Con la ruta de la carga en bodega (M4), Por cerrar es automático: todas las facturas cargadas
+   * tienen estado. «Ya no tengo más entregas» queda como respaldo manual (y es el único Por cerrar sin carga en bodega).
    */
   function estadoDia() {
     if (!dia.iniciado) return cerradoHoy(dia.piloto) ? 'cerrado' : 'sin';
-    return dia.fase === 'carga' ? 'carga' : (dia.fase === 'porCerrar' ? 'porCerrar' : 'ruta');
+    if (dia.fase === 'carga') return 'carga';
+    asegurarRutaDeCarga();
+    if (dia.fase === 'porCerrar' || (dia.ruta && !facturasPendientes().length)) return 'porCerrar';
+    return 'ruta';
   }
   var TEXTO_ESTADO_DIA = { sin: 'SIN INICIAR', carga: 'EN CARGA', ruta: 'EN RUTA', porCerrar: 'POR CERRAR', cerrado: 'CERRADO' };
   function plural(n, uno, varios) { return n + ' ' + (n === 1 ? uno : varios); }
-  function mostrarDia() { pintarDia(); mostrar('pDia'); }
+  function mostrarDia() { $('hojaFaltan').classList.add('oculto'); pintarDia(); mostrar('pDia'); }
   function fechaCorta(iso) { return DIAS_SEMANA[new Date(iso + 'T12:00:00').getDay()] + ' ' + fmtFecha(iso).slice(0, 5); }
   function pintarDia() {
     var e = estadoDia(), p = dia.placa ? esc(dia.placa) : '';
@@ -6232,6 +6565,11 @@
     $('diaEstado').className = 'estado-grande ' + e;
     var datos = '', nota = '', principal, mas = '';
     var resumen = p + ' · ' + plural(dia.paradas.length, 'parada', 'paradas') + ' · ' + plural(totalFacturas(), 'factura', 'facturas');
+    if (dia.ruta) {
+      var a = avanceRuta();
+      resumen = p + ' · ' + a.entregados + ' de ' + plural(a.puntos, 'parada', 'paradas') + ' · ' + a.conEstado + ' de ' + plural(a.facturas, 'factura', 'facturas') + ' con estado';
+    }
+    var terminarDia = '<button class="fantasma" type="button" data-dia="' + (dia.ruta ? 'terminar' : 'cierre') + '">' + icono('check', { tam: 18 }) + 'Terminar día</button>';
     if (e === 'sin') {
       var u = datosPlaca(placaSugerida());
       datos = u ? 'Última placa: ' + esc(u.placa) + (u.ultimoKm ? ' · último km ' + fmtKm(u.ultimoKm) : '') : 'Registre la salida de bodega para empezar.';
@@ -6241,17 +6579,28 @@
       datos = p + ' · salió ' + esc(dia.horaSalida) + ' · km ' + fmtKm(dia.kmSalida);
       principal = ['carga', 'qr', 'Seguir cargando'];
       mas = '<h3>Ruta de hoy</h3><div class="vacio">La ruta aparece al tocar «Terminar carga».</div>';
+    } else if (e === 'ruta' && dia.ruta) {
+      datos = resumen;
+      principal = ['siguiente', 'navegacion', 'Ir a la siguiente parada'];
+      mas = listaRuta() + terminarDia + '<div class="centro"><button class="enlace" type="button" data-dia="porCerrar">Ya no tengo más entregas</button></div>';
     } else if (e === 'ruta') {
       datos = resumen;
       principal = ['ruta', 'navegacion', 'Ir a la ruta'];
-      mas = '<button class="fantasma" type="button" data-dia="cierre">' + icono('check', { tam: 18 }) + 'Terminar día</button>' +
-        '<div class="centro"><button class="enlace" type="button" data-dia="porCerrar">Ya no tengo más entregas</button></div>';
+      mas = terminarDia + '<div class="centro"><button class="enlace" type="button" data-dia="porCerrar">Ya no tengo más entregas</button></div>';
     } else if (e === 'porCerrar') {
       datos = resumen;
-      nota = '<div class="cuadre ok">' + icono('circuloCheck') + '<div>Marcó que ya no tiene más entregas<small>Falta el regreso a bodega.</small></div></div>';
-      principal = ['cierre', 'check', 'Terminar día'];
-      mas = '<button class="fantasma" type="button" data-dia="ruta">' + icono('navegacion', { tam: 18 }) + 'Ver la ruta</button>' +
-        '<div class="centro"><button class="enlace" type="button" data-dia="seguirRuta">Todavía tengo entregas</button></div>';
+      var auto = dia.ruta && !facturasPendientes().length;
+      nota = auto
+        ? '<div class="cuadre ok">' + icono('circuloCheck') + '<div>Todas sus facturas tienen estado<small>Pasó solo a Por cerrar' +
+          (dia.ruta.completa ? ' a las ' + esc(dia.ruta.completa) : '') + '. Falta el regreso.</small></div></div>'
+        : '<div class="cuadre ok">' + icono('circuloCheck') + '<div>Marcó que ya no tiene más entregas<small>Falta el regreso a bodega.</small></div></div>';
+      principal = [dia.ruta ? 'terminar' : 'cierre', 'check', 'Terminar día'];
+      var seguir = '<div class="centro"><button class="enlace" type="button" data-dia="seguirRuta">Todavía tengo entregas</button></div>';
+      if (auto) {
+        mas = listaRuta() + '<div class="centro"><button class="enlace" type="button" data-dia="extra">' + icono('mas', { tam: 15 }) +
+          ' Agregar factura que no salió de bodega</button></div>';
+      } else if (dia.ruta) mas = listaRuta() + seguir;
+      else mas = '<button class="fantasma" type="button" data-dia="ruta">' + icono('navegacion', { tam: 18 }) + 'Ver la ruta</button>' + seguir;
     } else {
       var c = cerradoHoy(dia.piloto);
       datos = 'Cerrado a las ' + esc(c.hora) + ' · ' + plural(c.facturas, 'factura', 'facturas') + (c.km != null ? ' · ' + fmtKm(c.km) + ' km' : '');
@@ -6266,19 +6615,390 @@
       (accesos ? '<div class="accesos">' + accesos + '</div>' : '') + mas;
   }
   $('pDia').addEventListener('click', function (ev) {
+    var ab = ev.target.closest('button.abrir'), sube = ev.target.closest('[data-subir]'), baja = ev.target.closest('[data-bajar]');
+    if (sube || baja) { moverPunto(sube ? sube.getAttribute('data-subir') : baja.getAttribute('data-bajar'), sube ? -1 : 1); return; }
+    if (ab) {
+      if (ab.getAttribute('data-punto')) abrirPunto(ab.getAttribute('data-punto'));
+      else if (ab.getAttribute('data-parada') !== '') abrirParada(Number(ab.getAttribute('data-parada')));
+      return;
+    }
     var b = ev.target.closest('[data-dia]');
     if (!b) return;
     var acc = b.getAttribute('data-dia');
+    $('hojaFaltan').classList.add('oculto');
     if (acc === 'salida') {
       prepararInicio();
       mostrar('pInicio');
     } else if (acc === 'carga') abrirCargaBodega();
     else if (acc === 'ruta') { pintarRuta(); mostrar('pRuta'); }
+    else if (acc === 'siguiente') { var sig = siguientePunto(); if (sig) abrirPunto(sig.id); }
+    else if (acc === 'terminar') {
+      // «Terminar día» siempre se puede tocar: con facturas sin estado avisa cuáles, sin bloquear.
+      var faltan = facturasPendientes();
+      if (faltan.length) abrirHojaFaltan(faltan); else { prepararCierre(); mostrar('pCierre'); }
+    }
+    else if (acc === 'revisar') pintarDia();
     else if (acc === 'cierre') { prepararCierre(); mostrar('pCierre'); }
+    else if (acc === 'reordenar') { reordenando = !reordenando; pintarDia(); }
+    else if (acc === 'extra') abrirParada(null);
     else if (acc === 'porCerrar' || acc === 'seguirRuta') { dia.fase = acc === 'porCerrar' ? 'porCerrar' : 'ruta'; guardarBorrador(); mostrarDia(); }
     else if (acc === 'combustible') { aviso('mensajeGlobal'); abrirCombustible('pDia'); }
     else if (acc === 'mant') prepararMant();
   });
+  $('pDia').addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && !$('hojaFaltan').classList.contains('oculto')) $('hojaFaltan').classList.add('oculto');
+  });
+
+  // ------------------------------------------------------------ app nueva del motorista (M4): ruta sugerida y parada sin escaneo
+  // La carga en bodega (M3) llama alTerminarCarga(ruta) con lo que devuelve registrarCarga (M1): puntos de entrega con sus
+  // facturas. La ruta queda en el borrador del día (dia.ruta: sobrevive a recargar la página) y no viaja al servidor. ORDEN
+  // LIBRE (decisión 10 del diseño): cada punto tiene su propio estado, que sale de las paradas guardadas (una factura cargada
+  // tiene estado si está en alguna parada del día); el orden es solo una sugerencia y nunca bloquea.
+  // Zona de la bodega: de aquí parte la sugerencia (etapa A, sin coordenadas).
+  var ZONA_BODEGA = { departamento: 'San Salvador', municipio: 'Soyapango' };
+  // Departamentos de oeste a este: sin coordenadas, la distancia entre dos departamentos es cuántos hay entre ellos.
+  var DEPARTAMENTOS_OESTE_ESTE = ['Ahuachapán', 'Santa Ana', 'Sonsonate', 'Chalatenango', 'La Libertad', 'San Salvador', 'Cuscatlán',
+    'La Paz', 'Cabañas', 'San Vicente', 'Usulután', 'San Miguel', 'Morazán', 'La Unión'];
+  var CLAVE_RUTA_CARGA = 'kmCelasa.rutaCarga.v1';
+  function guardarRutaCarga(ruta) {
+    if (ruta == null) {
+      try { localStorage.removeItem(CLAVE_RUTA_CARGA); } catch (e) {}
+    } else {
+      escribirJSON(CLAVE_RUTA_CARGA, ruta);
+    }
+  }
+  function leerRutaCarga() {
+    return leerJSON(CLAVE_RUTA_CARGA, null);
+  }
+
+  function asegurarRutaDeCarga() {
+    if (!dia || dia.ruta) return;
+    var r = leerRutaCarga();
+    if (r && Array.isArray(r.puntos) && r.puntos.length) {
+      var puntos = JSON.parse(JSON.stringify(r.puntos));
+      puntos.forEach(function (pt) {
+        pt.facturas = Array.isArray(pt.facturas) ? pt.facturas : [];
+        pt.lugar = lugarDePunto(pt);
+      });
+      dia.ruta = { id: r.id || '', puntos: puntos, orden: [] };
+      reordenarPendientes(ultimoLugarEntregado() || ZONA_BODEGA);
+    }
+  }
+
+  var reordenando = false;
+  function alTerminarCarga(ruta) {
+    if (ruta != null) {
+      guardarRutaCarga(ruta);
+    }
+    dia = dia || { piloto: pilotoConSesion(), iniciado: true, paradas: [] };
+    dia.iniciado = true;
+    dia.fase = 'ruta';
+    var r = ruta != null ? ruta : leerRutaCarga();
+    var puntos = r && Array.isArray(r.puntos) ? JSON.parse(JSON.stringify(r.puntos)) : [];
+    if (puntos.length) {
+      puntos.forEach(function (pt) {
+        pt.facturas = Array.isArray(pt.facturas) ? pt.facturas : [];
+        pt.lugar = lugarDePunto(pt);
+      });
+      dia.ruta = { id: (r && r.id) || '', puntos: puntos, orden: [] };
+      reordenarPendientes(ultimoLugarEntregado() || ZONA_BODEGA);
+    }
+    guardarBorrador();
+    if (dia.nueva) {
+      mostrarDia();
+    } else {
+      mostrar('pRuta');
+      pintarRuta();
+    }
+  }
+  window.alTerminarCarga = alTerminarCarga;
+  window.guardarRutaCarga = guardarRutaCarga;
+  window.leerRutaCarga = leerRutaCarga;
+  /** Departamento y municipio del punto, leídos de su dirección (la misma regla que la parada de siempre); null si no hay. */
+  function lugarDePunto(pt) {
+    var textos = [pt.direccion, pt.envio].concat(pt.facturas.map(function (f) { return f.calle; }));
+    for (var k = 0; k < textos.length; k++) {
+      var r = textos[k] ? municipioEnDireccion(textos[k], '') : null;
+      if (r) return r;
+    }
+    return null;
+  }
+  function distanciaLugar(a, b) {
+    if (a.departamento === b.departamento) return a.municipio === b.municipio ? 0 : 1;
+    var i = DEPARTAMENTOS_OESTE_ESTE.indexOf(a.departamento), j = DEPARTAMENTOS_OESTE_ESTE.indexOf(b.departamento);
+    return 2 + (i < 0 || j < 0 ? DEPARTAMENTOS_OESTE_ESTE.length : Math.abs(i - j));
+  }
+  /** Enlace del QR de entrega del punto, tal cual, solo si es una dirección web (cualquier otra cosa no se abre). */
+  function qrDePunto(pt) {
+    var q = [pt.qrEntrega].concat(pt.facturas.map(function (f) { return f.qrEntrega; }))
+      .map(function (x) { return String(x || '').trim(); }).filter(function (x) { return /^https?:\/\/\S+$/i.test(x); })[0];
+    return q || '';
+  }
+  function porUbicar(pt) { return !pt.lugar && !qrDePunto(pt) && !(pt.lat != null && pt.lng != null); }
+  /**
+   * Orden sugerido (etapa A): vecino más cercano desde el origen, con la distancia de distanciaLugar (mismo municipio, mismo
+   * departamento, departamentos vecinos) y empate en el orden de la carga. Los que tienen QR de entrega pero sin municipio
+   * leído van después; los por ubicar, al final. puntos: en el orden de la carga.
+   */
+  function ordenSugerido(puntos, origen) {
+    var conLugar = puntos.filter(function (pt) { return pt.lugar; }), orden = [], actual = origen;
+    while (conLugar.length) {
+      var mejor = 0;
+      for (var k = 1; k < conLugar.length; k++) if (distanciaLugar(actual, conLugar[k].lugar) < distanciaLugar(actual, conLugar[mejor].lugar)) mejor = k;
+      actual = conLugar[mejor].lugar;
+      orden.push(conLugar.splice(mejor, 1)[0].id);
+    }
+    var id = function (pt) { return pt.id; };
+    return orden.concat(puntos.filter(function (pt) { return !pt.lugar && !porUbicar(pt); }).map(id), puntos.filter(porUbicar).map(id));
+  }
+  /** Identidad de una factura cargada en el teléfono (como la Tarea 34): código de generación, DTE o control y cliente. */
+  function claveFacturaRuta(f) {
+    return String(f.codigo || f.numeroControl || (f.control ? f.control + '|' + (f.cliente || '') : '')).trim().toUpperCase();
+  }
+  /** Claves de las facturas que ya tienen estado: las que están en alguna parada del día. */
+  function facturasConEstado() {
+    var c = {};
+    dia.paradas.forEach(function (p) { p.facturas.forEach(function (f) { var k = claveFacturaRuta(f); if (k) c[k] = true; }); });
+    return c;
+  }
+  function estadoPunto(pt, hechas) {
+    var n = pt.facturas.filter(function (f) { return hechas[claveFacturaRuta(f)]; }).length;
+    return n === 0 ? 'pendiente' : n === pt.facturas.length ? 'entregada' : 'parcial';
+  }
+  function puntoRuta(id) {
+    return dia && dia.ruta ? dia.ruta.puntos.filter(function (pt) { return pt.id === id; })[0] || null : null;
+  }
+  /** Los puntos que faltan (pendientes o parciales), en el orden sugerido. */
+  function puntosPendientes() {
+    var hechas = facturasConEstado();
+    return dia.ruta.orden.map(puntoRuta).filter(function (pt) { return pt && estadoPunto(pt, hechas) !== 'entregada'; });
+  }
+  function siguientePunto() { return dia && dia.ruta ? puntosPendientes()[0] || null : null; }
+  /** Facturas cargadas sin estado, en el orden sugerido: [{ punto, factura }]. */
+  function facturasPendientes() {
+    var hechas = facturasConEstado(), r = [];
+    dia.ruta.orden.map(puntoRuta).forEach(function (pt) {
+      if (pt) pt.facturas.forEach(function (f) { if (!hechas[claveFacturaRuta(f)]) r.push({ punto: pt, factura: f }); });
+    });
+    return r;
+  }
+  function avanceRuta() {
+    var hechas = facturasConEstado(), a = { puntos: dia.ruta.puntos.length, entregados: 0, facturas: 0, conEstado: 0 };
+    dia.ruta.puntos.forEach(function (pt) {
+      if (estadoPunto(pt, hechas) === 'entregada') a.entregados++;
+      pt.facturas.forEach(function (f) { a.facturas++; if (hechas[claveFacturaRuta(f)]) a.conEstado++; });
+    });
+    return a;
+  }
+  /** Rehace la sugerencia de lo que falta desde un lugar (las entregadas quedan adelante, como fueron). */
+  function reordenarPendientes(origen) {
+    var hechas = facturasConEstado(), puntos = dia.ruta.puntos;
+    var faltan = puntos.filter(function (pt) { return estadoPunto(pt, hechas) !== 'entregada'; });
+    dia.ruta.orden = puntos.filter(function (pt) { return estadoPunto(pt, hechas) === 'entregada'; }).map(function (pt) { return pt.id; })
+      .concat(ordenSugerido(faltan, origen));
+  }
+  function ultimoLugarEntregado() {
+    for (var k = dia.paradas.length - 1; k >= 0; k--) {
+      var pt = dia.paradas[k].punto ? puntoRuta(dia.paradas[k].punto) : null;
+      if (pt && pt.lugar) return pt.lugar;
+    }
+    return null;
+  }
+  /**
+   * Después de guardar la parada de un punto: si no era la sugerida, la sugerencia se recalcula desde ese punto (nunca se
+   * marcan las anteriores). Cuando ya no falta ninguna factura, se anota la hora (Por cerrar automático).
+   */
+  function alEntregarPunto(id, sugerida) {
+    var pt = puntoRuta(id);
+    if (pt && pt.lugar && sugerida && sugerida.id !== id) reordenarPendientes(pt.lugar);
+    if (facturasPendientes().length) delete dia.ruta.completa;
+    else dia.ruta.completa = dia.ruta.completa || ahora();
+  }
+  function moverPunto(id, paso) {
+    var faltan = puntosPendientes().map(function (pt) { return pt.id; });
+    var i = faltan.indexOf(id), j = i + paso, o = dia.ruta.orden;
+    if (i < 0 || j < 0 || j >= faltan.length) return;
+    var a = o.indexOf(faltan[i]), b = o.indexOf(faltan[j]);
+    o[a] = faltan[j]; o[b] = faltan[i];
+    guardarBorrador();
+    pintarDia();
+  }
+  /** Abre la parada de un punto: la ya guardada (para corregirla o completarla) o una nueva con sus facturas cargadas. */
+  function abrirPunto(id) {
+    var pt = puntoRuta(id), i = -1;
+    if (!pt) return;
+    dia.paradas.forEach(function (p, k) { if (p.punto === id) i = k; });
+    abrirParada(i < 0 ? null : i, pt);
+  }
+  /** Una factura de la carga como factura del formulario de la parada: Exitosa ya puesta; solo falta la forma de pago. */
+  function facturaDeCarga(f) {
+    var x = { control: String(f.control || ''), codigo: String(f.codigo || '').toUpperCase(), monto: f.monto == null ? '' : f.monto,
+      vendedor: String(f.vendedor || '').toUpperCase(), numeroControl: f.numeroControl || '', estado: 'Exitosa', motivo: '', montoDevuelto: '',
+      formaPago: f.formaPago || '', cliente: f.cliente || '', direccion: f.calle || '', cargada: true, auto: f.formaPago ? { formaPago: true } : {} };
+    if (f.fechaFactura) { x.fechaFactura = f.fechaFactura; x.horaFactura = f.horaFactura || ''; }
+    return x;
+  }
+  function paradaDePunto(pt) {
+    return { cliente: pt.cliente || pt.nombre || '', direccion: pt.direccion || '', departamento: pt.lugar ? pt.lugar.departamento : '',
+      municipio: pt.lugar ? pt.lugar.municipio : '', horaLlegada: ahora(), km: '', horaSalida: '', facturas: pt.facturas.map(facturaDeCarga) };
+  }
+  /** Cómo llegar: el QR de entrega tal cual; si no, una búsqueda en Google Maps con la dirección (o el cliente) y el municipio. */
+  function enlaceComoLlegar(pt) {
+    var qr = qrDePunto(pt);
+    if (qr) return qr;
+    var buscar = pt.lat != null && pt.lng != null ? pt.lat + ',' + pt.lng : '';
+    if (!buscar) {
+      var dir = pt.direccion || pt.facturas.map(function (f) { return f.calle; }).filter(Boolean)[0] || '';
+      var partes = [dir || pt.cliente || pt.nombre || ''];
+      if (pt.lugar && claveLugar(dir).indexOf(claveLugar(pt.lugar.municipio)) < 0) partes.push(pt.lugar.municipio);
+      buscar = partes.concat(['El Salvador']).filter(Boolean).join(', ');
+    }
+    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(buscar);
+  }
+  function refFactura(f) {
+    return f.numeroControl ? 'DTE ···' + String(f.numeroControl).slice(-5) : f.control ? 'Control ' + f.control : 'Factura ' + String(f.codigo || '').slice(0, 8);
+  }
+  /** Cabecera de la parada de un punto: dónde se entrega, Cómo llegar, Llamar a quien recibe y el km anterior. */
+  function pintarParadaPunto(pt) {
+    var n = 0;
+    filasRuta().forEach(function (f, k) { if (f.punto && f.punto.id === pt.id) n = k + 1; });
+    $('paradaPaso').textContent = 'Parada ' + (n || '') + ' de ' + dia.ruta.puntos.length + ' · Llegó ' + $('txtLlegada').value + ' (auto)';
+    var calle = pt.direccion || pt.facturas.map(function (f) { return f.calle; }).filter(Boolean)[0] || '';
+    var datos = (pt.envio ? '<dt>Envío</dt><dd>' + esc(pt.envio) + '</dd>' : '') +
+      '<dt>' + (pt.envio ? 'Calle' : 'Dirección') + '</dt><dd>' + (calle ? esc(calle) : 'Sin dirección') + '</dd>' +
+      (pt.recibe ? '<dt>Recibe</dt><dd>' + esc(pt.recibe) + '</dd>' : '');
+    var chips = (pt.canal ? '<span class="chip canal">' + esc(pt.canal) + '</span>' : '') +
+      (qrDePunto(pt) ? '<span class="chip ok">Ubicación de entrega' + icono('check', { tam: 13 }) + '</span>'
+        : porUbicar(pt) ? '<span class="chip pend">' + icono('pin', { tam: 13 }) + 'Por ubicar</span>'
+        : pt.lugar ? '<span class="chip canal">' + icono('pin', { tam: 13 }) + esc(pt.lugar.municipio) + '</span>' : '');
+    var cel = String(pt.cel || '').trim(), tel = cel.replace(/[^\d+]/g, '');
+    $('paradaPunto').innerHTML = '<dl class="bloque">' + datos + '</dl><div class="chips">' + chips + '</div>' +
+      '<div class="dos-botones' + (tel ? '' : ' uno') + '"><a class="boton-fantasma" id="comoLlegar" href="' + esc(enlaceComoLlegar(pt)) +
+      '" target="_blank" rel="noopener">' + icono('navegacion', { tam: 18 }) + '<span>Cómo llegar</span></a>' +
+      (tel ? '<a class="boton-fantasma" id="llamar" href="tel:' + esc(tel) + '">' + icono('telefono', { tam: 18 }) +
+        '<span>Llamar a quien recibe<small>' + esc(cel) + '</small></span></a>' : '') + '</div>';
+    var anterior = kmUltimaParada(editando == null ? null : editando);
+    $('ayudaKmParada').textContent = anterior ? 'anterior: ' + fmtKm(anterior) : '';
+    $('paradaFacturasTitulo').textContent = 'Facturas · ' + pt.facturas.length + ' · cargadas en bodega, sin escanear';
+  }
+  /** Factura cargada en la parada sin escaneo: forma de pago en un toque, Mixto con formas marcables y estado. */
+  function tarjetaCargada(f, j) {
+    var e = estadoDe(f), clase = e === 'Exitosa' ? 'Exitosa' : e === 'Fallida' ? 'Fallida' : 'Dev';
+    var html = '<div class="factura cargada"><div class="cab"><span class="dte">' + esc(refFactura(f)) + '</span>' +
+      '<span class="qr">' + icono('check', { tam: 12 }) + 'Cargada</span>' +
+      '<span class="monto">' + (f.monto === '' || f.monto == null ? '' : fmtDinero(f.monto)) + '</span></div>';
+    html += '<div class="pildoras" role="group" aria-label="Forma de pago">' + formasPago().map(function (x) {
+      var sel = f.formaPago === x;
+      return '<button type="button" data-fp="' + j + '" data-pago="' + esc(x) + '" aria-pressed="' + sel + '"' + (sel ? ' class="sel"' : '') + '>' + esc(x) + '</button>';
+    }).join('') + '</div>';
+    if (conPagoMixto() && f.formaPago === 'Mixto') {
+      var d = desgloseEditable(f.desglosePago), marcada = function (x) { return Object.prototype.hasOwnProperty.call(d, x); };
+      html += '<div class="mixto"><p>Marque las formas que usó el cliente (dos o más):</p><div class="pildoras" role="group" aria-label="Formas del pago mixto">' +
+        formasDelMixto().map(function (x) {
+          return '<button type="button" class="marca' + (marcada(x) ? ' sel' : '') + '" data-marca="' + j + '|' + esc(x) + '" aria-pressed="' + marcada(x) + '">' +
+            icono(marcada(x) ? 'check' : 'mas', { tam: 14 }) + esc(x) + '</button>';
+        }).join('') + '</div><div class="montos">' +
+        formasDelMixto().filter(marcada).map(function (x, k) {
+          return '<div><label for="mx' + j + '-' + k + '">' + esc(x) + ' $</label><input id="mx' + j + '-' + k + '" class="num" data-desglose-f="' + j +
+            '" data-desglose="' + esc(x) + '" type="number" inputmode="decimal" step="0.01" min="0" value="' + esc(d[x]) + '"></div>';
+        }).join('') + '</div>' + cuadreMixto(f, j) + '</div>';
+    }
+    html += '<div class="estado-sel"><label for="est' + j + '">Estado</label><select id="est' + j + '" class="' + clase + '" data-estado-sel="' + j + '">' +
+      estadosEntrega().map(function (x) { return '<option' + (x === e ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('') + '</select></div>';
+    if (e !== 'Exitosa') {
+      html += '<div class="despliegue ' + clase + '">' + campoMotivo(f, j) + (e !== 'Devolución parcial' ? '' : '<label>Monto devuelto $</label>' +
+        '<input data-f="' + j + '" data-campo="montoDevuelto" type="number" inputmode="decimal" step="0.01" min="0" value="' +
+        esc(f.montoDevuelto == null ? '' : f.montoDevuelto) + '" placeholder="Lo que el cliente devolvió">') + '</div>';
+    }
+    return html + '</div>';
+  }
+  /**
+   * Filas de la ruta en Mi día: primero lo ya entregado, en el orden en que se guardó (también las paradas fuera de la ruta),
+   * y luego lo que falta, en el orden sugerido. Un punto con parte de sus facturas sin estado sigue con lo que falta.
+   */
+  function filasRuta() {
+    var hechas = facturasConEstado(), filas = [], vistos = {};
+    dia.paradas.forEach(function (p, i) {
+      var pt = p.punto ? puntoRuta(p.punto) : null;
+      if (pt && (vistos[pt.id] || estadoPunto(pt, hechas) !== 'entregada')) return;
+      if (pt) vistos[pt.id] = true;
+      filas.push({ hecha: true, punto: pt, parada: p, indice: i });
+    });
+    dia.ruta.puntos.forEach(function (pt) {
+      if (!vistos[pt.id] && estadoPunto(pt, hechas) === 'entregada') filas.push({ hecha: true, punto: pt, parada: null, indice: null });
+    });
+    puntosPendientes().forEach(function (pt) { filas.push({ hecha: false, punto: pt, parcial: estadoPunto(pt, hechas) === 'parcial' }); });
+    return filas;
+  }
+  function chipsParada(p) {
+    var n = {}, pagos = [];
+    p.facturas.forEach(function (f) {
+      var e = estadoDe(f);
+      n[e] = (n[e] || 0) + 1;
+      if (f.formaPago && pagos.indexOf(f.formaPago) < 0) pagos.push(f.formaPago);
+    });
+    return Object.keys(n).map(function (e) {
+      var c = e === 'Exitosa' ? ['ok', 'check', n[e] === 1 ? 'Exitosa' : n[e] + ' exitosas'] : e === 'Fallida' ? ['fallida', 'x', n[e] === 1 ? 'Fallida' : n[e] + ' fallidas'] : ['dev', 'anterior', e];
+      return '<span class="chip ' + c[0] + '">' + icono(c[1], { tam: 13 }) + esc(c[2]) + '</span>';
+    }).join('') + pagos.map(function (x) { return '<span class="chip">' + icono(x === 'Efectivo' || x === 'Mixto' ? 'billete' : 'recibo', { tam: 13 }) + esc(x) + '</span>'; }).join('');
+  }
+  function filaRuta(fila, n, siguiente) {
+    var pt = fila.punto, p = fila.parada, ubicar = pt && !fila.hecha && porUbicar(pt);
+    var clase = fila.hecha ? 'hecha' : siguiente ? 'siguiente' : ubicar ? 'por-ubicar' : 'pendiente';
+    var nombre = pt ? pt.cliente || pt.nombre : p.cliente;
+    var lugar = pt ? [pt.canal === 'Industria' ? pt.envio : '', pt.direccion,
+      pt.lugar && claveLugar(pt.direccion).indexOf(claveLugar(pt.lugar.municipio)) < 0 ? pt.lugar.municipio : ''].filter(Boolean).join(', ')
+      : [p.municipio, p.departamento].filter(Boolean).join(', ');
+    var der = fila.hecha ? (p ? p.horaSalida || p.horaLlegada || '' : '') : siguiente ? 'Siguiente' : '';
+    var chips;
+    if (fila.hecha) chips = p ? chipsParada(p) + (pt ? '' : '<span class="chip pend">Fuera de la ruta</span>') : '';
+    else {
+      chips = '<span class="chip">' + icono('recibo', { tam: 13 }) + plural(pt.facturas.length, 'factura', 'facturas') + '</span>' +
+        (fila.parcial ? '<span class="chip pend">Faltan facturas</span>' : '') +
+        (ubicar ? '<span class="chip pend">' + icono('pin', { tam: 13 }) + 'Por ubicar</span>' : '') +
+        (qrDePunto(pt) ? '<span class="chip ok">Ubicación de entrega' + icono('check', { tam: 13 }) + '</span>' : '');
+    }
+    var html = '<div class="parada ' + clase + '"><button type="button" class="abrir" data-punto="' + esc(pt ? pt.id : '') + '" data-parada="' +
+      (fila.indice != null ? fila.indice : '') + '"><span class="titulo"><span class="n">' + n + '</span><span class="cli">' + esc(nombre || 'Sin nombre') +
+      '</span><span class="h">' + esc(der) + '</span></span>' + (lugar ? '<span class="det">' + icono('pin', { tam: 13 }) + esc(lugar) + '</span>' : '') +
+      '<span class="chips">' + chips + '</span></button>';
+    if (reordenando && !fila.hecha) {
+      html += '<span class="flechas"><button type="button" data-subir="' + esc(pt.id) + '" aria-label="Subir">' + icono('arriba') + '</button>' +
+        '<button type="button" data-bajar="' + esc(pt.id) + '" aria-label="Bajar">' + icono('abajo') + '</button></span>';
+    }
+    return html + '</div>';
+  }
+  function listaRuta() {
+    var filas = filasRuta(), sig = siguientePunto(), faltan = filas.filter(function (f) { return !f.hecha; }).length;
+    // Las por ubicar que quedan al final van separadas.
+    var corte = filas.length;
+    for (var k = filas.length - 1; k >= 0 && !filas[k].hecha && porUbicar(filas[k].punto); k--) corte = k;
+    var html = '<div id="rutaNueva"><h3>Ruta sugerida</h3><p class="meta-ruta">' + icono('navegacion', { tam: 14 }) + '<b>' +
+      plural(dia.ruta.puntos.length, 'parada', 'paradas') + '</b>' +
+      (faltan > 1 || reordenando ? '<button class="enlace" type="button" data-dia="reordenar">' + (reordenando ? 'Listo' : icono('flechas', { tam: 15 }) + 'Reordenar') + '</button>' : '') +
+      '</p><p class="meta-ruta">Sugerida por municipio, desde la bodega. Puede entregar en el orden que quiera: toque la parada.</p>';
+    filas.forEach(function (f, k) {
+      if (k === corte) html += '<p class="separador">' + icono('pin', { tam: 14 }) + 'Por ubicar, al final: sin municipio en la dirección</p>';
+      html += filaRuta(f, k + 1, Boolean(sig && !f.hecha && f.punto.id === sig.id));
+    });
+    return html + '</div>';
+  }
+  /** «Le faltan N facturas: ¿se quedaron en el camión?» con la lista; «Revisar» o «Terminar de todos modos» (no bloquea). */
+  function abrirHojaFaltan(faltan) {
+    var n = faltan.length;
+    $('hojaFaltan').querySelector('.hoja').innerHTML = '<p class="paso">' + icono('alerta', { tam: 14 }) + ' Antes de terminar el día</p>' +
+      '<h2 id="hojaFaltanTitulo">Le faltan ' + plural(n, 'factura', 'facturas') + ': ¿se quedaron en el camión?</h2><ul class="faltan">' +
+      faltan.map(function (x) {
+        return '<li><span>' + esc(x.punto.cliente || x.punto.nombre || 'Sin nombre') + '<small>' + esc(refFactura(x.factura)) + (porUbicar(x.punto) ? ' · por ubicar' : '') +
+          '</small></span><b>' + (x.factura.monto == null ? '' : fmtDinero(x.factura.monto)) + '</b></li>';
+      }).join('') + '</ul>' +
+      '<button class="primario" type="button" data-dia="revisar">' + icono('recibo', { tam: 20 }) + 'Revisar</button>' +
+      '<button class="fantasma" type="button" data-dia="cierre">Terminar de todos modos</button>' +
+      '<p class="ayuda centro">No bloquea: la oficina verá ' + plural(n, 'factura', 'facturas') + ' sin estado en el plan contra real.</p>';
+    $('hojaFaltan').classList.remove('oculto');
+    $('hojaFaltan').querySelector('.hoja .primario').focus();
+  }
+
   /** Día enviado (o guardado para enviarse solo): Mi día queda CERRADO y el piloto sigue adentro para otro viaje. */
   function cerrarDiaNuevo(envio, html) {
     escribirJSON(CLAVE_CERRADO, { piloto: envio.piloto, fecha: hoyISO(), hora: ahora(), facturas: totalFacturas(),
@@ -6306,7 +7026,8 @@
     var n = sinEnviar(), prueba = esPrueba(dia.piloto);
     var izq = id === 'pDia'
       ? '<div class="cab-quien"><b>' + esc(dia.piloto) + '</b><span>' + (prueba ? '<span class="modo-prueba">MODO PRUEBA</span>' : 'Piloto · Logistik Go') + '</span></div>'
-      : (id === 'pParada' ? '' : '<button class="volver" type="button" data-cab="dia">' + icono('anterior') + 'Mi día</button>') +
+      // En la parada de siempre se cancela o se guarda; en la parada de un punto de la ruta, «Mi día» vuelve sin entregarla.
+      : (id === 'pParada' && paradaPunto == null ? '' : '<button class="volver" type="button" data-cab="dia">' + icono('anterior') + 'Mi día</button>') +
         '<div class="cab-quien">' + (prueba ? '<span class="modo-prueba">MODO PRUEBA</span>' : '') + '</div>';
     var chip = n
       ? '<button class="chip-bandeja" type="button" data-cab="bandeja" aria-expanded="' + $('bandeja').classList.contains('abierta') + '">' +
@@ -6329,6 +7050,7 @@
     var acc = b.getAttribute('data-cab'), actual = pantallaActual();
     if (acc === 'dia') {
       if (actual === 'pCierre') { leerCierre(); guardarBorrador(); }
+      if (actual === 'pParada') olvidarParadaAbierta();
       if (actual === 'pCombustible') { volverDeCombustible(); return; }
       mostrarDia();
     } else if (acc === 'bandeja') {
@@ -6453,8 +7175,7 @@
     if (!dia || !dia.iniciado) return;
     if (avanceEnCurso) { avanceOtraVez = true; return; }
     avanceEnCurso = true;
-    var copia = JSON.parse(JSON.stringify(dia));
-    delete copia.iniciado;
+    var copia = copiaParaServidor(dia);
     conPin(copia.piloto, function () { return servidor('guardarAvance', conCredencial(copia)); }).then(function (r) {
       errorAvance = '';
       avanceOcupado = false;
@@ -7194,57 +7915,6 @@
     reintentarCargasBodega();
   }
 
-  var CLAVE_RUTA_CARGA = 'kmCelasa.rutaCarga.v1';
-  function guardarRutaCarga(ruta) {
-    if (ruta == null) {
-      try { localStorage.removeItem(CLAVE_RUTA_CARGA); } catch (e) {}
-    } else {
-      escribirJSON(CLAVE_RUTA_CARGA, ruta);
-    }
-  }
-  function leerRutaCarga() {
-    return leerJSON(CLAVE_RUTA_CARGA, null);
-  }
-
-  function alTerminarCarga(ruta) {
-    guardarRutaCarga(ruta);
-    dia = dia || { piloto: pilotoConSesion(), iniciado: true, paradas: [] };
-    dia.iniciado = true;
-    dia.fase = 'ruta';
-    if (ruta && Array.isArray(ruta.puntos) && ruta.puntos.length) {
-      dia.paradas = ruta.puntos.map(function (p) {
-        return {
-          cliente: p.cliente || p.nombre || '',
-          direccion: p.direccion || '',
-          departamento: p.departamento || '',
-          municipio: p.municipio || '',
-          horaLlegada: '',
-          km: '',
-          horaSalida: '',
-          facturas: (p.facturas || []).map(function (f) {
-            return {
-              codigo: f.codigo || '',
-              control: f.control || f.numeroControl || '',
-              numeroControl: f.numeroControl || '',
-              monto: f.monto || '',
-              cliente: f.cliente || p.cliente || '',
-              vendedor: f.vendedor || '',
-              canal: f.canal || p.canal || '',
-              pago: 'Al contado',
-              estado: 'Exitosa'
-            };
-          })
-        };
-      });
-    }
-    guardarBorrador();
-    if (dia.nueva) {
-      mostrarDia();
-    } else {
-      mostrar('pRuta');
-      pintarRuta();
-    }
-  }
 
   function enviarLoteCargaBodega(esFinal) {
     if (!cargaBodega) return Promise.resolve(null);
