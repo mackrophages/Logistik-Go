@@ -244,7 +244,10 @@
   #pTablero .grafico-tarjeta .grafico { background: var(--blanco); border: 0; padding: 0; }
   #pTablero input { border-radius: var(--radio-s); }
   /* App instalada: sin "jalar para recargar" ni rebote que saque al piloto de lo que está haciendo. */
-  html, body { overscroll-behavior: none; overflow-x: hidden; }
+  /* overflow-x: hidden en html y body convertía al body en contenedor de desplazamiento propio y en el teléfono
+     (dentro del marco de Apps Script) dejaba de desplazarse; clip recorta sin crear ese contenedor. */
+  html { overscroll-behavior: none; }
+  body { overflow-x: clip; }
   input, select, textarea { scroll-margin-top: 70px; scroll-margin-bottom: 70px; }
 
   /* Pantallas del piloto en horizontal (Task 21): teléfono montado de lado en el carro (~390 px de alto) */
@@ -2187,11 +2190,8 @@
     });
     observadorTablero.observe(cont);
   }
-  window.addEventListener('resize', function () {
-    if (window.LogistikGraficos && ultimoTablero && pantallaActual() === 'pTablero') {
-      pintarGraficos(ultimoTablero);
-    }
-  });
+  // Sin redibujar en cada resize: en el teléfono la barra de Chrome cambia el alto al desplazarse, y redibujar los
+  // gráficos en cada cambio devolvía la página arriba. El ResizeObserver de arriba ya redibuja si cambia el ancho.
   window.addEventListener('orientationchange', function () {
     if (window.LogistikGraficos && ultimoTablero && pantallaActual() === 'pTablero') {
       pintarGraficos(ultimoTablero);
