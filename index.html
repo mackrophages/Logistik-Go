@@ -90,6 +90,9 @@
   .chip.fallida { background: #fce5cd; color: #a14d00; }
   .chip.devolucion { background: #e9e2f5; color: #5b3d99; }
   .estados { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 2px; }
+  /* Reparto de un pago «Mixto»: un monto por forma, de dos en dos; mismo borde naranja que .enruta y .obligatorio. */
+  .desglose { border-left: 4px solid var(--naranja); padding: 2px 0 2px 10px; margin: 10px 0 2px; }
+  .desglose .partes { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
   .estados button { flex: 1 1 40%; min-height: 44px; padding: 6px 4px; font-size: 14px; border-color: #cfd5da; color: var(--gris); }
   .estados button.sel[data-estado="Exitosa"] { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
   .estados button.sel[data-estado="Fallida"] { background: #fce5cd; border-color: #c26100; color: #a14d00; }
@@ -179,6 +182,10 @@
   .kpi.otif { border-top: 4px solid var(--linea); }
   .kpi.destacado { border-top: 4px solid var(--naranja); }
   /* Efectivo a bordo (Task 13): un piloto por encima del límite, en rojo (el mismo rojo del semáforo). */
+  /* Novedades por responsabilidad (Task 17): cada responsable con un color de la paleta de Logistik. */
+  .kpi.resp-ventas { border-top: 4px solid var(--naranja); } .kpi.resp-bodega { border-top: 4px solid var(--acero); }
+  .kpi.resp-transporte { border-top: 4px solid var(--marino); } .kpi.resp-revisar { border-top: 4px solid var(--gris); }
+  .kpi small, table.tabla small.responsable { display: block; font-size: 12px; color: var(--gris); }
   .kpi.sobre-limite { border-top: 4px solid var(--error); } .kpi.sobre-limite b, table.tabla .sobre-limite { color: var(--error); font-weight: 700; }
   .kpi.otif.ok b { color: var(--ok); } .kpi.otif.alerta b { color: var(--alerta); } .kpi.otif.error b { color: var(--error); }
   .linea-tiempo button.dia[aria-pressed="true"] { border-color: var(--naranja); box-shadow: 0 0 0 2px rgba(241, 89, 35, .28); }
@@ -543,10 +550,20 @@
       <div class="tabla-scroll" id="tabPareto"></div>
       <p class="ayuda" id="tabParetoNota"></p>
     </div>
-    <!-- Motivos de rechazo (Task 13): fallidas y devoluciones del periodo por motivo del catálogo (MOTIVOS_RECHAZO). Lo calcula
-         el servidor (normalizarMotivoRechazo_); sin porMotivoRechazo (servidor anterior), la tarjeta no aparece. -->
+    <!-- Facturas por canal (Task 18): facturas y monto del periodo por canal de venta (Industria, Mayoreo, Retail), con el
+         código de vendedor de cada factura y la pestaña Vendedores. Por canal, nunca por vendedor. Lo calcula el servidor
+         (tablero_, con canalDeVendedor_); sin porCanal (servidor anterior), no aparece. -->
+    <div class="tarjeta oculto" id="tabCanalTarjeta">
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Facturas por canal">Facturas por canal (este mes)</h3>
+      <div class="tabla-scroll" id="tabCanal"></div>
+      <p class="ayuda" id="tabCanalNota"></p>
+    </div>
+    <!-- Novedades por responsabilidad (Task 17, sobre la tarjeta de motivos de la Task 13): fallidas y devoluciones del
+         periodo por responsabilidad (Ventas, Bodega, Transporte, Por revisar) y debajo por motivo. Lo calcula el servidor
+         (tablero_, con RESPONSABILIDAD_NOVEDAD); sin porResponsabilidad (servidor anterior), la tarjeta no aparece. -->
     <div class="tarjeta oculto" id="tabMotivosTarjeta">
-      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Motivos de rechazo">Motivos de rechazo (este mes)</h3>
+      <h3 style="margin-top:0" class="cap-periodo" data-titulo="Novedades por responsabilidad">Novedades por responsabilidad (este mes)</h3>
+      <div class="kpis" id="tabResponsabilidadKpis"></div>
       <div class="tabla-scroll" id="tabMotivos"></div>
       <p class="ayuda" id="tabMotivosNota"></p>
     </div>
@@ -1787,16 +1804,33 @@
       'La tabla muestra los clientes que juntan el 80 %; los demás quedan fuera de la lista.' +
       (sinDato ? ' «Sin dato»: facturas sin nombre de cliente en Registros, fuera del cálculo.' : '');
   }
-  function pintarMotivos(t) {
-    var m = t.porMotivoRechazo;
-    $('tabMotivosTarjeta').classList.toggle('oculto', !Array.isArray(m));
-    if (!Array.isArray(m)) return;
-    var total = m.reduce(function (a, x) { return a + x.facturas; }, 0);
-    $('tabMotivos').innerHTML = tabla(['Motivo', 'Facturas', '%'], m.map(function (x) {
-      return [esc(x.motivo), fmtKm(x.facturas), total ? Math.round(x.facturas * 100 / total) + ' %' : ''];
+  function pintarCanales(t) {
+    var c = t.porCanal;
+    $('tabCanalTarjeta').classList.toggle('oculto', !Array.isArray(c));
+    if (!Array.isArray(c)) return;
+    var total = c.reduce(function (a, x) { return a + x.monto; }, 0);
+    $('tabCanal').innerHTML = tabla(['Canal', 'Facturas', 'Monto'], c.map(function (x) {
+      return [esc(x.canal) + '<br><span class="ayuda">' + (total ? Math.round(x.monto * 100 / total) : 0) + ' % del monto</span>', fmtKm(x.facturas), fmtDinero(x.monto)];
     }), [1, 2]);
+    $('tabCanalNota').textContent = 'Por el código de vendedor de cada factura, con la pestaña Vendedores del Sheet. «Sin canal»: factura sin código ' +
+      'de vendedor o con un código que no está en esa pestaña (agréguelo ahí con su canal).';
+  }
+  var CLASE_RESPONSABILIDAD = { 'Ventas': 'resp-ventas', 'Bodega': 'resp-bodega', 'Transporte': 'resp-transporte', 'Por revisar': 'resp-revisar' };
+  function pintarMotivos(t) {
+    var r = t.porResponsabilidad, m = t.porMotivoRechazo || [];
+    $('tabMotivosTarjeta').classList.toggle('oculto', !Array.isArray(r));
+    if (!Array.isArray(r)) return;
+    var total = r.reduce(function (a, x) { return a + x.facturas; }, 0);
+    $('tabResponsabilidadKpis').innerHTML = r.map(function (x) {
+      return '<div class="kpi ' + (CLASE_RESPONSABILIDAD[x.responsabilidad] || '') + '"><span>' + esc(x.responsabilidad) + '</span><b>' + fmtKm(x.facturas) +
+        '</b><small>' + fmtDinero(x.monto) + ' · ' + (total ? Math.round(x.facturas * 100 / total) : 0) + ' %</small></div>';
+    }).join('');
+    $('tabMotivos').innerHTML = m.length ? tabla(['Motivo', 'Facturas', 'Monto'], m.map(function (x) {
+      return [esc(x.motivo) + '<small class="responsable">' + esc(x.responsabilidad) + '</small>', fmtKm(x.facturas), fmtDinero(x.monto)];
+    }), [1, 2]) : '<p class="ayuda">Ninguna factura fallida o devuelta en este periodo.</p>';
     $('tabMotivosNota').textContent = (total ? fmtKm(total) + (total === 1 ? ' factura fallida o devuelta' : ' facturas fallidas o devueltas') : 'Ninguna factura fallida o devuelta') +
-      ' en el periodo. En «Otra», lo que escribió el piloto queda en la nota de la celda Motivo (columna T de Registros).';
+      ' en el periodo. Monto: lo devuelto. La responsabilidad sale del motivo que elige el motorista (él no la ve). «Por revisar»: «Otra» (lo que ' +
+      'escribió el piloto queda en la nota de la celda Motivo), un motivo de antes del catálogo o sin motivo; la oficina puede corregirla en la columna AA de Registros.';
   }
   function pintarEficiencia(t) {
     var e = t.eficiencia;
@@ -1848,6 +1882,7 @@
     pintarMargen(t);
     pintarMantVencido(t);
     pintarPareto(t);
+    pintarCanales(t);
     pintarMotivos(t);
     pintarOtif(t);
     $('tabRecientes').innerHTML = tabla(['Fecha', 'Piloto', 'Placa', 'Km', 'Facturas', 'Monto', 'Revisar'], t.recientes.map(function (v) {
@@ -2108,7 +2143,11 @@
     $('txtLlegada').value = p.horaLlegada || '';
     $('txtKmParada').value = p.km == null ? '' : p.km;
     $('txtSalidaParada').value = p.horaSalida || '';
-    facturasForm = JSON.parse(JSON.stringify(p.facturas)).map(function (f) { f.auto = f.auto || {}; return f; });
+    facturasForm = JSON.parse(JSON.stringify(p.facturas)).map(function (f) {
+      f.auto = f.auto || {};
+      if (f.desglosePago) f.desglosePago = desgloseEditable(f.desglosePago);
+      return f;
+    });
     $('btnBorrarParada').classList.toggle('oculto', i == null);
     aviso('errParada'); aviso('avisoKmParada');
     dibujarFacturas();
@@ -2121,11 +2160,62 @@
    * transferencia o con quedan. El catálogo es el de FORMAS_PAGO de Codigo.gs, que llega en la configuración (servidor 13):
    * la app no tiene copia propia. Un servidor que no lo manda no la guarda con estas formas, así que no se pide.
    */
-  function formasPago() { return Array.isArray(config.formasPago) ? config.formasPago : []; }
+  function formasPago() {
+    var l = Array.isArray(config.formasPago) ? config.formasPago : [];
+    return conPagoMixto() ? l : l.filter(function (x) { return x !== 'Mixto'; });
+  }
   function conFormaPago() { return formasPago().length > 0; }
   /**
+   * Pago «Mixto» (servidor 18): el piloto reparte el monto de la factura entre 2 o más de las otras formas y la suma debe
+   * ser el monto, con la tolerancia que manda el servidor (toleranciaPagoMixto). En el formulario, f.desglosePago es
+   * { forma: 'monto escrito' }; en la parada y en lo que se envía, [{ formaPago, monto }], lo que lee leerDesglosePago_ de
+   * Codigo.gs (que también revisa la suma: si no cuadra, la fila queda marcada para la oficina).
+   */
+  function conPagoMixto() { return config.version >= 18; }
+  function formasDelMixto() { return formasPago().filter(function (x) { return x !== 'Mixto'; }); }
+  function desgloseEditable(d) {
+    if (!Array.isArray(d)) return d && typeof d === 'object' ? d : {};
+    var o = {};
+    d.forEach(function (p) { if (p && p.formaPago) o[p.formaPago] = String(p.monto); });
+    return o;
+  }
+  /** Las formas con algo escrito, en el orden del catálogo: [{ formaPago, monto (NaN si no es un número) }]. */
+  function partesMixto(f) {
+    var d = desgloseEditable(f.desglosePago);
+    return formasDelMixto().filter(function (x) { return d[x] != null && String(d[x]).trim() !== ''; })
+      .map(function (x) { return { formaPago: x, monto: Number(d[x]) }; });
+  }
+  function centavos(n) { return Math.round(n * 100); }
+  function sumaMixto(f) { return partesMixto(f).reduce(function (a, p) { return a + (p.monto > 0 ? centavos(p.monto) : 0); }, 0) / 100; }
+  function cuadraMixto(suma, monto) { return Math.abs(centavos(suma) - centavos(monto)) <= centavos(Number(config.toleranciaPagoMixto) || 0); }
+  function textoSumaMixto(f) {
+    var suma = sumaMixto(f), monto = f.monto === '' || f.monto == null ? NaN : Number(f.monto);
+    if (isNaN(monto)) return 'Suma $' + suma.toFixed(2) + '. Escriba el monto de la factura.';
+    if (cuadraMixto(suma, monto)) return 'Suma $' + suma.toFixed(2) + ' de $' + monto.toFixed(2) + ': cuadra.';
+    return 'Suma $' + suma.toFixed(2) + ' de $' + monto.toFixed(2) + ': ' + (suma < monto ? 'faltan' : 'sobran') + ' $' + (Math.abs(centavos(monto) - centavos(suma)) / 100).toFixed(2) + '.';
+  }
+  function pintarSumaMixto(j) {
+    var el = document.querySelector('[data-suma="' + j + '"]');
+    if (el && facturasForm[j]) el.textContent = textoSumaMixto(facturasForm[j]);
+  }
+  /** Lo que impide guardar un Mixto (mismo aviso de error que los demás campos de la factura). */
+  function erroresMixto(f) {
+    var partes = partesMixto(f), errores = [];
+    partes.forEach(function (p) { if (isNaN(p.monto) || p.monto < 0) errores.push('el monto de ' + p.formaPago.toLowerCase() + ' en el pago mixto no es válido.'); });
+    if (errores.length) return errores;
+    if (partes.filter(function (p) { return p.monto > 0; }).length < 2) return ['reparta el pago mixto en al menos dos formas de pago.'];
+    var monto = f.monto === '' || f.monto == null ? NaN : Number(f.monto);
+    if (!isNaN(monto) && !cuadraMixto(sumaMixto(f), monto)) return ['el pago mixto suma $' + sumaMixto(f).toFixed(2) + ' y la factura es de $' + monto.toFixed(2) + '.'];
+    return [];
+  }
+  /** El desglose que se guarda en la parada y se envía: solo las partes mayores que 0, con dos decimales. */
+  function desgloseParaEnviar(f) {
+    return partesMixto(f).filter(function (p) { return p.monto > 0; }).map(function (p) { return { formaPago: p.formaPago, monto: centavos(p.monto) / 100 }; });
+  }
+  /**
    * Motivo de una entrega fallida o una devolución: el catálogo es MOTIVOS_RECHAZO de Codigo.gs, que llega en la
-   * configuración (servidor 16). Con «Otra» el piloto escribe cuál y se manda como 'Otra: texto'. Un motivo libre de un
+   * configuración (servidor 16; desde el 17, las novedades de RESPONSABILIDAD_NOVEDAD, sin la responsabilidad: el
+   * motorista no la ve ni la manda, la calcula el servidor). Con «Otra» el piloto escribe cuál y se manda como 'Otra: texto'. Un motivo libre de un
    * día empezado antes (o de un servidor anterior) se muestra como «Otra» con su texto: no se pierde. Sin catálogo, el
    * campo de texto con sugerencias de antes.
    */
@@ -2236,6 +2326,13 @@
           formasPago().map(function (x) {
             return '<button type="button" data-fp="' + j + '" data-pago="' + esc(x) + '"' + (f.formaPago === x ? ' class="sel' + (f.auto && f.auto.formaPago ? ' autollenado' : '') + '" aria-pressed="true"' : ' aria-pressed="false"') + '>' + esc(x) + '</button>';
           }).join('') + '</div>') +
+        (!(conPagoMixto() && f.formaPago === 'Mixto') ? '' : '<div class="desglose"><label>Reparto del pago mixto</label>' +
+          '<div class="ayuda">Escriba cuánto pagó con cada forma (al menos dos). La suma debe ser el monto de la factura.</div><div class="partes">' +
+          formasDelMixto().map(function (x) {
+            var d = desgloseEditable(f.desglosePago);
+            return '<div><label>' + esc(x) + ' $</label><input data-desglose-f="' + j + '" data-desglose="' + esc(x) + '" type="number" inputmode="decimal" step="0.01" min="0" value="' +
+              esc(d[x] == null ? '' : d[x]) + '"></div>';
+          }).join('') + '</div><div class="ayuda" data-suma="' + j + '">' + esc(textoSumaMixto(f)) + '</div></div>') +
         (estadoDe(f) !== 'Devolución parcial' ? '' : '<label>Monto devuelto $</label>' +
           '<input data-f="' + j + '" data-campo="montoDevuelto" type="number" inputmode="decimal" step="0.01" min="0" value="' + esc(f.montoDevuelto == null ? '' : f.montoDevuelto) +
           '" placeholder="Lo que el cliente devolvió"' + (f.montoDevuelto === '' || f.montoDevuelto == null ? ' class="falta"' : '') + '>') +
@@ -2246,6 +2343,16 @@
     }).join('');
   }
   $('listaFacturas').addEventListener('input', function (ev) {
+    var jd = ev.target.getAttribute('data-desglose-f');
+    if (jd != null && facturasForm[Number(jd)]) {
+      var fd = facturasForm[Number(jd)];
+      fd.desglosePago = desgloseEditable(fd.desglosePago);
+      fd.desglosePago[ev.target.getAttribute('data-desglose')] = ev.target.value;
+      pintarSumaMixto(Number(jd));
+      guardarConFaltantes = false;
+      guardarParadaAbierta();
+      return;
+    }
     var j = ev.target.getAttribute('data-f');
     if (j == null) return;
     var campo = ev.target.getAttribute('data-campo');
@@ -2266,6 +2373,7 @@
       if (v !== ev.target.value && alFinal) ev.target.value = v;
     }
     facturasForm[Number(j)][campo] = v;
+    if (campo === 'monto') pintarSumaMixto(Number(j));
     if (facturasForm[Number(j)].auto) facturasForm[Number(j)].auto[campo] = false;
     ev.target.classList.remove('autollenado');
     ev.target.classList.toggle('falta', Boolean(facturasForm[Number(j)].escaneada) && v === '');
@@ -2383,6 +2491,7 @@
         var nombres = formasPago().map(function (x) { return x.toLowerCase(); });
         errores.push(n + 'elija la forma de pago (' + nombres.slice(0, -1).join(', ') + ' o ' + nombres[nombres.length - 1] + ').');
       }
+      else if (conPagoMixto() && f.formaPago === 'Mixto') erroresMixto(f).forEach(function (e) { errores.push(n + e); });
       if (estadoDe(f) === 'Devolución parcial') {
         var dev = f.montoDevuelto === '' || f.montoDevuelto == null ? null : Number(f.montoDevuelto);
         if (dev == null || isNaN(dev) || dev <= 0) errores.push(n + 'escriba el monto devuelto (lo que el cliente regresó).');
@@ -2432,6 +2541,7 @@
                  estado: estadoDe(f), motivo: estadoDe(f) === 'Exitosa' ? '' : String(f.motivo || '').trim(),
                  montoDevuelto: estadoDe(f) === 'Devolución parcial' ? Math.round(Number(f.montoDevuelto) * 100) / 100 : '',
                  formaPago: conFormaPago() ? f.formaPago || '' : undefined,
+                 desglosePago: conPagoMixto() && f.formaPago === 'Mixto' ? desgloseParaEnviar(f) : undefined,
                  fechaFactura: conFechaFactura() ? f.fechaFactura || '' : undefined,
                  horaFactura: conFechaFactura() ? f.horaFactura || '' : undefined,
                  cliente: f.cliente || '', direccion: f.direccion || '', auto: f.auto || {} };
@@ -2475,7 +2585,9 @@
     dia.paradas.forEach(function (p) {
       p.facturas.forEach(function (f) {
         var e = estadoDe(f), monto = f.monto === '' || f.monto == null ? 0 : Number(f.monto) || 0;
-        if (f.formaPago) porPago[f.formaPago] = (porPago[f.formaPago] || 0) + monto;
+        // Un Mixto se reparte con lo que escribió el piloto en cada forma.
+        if (f.formaPago === 'Mixto' && conPagoMixto()) desgloseParaEnviar(f).forEach(function (x) { porPago[x.formaPago] = (porPago[x.formaPago] || 0) + x.monto; });
+        else if (f.formaPago) porPago[f.formaPago] = (porPago[f.formaPago] || 0) + monto;
         if (!f.codigo || !f.vendedor) porCompletar++;
         if (conFechaFactura() && (!f.fechaFactura || !f.horaFactura)) sinFecha++;
         if (e === 'Fallida') fallidas++;

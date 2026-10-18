@@ -3,7 +3,7 @@
 // - La página se pide primero a la red, sin la copia del navegador (así llegan las versiones nuevas); si no hay señal
 //   o tarda más de 4 segundos, sale la copia guardada.
 // - No toca las llamadas al servidor de Google (otro dominio): esas las maneja la app.
-var VERSION = "4ec077c8358c";
+var VERSION = "4b164416817f";
 var CACHE = 'logistik-go-' + VERSION;
 var CASCARON = ["./","manifest.webmanifest","jsQR.min.js","iconos/apple-touch-icon.png","iconos/favicon-48.png","iconos/icono-192.png","iconos/icono-512.png","iconos/icono-maskable-512.png"];
 
