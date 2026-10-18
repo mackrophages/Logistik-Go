@@ -1695,6 +1695,24 @@
     return /network|conexi|HTTP 0|timeout|timed out|failed to fetch|offline|se perdió|too many times|simultaneously|server error occurred|error en el servidor|Service .* failed|Service error|Demasiados intentos|Sesión vencida/i.test(msg);
   }
   window.esErrorDeRed = esErrorDeRed;
+  /**
+   * true si el servidor (23) no pudo tomar su candado a tiempo porque estaba ocupado con otros envíos. No es falta de
+   * señal ni un rechazo: lo enviado queda pendiente y se reintenta solo (ver reintentarCuandoSeLibere).
+   */
+  function esServidorOcupado(e) {
+    return /servidor estaba ocupado/i.test(e && e.message ? e.message : String(e));
+  }
+  // Un minuto después de un «servidor ocupado», los días pendientes y el avance se vuelven a mandar solos (sin esperar a
+  // que vuelva la señal, porque nunca se fue).
+  var relojOcupado = null;
+  function reintentarCuandoSeLibere() {
+    if (relojOcupado) return;
+    relojOcupado = setTimeout(function () {
+      relojOcupado = null;
+      reintentarPendientes();
+      if (avancePendiente()) mandarAvance();
+    }, 60000);
+  }
   function totalFacturas() {
     return dia.paradas.reduce(function (s, p) { return s + p.facturas.length; }, 0);
   }
@@ -4215,14 +4233,16 @@
       terminarEnvio(r, envio);
     }).catch(function (e) {
       var msg = e && e.message ? e.message : String(e);
-      // Errores de datos: el piloto debe corregir. Errores de red (o sin sesión): se guarda como pendiente.
-      if (!esErrorDeRed(e)) {
+      // Errores de datos: el piloto debe corregir. Errores de red (o sin sesión) o servidor ocupado: se guarda como pendiente.
+      var ocupado = esServidorOcupado(e);
+      if (!esErrorDeRed(e) && !ocupado) {
         aviso('errCierre', 'error', esc(msg));
       } else {
         var pend = leerJSON(CLAVE_PENDIENTES, []);
         pend.push(conSesion() ? Object.assign({}, envio, { pin: undefined }) : envio);
         escribirJSON(CLAVE_PENDIENTES, pend);
-        terminarEnvio({ ok: true, pendiente: true, sinSesion: esSesionVencida(e) }, envio);
+        terminarEnvio({ ok: true, pendiente: true, sinSesion: esSesionVencida(e), ocupado: ocupado }, envio);
+        if (ocupado) reintentarCuandoSeLibere();
       }
     }).then(function () {
       $('btnEnviar').disabled = false;
@@ -4235,6 +4255,8 @@
     var html;
     if (r.pendiente && r.sinSesion) {
       html = '<div class="aviso ambar">El día quedó guardado en este teléfono: falta escribir su PIN para enviarlo. Toque el aviso de días sin enviar y escriba su PIN.</div>';
+    } else if (r.pendiente && r.ocupado) {
+      html = '<div class="aviso ambar">El servidor estaba ocupado con otros envíos: se reintentará. El día quedó guardado en este teléfono y se enviará solo.</div>';
     } else if (r.pendiente) {
       html = '<div class="aviso ambar">No hay señal. El día quedó guardado en este teléfono y se enviará solo cuando vuelva a abrir la app con internet.</div>';
     } else if (r.anulado) {
@@ -4242,11 +4264,12 @@
       // llegó en "Envíos app" para que la oficina lo recupere si fue un error.
       html = '<div class="aviso ambar">' + esc(r.mensaje) + ' Lo que envió quedó guardado para la oficina. Avise a la oficina si el día no debía anularse.</div>';
     } else if (r.duplicado) {
-      html = '<div class="aviso info">' + esc(r.mensaje) + '</div>';
+      html = '<div class="aviso info">' + esc(r.mensaje) + '</div>' + avisoOmitidas(r.omitidas);
     } else {
       html = r.prueba
         ? '<div class="aviso info">' + esc(r.mensaje || 'Usuario de prueba: no se guardó en Registros.') + ' Km del día: ' + fmtKm(km) + '.</div>'
         : '<div class="aviso ok">Se guardaron ' + r.filas + ' fila(s) en Registros. Km del día: ' + fmtKm(km) + '.</div>';
+      html += avisoOmitidas(r.omitidas);
       var avisos = (r.avisos || []).filter(function (a) { return a !== r.mensaje; });
       if (avisos.length) html += '<div class="aviso ambar"><b>Para revisión de oficina:</b><br>' + avisos.map(esc).join('<br>') + '</div>';
     }
@@ -4265,6 +4288,20 @@
     pintarQuien();
     pintarPendientes();
     mostrar('pListo');
+  }
+  /**
+   * Facturas que el servidor (23) no volvió a escribir porque ya estaban registradas en otro envío: se dice cuáles, sin
+   * culpa (pasa si el mismo día se mandó dos veces). omitidas: [{ factura, motivo }].
+   */
+  function textoOmitidas(omitidas) {
+    if (!omitidas || !omitidas.length) return '';
+    var n = omitidas.length;
+    return (n === 1 ? '1 factura ya estaba registrada (no se duplicó): ' : n + ' facturas ya estaban registradas (no se duplicaron): ') +
+      omitidas.map(function (o) { return o.factura; }).join(', ') + '.';
+  }
+  function avisoOmitidas(omitidas) {
+    var t = textoOmitidas(omitidas);
+    return t ? '<div class="aviso info">' + esc(t) + '</div>' : '';
   }
   /**
    * El último registro de la placa pasa a ser este día, aunque su km sea menor que el anterior (mismo criterio que el
@@ -4334,7 +4371,7 @@
     var pend = leerJSON(CLAVE_PENDIENTES, []);
     if (!pend.length) return;
     reintentando = true;
-    var problemas = [], enviados = 0;
+    var problemas = [], enviados = 0, noDuplicadas = [];
     var cadena = Promise.resolve();
     pend.forEach(function (envio) {
       cadena = cadena.then(function () {
@@ -4345,6 +4382,7 @@
           if (r && r.anulado) problemas.push('El día ' + fmtFecha(envio.fecha) + ' no se guardó: la oficina lo había anulado.');
           else {
             enviados++;
+            if (r && textoOmitidas(r.omitidas)) noDuplicadas.push(textoOmitidas(r.omitidas));
             anotarUltimoRegistro(envio);
             var p = datosPlaca(envio.placa);
             if (p && r && r.mant) p.mant = r.mant;
@@ -4352,6 +4390,7 @@
         }, function (e) {
           var msg = e && e.message ? e.message : String(e);
           if (esErrorDeRed(e)) return;
+          if (esServidorOcupado(e)) { reintentarCuandoSeLibere(); return; }
           // No se borra: queda guardado aparte en el teléfono; se puede reintentar tocando el aviso.
           guardarRechazado(envio, msg);
           quitarPendiente(envio.id);
@@ -4364,7 +4403,7 @@
       if (enviados) guardarConfig();
       pintarPendientes();
       if (problemas.length) aviso('mensajeGlobal', 'error', problemas.map(esc).join('<br>'));
-      else if (enviados && !leerJSON(CLAVE_PENDIENTES, []).length) aviso('mensajeGlobal', 'ok', 'Se enviaron los días que estaban pendientes.');
+      else if (enviados && !leerJSON(CLAVE_PENDIENTES, []).length) aviso('mensajeGlobal', 'ok', ['Se enviaron los días que estaban pendientes.'].concat(noDuplicadas).map(esc).join('<br>'));
       // Si la pantalla de salida está abierta, muestra el último registro ya actualizado.
       if (enviados && !$('pInicio').classList.contains('oculto')) actualizarPlaca();
       if (reintentarOtraVez) { reintentarOtraVez = false; reintentarPendientes(); }
@@ -4391,7 +4430,7 @@
    * ese momento (guardarAvance). Sin señal no se pierde nada: se manda el último estado cuando vuelve la señal. Lo que
    * vale al final es el envío del día ("Enviar día").
    */
-  var avanceEnCurso = false, avanceOtraVez = false, relojAvance = null, errorAvance = '';
+  var avanceEnCurso = false, avanceOtraVez = false, relojAvance = null, errorAvance = '', avanceOcupado = false;
   function estadoAvance() { var a = leerJSON(CLAVE_AVANCE, null); return a && dia && a.id === dia.id ? a : null; }
   function avancePendiente() { var a = estadoAvance(); return Boolean(dia && dia.iniciado && (!a || a.pendiente)); }
   function mandarAvance() {
@@ -4410,12 +4449,15 @@
     delete copia.iniciado;
     conPin(copia.piloto, function () { return servidor('guardarAvance', conCredencial(copia)); }).then(function (r) {
       errorAvance = '';
+      avanceOcupado = false;
       // Solo si no hay un cambio más nuevo esperando (en cola o en los 300 ms antes de mandarse).
       if (dia && dia.id === copia.id && !avanceOtraVez && !relojAvance) escribirJSON(CLAVE_AVANCE, { id: copia.id, pendiente: false, hora: ahora() });
       if (r && r.anulado) aviso('mensajeGlobal', 'error', 'La oficina anuló este día. Pregunte a la oficina antes de seguir.');
     }, function (e) {
       // Sin señal: queda pendiente. Datos que el servidor no acepta: se dice aquí; el envío final dirá qué corregir.
-      errorAvance = esErrorDeRed(e) ? '' : (e && e.message ? e.message : String(e));
+      avanceOcupado = esServidorOcupado(e);
+      if (avanceOcupado) reintentarCuandoSeLibere();
+      errorAvance = esErrorDeRed(e) || avanceOcupado ? '' : (e && e.message ? e.message : String(e));
     }).then(function () {
       avanceEnCurso = false;
       pintarEstadoAvance();
@@ -4427,6 +4469,7 @@
     if (!dia || !dia.iniciado || !(config.version >= 5)) { el.textContent = ''; return; }
     var a = estadoAvance();
     if (errorAvance) el.textContent = 'La oficina no está recibiendo su ruta: ' + errorAvance;
+    else if (avanceOcupado && a && a.pendiente && !avanceEnCurso && !relojAvance) el.textContent = 'El servidor estaba ocupado: se reintentará en un momento.';
     else if (a && !a.pendiente) el.textContent = '✓ La oficina ve su ruta (actualizada ' + a.hora + ').';
     else if (avanceEnCurso || relojAvance) el.textContent = 'Enviando su ruta a la oficina…';
     else el.textContent = 'Sin señal: la oficina verá sus paradas cuando vuelva la señal.';
