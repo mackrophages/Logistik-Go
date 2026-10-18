@@ -383,6 +383,280 @@
   #pTablero .pildoras button, #pTablero .periodo-nav button { border-color: var(--borde-fino); }
   #pTablero .pildoras, #pTablero .fila, #pTablero .periodo-nav { gap: 10px; }
 
+  /* Daily y Nivelacion de carga (M5) */
+  #tabDailyTarjeta .conteo {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    margin: 6px 0 12px;
+  }
+  #tabDailyTarjeta .conteo-item {
+    background: var(--superficie-2);
+    border-radius: var(--radio-s);
+    padding: 6px 4px;
+    font-size: 10.5px;
+    color: var(--gris);
+    text-align: center;
+    line-height: 1.2;
+  }
+  #tabDailyTarjeta .conteo-item b {
+    display: block;
+    font-family: var(--fuente-display);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--tinta);
+    margin: 2px 0;
+  }
+  #tabDailyTarjeta .conteo-item .icono { color: var(--gris); }
+  #tabDailyTarjeta .conteo-item span {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #tabDailyTarjeta .avance-txt {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: var(--gris);
+  }
+  #tabDailyTarjeta .avance-txt b {
+    color: var(--tinta);
+    font-variant-numeric: tabular-nums;
+  }
+  #tabDailyTarjeta .avance {
+    height: 10px;
+    border-radius: 800px;
+    background: var(--superficie-2);
+    overflow: hidden;
+    margin: 6px 0 10px;
+  }
+  #tabDailyTarjeta .avance i {
+    display: block;
+    height: 100%;
+    background: var(--marino);
+    border-radius: 800px;
+  }
+  #tabDailyTarjeta .cuadre.ok {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: var(--radio-m);
+    border: 1.5px solid var(--estado-ok);
+    background: #f1faf6;
+    color: var(--tinta);
+    font-size: 13px;
+    margin: 10px 0;
+  }
+  #tabDailyTarjeta .cuadre.ok .icono { color: var(--estado-ok); flex: none; margin-top: 2px; }
+  #tabDailyTarjeta .cuadre.ok small { display: block; font-size: 11.5px; color: var(--gris); margin-top: 2px; }
+  .tarjeta-piloto-daily {
+    background: var(--blanco);
+    border: 1px solid var(--borde-fino);
+    border-radius: var(--radio-m);
+    padding: 12px 14px;
+    margin-top: 8px;
+  }
+  .tarjeta-piloto-daily.libre {
+    border: 2px solid var(--estado-ok);
+    background: #f1faf6;
+  }
+  .tarjeta-piloto-daily .fila1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .tarjeta-piloto-daily .nombre {
+    font-weight: 700;
+    color: var(--tinta);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tarjeta-piloto-daily .chip-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 800px;
+    padding: 2px 9px 2px 7px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1.5px solid var(--borde-fino);
+    background: var(--superficie-tarjeta);
+    white-space: nowrap;
+    flex: none;
+  }
+  .tarjeta-piloto-daily .chip-estado.sin-carga { border-color: var(--borde-fino); color: var(--gris); }
+  .tarjeta-piloto-daily .chip-estado.en-carga { border-color: var(--serie-1); color: var(--serie-1); }
+  .tarjeta-piloto-daily .chip-estado.en-ruta { border-color: var(--acento); color: var(--acento); }
+  .tarjeta-piloto-daily .chip-estado.libre { border-color: var(--estado-ok); background: var(--estado-ok); color: var(--blanco); }
+  .tarjeta-piloto-daily .chip-estado.cerrado { border-color: var(--gris); color: var(--gris); }
+  .tarjeta-piloto-daily .avance-txt {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--gris);
+  }
+  .tarjeta-piloto-daily .avance-txt b {
+    color: var(--tinta);
+    font-variant-numeric: tabular-nums;
+  }
+  .tarjeta-piloto-daily .avance {
+    height: 8px;
+    border-radius: 800px;
+    background: var(--superficie-2);
+    overflow: hidden;
+    margin: 6px 0 4px;
+  }
+  .tarjeta-piloto-daily .avance i {
+    display: block;
+    height: 100%;
+    background: var(--marino);
+    border-radius: 800px;
+  }
+  .tarjeta-piloto-daily .ultima {
+    font-size: 12px;
+    color: var(--gris);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .tarjeta-piloto-daily .puede {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 6px;
+    color: #1f6e5a;
+  }
+  #tabNivelacionTarjeta .indicador {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--superficie-2);
+    border-radius: var(--radio-m);
+    padding: 10px 14px;
+    margin: 4px 0 8px;
+  }
+  #tabNivelacionTarjeta .indicador .valor {
+    font-family: var(--fuente-display);
+    font-size: 48px;
+    line-height: .9;
+    flex: none;
+    color: var(--tinta);
+  }
+  #tabNivelacionTarjeta .indicador p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.3;
+    color: var(--tinta);
+  }
+  #tabNivelacionTarjeta .indicador .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 5px;
+    border-radius: 800px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  #tabNivelacionTarjeta .indicador .chip.ok {
+    background: var(--ok-bg);
+    color: var(--ok);
+    border: 1px solid var(--ok);
+  }
+  #tabNivelacionTarjeta .indicador .chip.pend {
+    background: var(--alerta-bg);
+    color: var(--alerta);
+    border: 1px solid var(--alerta);
+  }
+  #tabNivelacionTarjeta .cuadre.alerta {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: var(--radio-m);
+    border: 1.5px solid var(--estado-alerta);
+    background: #fdfaf0;
+    color: var(--tinta);
+    font-size: 13px;
+    margin: 8px 0;
+  }
+  #tabNivelacionTarjeta .cuadre.alerta .icono {
+    color: var(--estado-alerta);
+    flex: none;
+    margin-top: 2px;
+  }
+  #tabNivelacionTarjeta .cuadre.alerta small {
+    display: block;
+    font-size: 11.5px;
+    color: var(--gris);
+    margin-top: 2px;
+  }
+  #tabNivelacionTarjeta .grafica-nivelacion-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    margin-top: 8px;
+  }
+  #tabNivelacionTarjeta .grafica-nivelacion-wrap svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  #tabNivelacionTarjeta .leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 12px;
+    color: var(--gris);
+    margin: 8px 0 0;
+  }
+  #tabNivelacionTarjeta .leyenda span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  #tabNivelacionTarjeta .leyenda i {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    background: var(--serie-1);
+  }
+  #tabNivelacionTarjeta .leyenda i.est {
+    width: 16px;
+    height: 0;
+    border-top: 2px dashed #8f8e8a;
+    border-radius: 0;
+    background: none;
+  }
+  #tabNivelacionTarjeta .leyenda i.prom {
+    width: 16px;
+    height: 0;
+    border-top: 2px solid var(--tinta);
+    border-radius: 0;
+    background: none;
+  }
+  #tabNivelacionTarjeta .fijo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--marino);
+    background: #e8eef5;
+    border-radius: var(--radio-m);
+    padding: 10px 14px;
+    margin: 12px 0 8px;
+  }
+
   /* Barra superior en el panel de la oficina (Tarea 26) */
   body.en-tablero header .quien,
   body:has(#pTablero:not(.oculto)) header .quien {
@@ -860,6 +1134,235 @@
   #pTablero .nota-grafica { margin: 6px 0 0; }
   #pTablero .tabla-plegada { display: none !important; }
   #pTablero button.ver-tabla { margin: 8px 0 4px; }
+  /* Personalizar panel (Tarea 28 Parte C) */
+  .lista-switches {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 12px 0;
+  }
+  .switch-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: var(--superficie-2);
+    border-radius: var(--radio-s);
+    cursor: pointer;
+    user-select: none;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--tinta);
+  }
+  .switch-fila:hover {
+    background: #e7e7e3;
+  }
+  .switch-input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 40px;
+    height: 22px;
+    background: #cbd5e1;
+    border-radius: 9999px;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    transition: background .2s;
+    flex: none;
+    margin: 0;
+  }
+  .switch-input::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform .2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .switch-input:checked {
+    background: var(--acento);
+  }
+  .switch-input:checked::after {
+    transform: translateX(18px);
+  }
+  .switch-input:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
+  }
+
+  /* Rendimiento de motoristas (Tarea 28 Parte C) */
+  #tabRendimientoTarjeta .rendimiento-cabecera {
+    margin-bottom: 14px;
+  }
+  .rendimiento-oportunidades {
+    margin-bottom: 16px;
+  }
+  .rendimiento-oportunidades .oportunidades-caja {
+    background: var(--superficie-2);
+    border-left: 4px solid var(--estado-alerta);
+    border-radius: 0 var(--radio-s) var(--radio-s) 0;
+    padding: 12px 14px;
+  }
+  .rendimiento-oportunidades h4 {
+    margin: 0 0 6px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--tinta);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .rendimiento-oportunidades ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 13px;
+    color: var(--tinta);
+  }
+  .rendimiento-oportunidades li {
+    margin-bottom: 4px;
+  }
+  .rendimiento-motoristas-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 18px;
+  }
+  .tarjeta-motorista {
+    background: var(--superficie-pagina);
+    border: 1px solid var(--borde-fino);
+    border-radius: var(--radio-m);
+    padding: 14px 12px;
+  }
+  .motorista-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--borde-fino);
+    padding-bottom: 8px;
+  }
+  .motorista-nombre {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--tinta);
+  }
+  .motorista-meta {
+    font-size: 12px;
+    color: var(--gris);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .chip.pocos-datos, .chip-estandar.pocos-datos {
+    background: #e2e2df;
+    color: var(--gris);
+    border: 1px solid var(--borde-fino);
+  }
+  .indicadores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 10px;
+  }
+  .kpi-indicador {
+    background: var(--superficie-tarjeta);
+    border: 1px solid var(--borde-fino);
+    border-radius: var(--radio-s);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .indicador-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .indicador-nombre {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gris);
+    line-height: 1.25;
+  }
+  .chip-estandar {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 9999px;
+    white-space: nowrap;
+    flex: none;
+  }
+  .chip-estandar.ok {
+    background: var(--estado-ok);
+    color: var(--tinta);
+  }
+  .chip-estandar.debajo {
+    background: var(--estado-error);
+    color: #fff;
+  }
+  .chip-estandar.alerta {
+    background: var(--estado-alerta);
+    color: var(--tinta);
+  }
+  .indicador-valores {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .indicador-valor {
+    font-family: var(--fuente-display);
+    font-size: 24px;
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    font-weight: 400;
+    color: var(--tinta);
+  }
+  .indicador-valor .pocos-datos-texto {
+    font-family: var(--fuente-panel);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gris);
+    letter-spacing: normal;
+  }
+  .indicador-estandar {
+    font-size: 11px;
+    color: var(--gris);
+  }
+  .indicador-tendencia {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--tinta);
+    border-top: 1px dashed var(--borde-fino);
+    padding-top: 4px;
+    margin-top: 2px;
+  }
+  .indicador-detalle {
+    font-size: 10.5px;
+    color: var(--gris);
+    line-height: 1.3;
+  }
+  #grafRendimiento {
+    width: 100%;
+    overflow-x: auto;
+  }
+  #grafRendimiento svg {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
   /* App instalada: sin "jalar para recargar" ni rebote que saque al piloto de lo que está haciendo. */
   /* overflow-x: hidden en html y body convertía al body en contenedor de desplazamiento propio y en el teléfono
      (dentro del marco de Apps Script) dejaba de desplazarse; clip recorta sin crear ese contenedor. */
@@ -1461,6 +1964,9 @@
       </button>
     </div>
     <div class="quien-acciones">
+      <button type="button" id="btnTabPersonalizarTop" class="btn-icono-top" aria-label="Personalizar panel" title="Personalizar panel">
+        <svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
       <button type="button" id="btnTabActualizar" class="btn-icono-top" aria-label="Actualizar" title="Actualizar">
         <svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
       </button>
@@ -1491,8 +1997,16 @@
   <!-- Panel de la oficina (administradores): solo lectura. -->
   <section id="pTablero" class="oculto">
     <div class="tarjeta" id="tabCabeceraTarjeta">
-      <p class="paso">Panel de la oficina</p>
-      <h2>Cómo va el día</h2>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+        <div>
+          <p class="paso">Panel de la oficina</p>
+          <h2>Cómo va el día</h2>
+        </div>
+        <button type="button" id="btnTabPersonalizar" class="boton chico" style="display:inline-flex; align-items:center; gap:6px; margin-top:2px;" aria-label="Personalizar panel" title="Personalizar panel">
+          <svg class="icono" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Personalizar panel</span>
+        </button>
+      </div>
       <p class="ayuda" id="tabGenerado"></p>
       <div id="tabAviso"></div>
     </div>
@@ -1529,7 +2043,33 @@
       <div class="linea-tiempo periodo-datos" id="tabEvolucion" aria-label="Día por día"></div>
     </div>
     <div id="tabSeccionGeneral">
-      <div class="tarjeta"><h3 style="margin-top:0"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>En ruta ahora</h3><div id="tabEnRuta"></div></div>
+      <!-- Daily (M5): plan de la mañana contra avance -->
+      <div class="tarjeta" id="tabDailyTarjeta">
+        <p class="paso">Daily · plan de la mañana contra avance</p>
+        <h2>Pilotos hoy</h2>
+        <div class="conteo" id="tabDailyConteo"></div>
+        <div class="avance-txt">
+          <span>Facturas entregadas de cargadas</span>
+          <b id="tabDailyAvanceTxt">0 de 0</b>
+        </div>
+        <div class="avance" id="tabDailyAvanceBarra" role="img" aria-label="0 de 0 entregadas"><i style="width:0%"></i></div>
+        <div id="tabDailyLibreAviso"></div>
+        <div id="tabDailyPilotos" style="margin-top:10px"></div>
+      </div>
+
+      <!-- Nivelación de carga (M5): balanceo de puntos de entrega de la mañana -->
+      <div class="tarjeta" id="tabNivelacionTarjeta">
+        <p class="paso">Nivelación de carga · plan de la mañana</p>
+        <h2>Puntos de entrega por piloto</h2>
+        <div class="indicador" id="tabNivelacionIndicador"></div>
+        <div id="tabNivelacionAvisoReasignar"></div>
+        <figure class="grafico" id="figNivelacionGrafica"><figcaption>Puntos de entrega por piloto</figcaption><div class="grafica-nivelacion-wrap" id="grafNivelacion"></div></figure>
+        <div class="leyenda" id="tabNivelacionLeyenda"></div>
+        <p class="fijo"><svg class="icono" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>Se mide la asignación de la carga (el proceso), no a los pilotos.</p>
+        <div class="tabla-scroll" id="tabNivelacionTabla" data-grafico="grafNivelacion"></div>
+      </div>
+
+      <div class="tarjeta" id="tabEnRutaTarjeta"><h3 style="margin-top:0"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>En ruta ahora</h3><div id="tabEnRuta"></div></div>
       <div class="periodo-datos">
     <!-- Gráficos (Task 20): isla React con TanStack Charts (graficos/, compilada a Graficos.html). El panel pide el código con
          un <script> solo al abrirse (pintarGraficos); cada <figure> queda oculta hasta que su gráfico tiene datos. Las tablas
@@ -1538,7 +2078,7 @@
       <h3 style="margin-top:0" class="cap-periodo" data-titulo="OTIF por departamento"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>OTIF por departamento (este mes)</h3>
       <figure class="grafico" hidden><div id="grafMapa"></div></figure>
     </div>
-    <div class="tarjeta"><h3 style="margin-top:0">Hoy</h3><div class="kpis" id="tabHoy"></div>
+    <div class="tarjeta" id="tabResumenTarjeta"><h3 style="margin-top:0">Hoy</h3><div class="kpis" id="tabHoy"></div>
       <h3 class="cap-periodo" data-titulo="">Este mes</h3><div class="kpis" id="tabMes"></div></div>
     <!-- Efectivo a bordo (Task 13): de hoy, por piloto, lo cobrado en efectivo (el Contado se paga en caja, no cuenta); en rojo el que pasa el límite
          (LIMITE_EFECTIVO_ABORDO). Lo calcula el servidor (tablero_); sin efectivoAbordoPorPiloto (servidor anterior), no aparece. -->
@@ -1549,10 +2089,10 @@
       <div class="tabla-scroll" id="tabEfectivo" data-grafico="grafEfectivo"></div>
       <p class="ayuda" id="tabEfectivoNota"></p>
     </div>
-    <div class="tarjeta"><h3 style="margin-top:0" class="cap-periodo" data-titulo="Pilotos"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Pilotos (este mes)</h3>
+    <div class="tarjeta" id="tabPilotosTarjeta"><h3 style="margin-top:0" class="cap-periodo" data-titulo="Pilotos"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Pilotos (este mes)</h3>
       <figure class="grafico" hidden><figcaption>Facturas de cada piloto</figcaption><div id="grafPilotos"></div></figure>
       <div class="tabla-scroll" id="tabPilotos" data-grafico="grafPilotos"></div></div>
-    <div class="tarjeta"><h3 style="margin-top:0"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="13" x="1" y="6" rx="2"/><polygon points="17 8 20 8 23 11 23 19 17 19 17 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Flota y mantenimiento</h3>
+    <div class="tarjeta" id="tabFlotaTarjeta"><h3 style="margin-top:0"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="13" x="1" y="6" rx="2"/><polygon points="17 8 20 8 23 11 23 19 17 19 17 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Flota y mantenimiento</h3>
       <figure class="grafico" hidden><figcaption>Intervalo de mantenimiento recorrido</figcaption><div id="grafFlota"></div></figure>
       <div class="tabla-scroll" id="tabFlota" data-grafico="grafFlota"></div></div>
     <!-- OTIF (Task 8): del periodo, por región y por departamento. Lo calcula el servidor (resultadoOtif_); sin otif (servidor
@@ -1679,8 +2219,26 @@
       <div class="tabla-scroll" id="tabMotivos" data-grafico="grafMotivos"></div>
       <p class="ayuda" id="tabMotivosNota"></p>
     </div>
+    <!-- Rendimiento de motoristas (Tarea 24 / Tarea 28 Parte C): por motorista propio, en orden alfabético. -->
+    <div class="tarjeta oculto" id="tabRendimientoTarjeta">
+      <div class="rendimiento-cabecera">
+        <h3 style="margin-top:0"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Rendimiento de motoristas</h3>
+        <p class="ayuda">Se mide el proceso para mejorarlo, no para culpar a nadie.</p>
+      </div>
+      <div id="tabRendimientoOportunidades" class="rendimiento-oportunidades"></div>
+      <figure class="grafico" id="figRendimiento">
+        <figcaption>Comparativa por motorista</figcaption>
+        <div class="fila-selector-grafico" style="display:flex;align-items:center;gap:8px;margin:8px 0 12px;">
+          <label for="selRendimientoIndicador" style="font-size:13px;font-weight:600;color:var(--gris);">Indicador:</label>
+          <select id="selRendimientoIndicador" style="max-width:240px;"></select>
+        </div>
+        <div id="grafRendimiento"></div>
+      </figure>
+      <div class="tabla-scroll" id="tabRendimientoTabla" data-grafico="grafRendimiento"></div>
+      <div id="tabRendimientoMotoristas" class="rendimiento-motoristas-lista"></div>
     </div>
-    <div class="tarjeta"><h3 style="margin-top:0"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><polyline points="12 7 12 12 15 15"/></svg>Últimos viajes enviados</h3>
+    </div>
+    <div class="tarjeta" id="tabRecientesTarjeta"><h3 style="margin-top:0"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><polyline points="12 7 12 12 15 15"/></svg>Últimos viajes enviados</h3>
       <figure class="grafico" hidden><figcaption>Km de cada viaje</figcaption><div id="grafRecientes"></div></figure>
       <div class="tabla-scroll" id="tabRecientes" data-grafico="grafRecientes"></div></div>
     </div>
@@ -1699,6 +2257,24 @@
     </div>
   </section>
 </main>
+
+<!-- Personalizar panel (Tarea 28 Parte C): mostrar u ocultar secciones del panel. -->
+<div id="dlgPersonalizarPanel" class="dialogo oculto" role="dialog" aria-modal="true" aria-labelledby="dlgPersonalizarTitulo">
+  <div class="tarjeta" style="max-height:90vh; overflow-y:auto; max-width:440px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <h2 id="dlgPersonalizarTitulo" style="margin:0;">Personalizar panel</h2>
+      <button type="button" id="btnCerrarDlgPersonalizar" class="btn-icono-top" aria-label="Cerrar" title="Cerrar">
+        <svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <p class="ayuda" style="margin-top:0;">Elija qué secciones desea ver en el panel. Rendimiento viene oculta por defecto y solo se calcula cuando está visible.</p>
+    <div id="listaSwitchesSecciones" class="lista-switches"></div>
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <button class="primario" type="button" id="btnGuardarPersonalizar">Guardar preferencias</button>
+      <button class="secundario" type="button" id="btnCancelarPersonalizar">Cancelar</button>
+    </div>
+  </div>
+</div>
 
 <!-- La sesión del piloto venció (o no hay): se pide el PIN sin salir de lo que estaba haciendo. -->
 <div id="dlgPin" class="dialogo oculto" role="dialog" aria-modal="true" aria-labelledby="dlgPinTitulo">
@@ -1978,7 +2554,11 @@
     usuarioMas: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/>' +
       '<line x1="22" x2="16" y1="11" y2="11"/>',
     ojoOff: '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>' +
-      '<path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>'
+      '<path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>',
+    candado: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    barras: '<line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/>',
+    flechas: '<polyline points="16 3 21 3 21 8"/><line x1="4" x2="21" y1="20" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" x2="21" y1="15" y2="21"/><line x1="4" x2="9" y1="4" y2="9"/>',
+    ajustes: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>'
   };
 
   function icono(nombre, opts) {
@@ -2934,6 +3514,7 @@
     if (typeof cambiarSeccionTablero === 'function') cambiarSeccionTablero('general');
     mostrar('pTablero');
     iniciarObservadorSecciones();
+    aplicarPreferenciasPanel(obtenerPreferenciasPanel());
     if (datos) pintarTablero(datos); else cargarTablero();
     programarTablero();
   }
@@ -2955,7 +3536,17 @@
     cargandoTablero = true;
     $('btnTabActualizar').disabled = true;
     var filtro = filtroTablero;
-    servidor('obtenerTablero', s.token, filtro).then(function (t) {
+    var prefs = obtenerPreferenciasPanel();
+    var secciones = [];
+    SECCIONES_PANEL_INFO.forEach(function (sec) {
+      if (sec.clave === 'rendimiento') {
+        if (prefs && prefs.rendimiento === true) secciones.push('rendimiento');
+      } else if (!prefs || prefs[sec.clave] !== false) {
+        secciones.push(sec.clave);
+      }
+    });
+    var opciones = { secciones: secciones };
+    return servidor('obtenerTablero', s.token, filtro, opciones).then(function (t) {
       cargandoTablero = false; $('btnTabActualizar').disabled = false;
       // Se eligió otro periodo mientras llegaba este: se pide el nuevo.
       if (filtro !== filtroTablero) { cargarTablero(); return; }
@@ -3253,6 +3844,225 @@
         return [esc(fmtFecha(p.desde)), fmtDinero(p.precio), esc(p.fuente || 'DGEHM')];
       }), [1]);
   }
+  function chipEstadoDaily(estado) {
+    var est = estado || 'Sin carga';
+    var mapa = {
+      'Sin carga': { ic: 'paquete', cls: 'sin-carga' },
+      'En carga': { ic: 'paquete', cls: 'en-carga' },
+      'En ruta': { ic: 'camion', cls: 'en-ruta' },
+      'Libre': { ic: 'circuloCheck', cls: 'libre' },
+      'Cerrado': { ic: 'candado', cls: 'cerrado' }
+    };
+    var cfg = mapa[est] || { ic: 'paquete', cls: 'sin-carga' };
+    return '<span class="chip-estado ' + cfg.cls + '">' + icono(cfg.ic, { tam: 13, grueso: 2.2 }) + esc(est) + '</span>';
+  }
+
+  function pintarDaily(t) {
+    var tarjeta = $('tabDailyTarjeta');
+    if (!tarjeta) return;
+    var visible = (!t.preferenciasPanel || t.preferenciasPanel.daily !== false) && Boolean(t.cargaDelDia);
+    tarjeta.classList.toggle('oculto', !visible);
+    if (!visible) return;
+
+    var pilotos = (t.cargaDelDia && Array.isArray(t.cargaDelDia.pilotos)) ? t.cargaDelDia.pilotos : [];
+
+    var cuenta = { 'Sin carga': 0, 'En carga': 0, 'En ruta': 0, 'Libre': 0, 'Cerrado': 0 };
+    var cargadas = 0, entregadas = 0;
+    pilotos.forEach(function (p) {
+      var est = p.estado || 'Sin carga';
+      if (cuenta[est] !== undefined) cuenta[est]++;
+      else cuenta['Sin carga']++;
+      cargadas += (p.facturas || 0);
+      entregadas += (p.entregadas || 0);
+    });
+
+    var estadosConfig = [
+      { clave: 'Sin carga', label: 'Sin carga', ic: 'paquete' },
+      { clave: 'En carga', label: 'En carga', ic: 'paquete' },
+      { clave: 'En ruta', label: 'En ruta', ic: 'camion' },
+      { clave: 'Libre', label: 'Libre', ic: 'circuloCheck' },
+      { clave: 'Cerrado', label: 'Cerrado', ic: 'candado' }
+    ];
+    $('tabDailyConteo').innerHTML = estadosConfig.map(function (e) {
+      return '<div class="conteo-item">' + icono(e.ic, { tam: 15 }) + '<b>' + cuenta[e.clave] + '</b><span>' + e.label + '</span></div>';
+    }).join('');
+
+    $('tabDailyAvanceTxt').textContent = entregadas + ' de ' + cargadas;
+    var pctTotal = cargadas > 0 ? Math.round(entregadas / cargadas * 100) : 0;
+    $('tabDailyAvanceBarra').setAttribute('aria-label', entregadas + ' de ' + cargadas + ' entregadas');
+    $('tabDailyAvanceBarra').innerHTML = '<i style="width:' + pctTotal + '%"></i>';
+
+    var libres = pilotos.filter(function (p) { return p.estado === 'Libre'; });
+    $('tabDailyLibreAviso').innerHTML = libres.length ?
+      '<div class="cuadre ok">' + icono('circuloCheck', { grueso: 2.2 }) +
+      '<div><b>' + esc(libres[0].piloto) + ' está Libre</b><br><small>Ya entregó todo y regresa: puede tomar otra entrega.</small></div></div>' : '';
+
+    if (!pilotos.length) {
+      $('tabDailyPilotos').innerHTML = '<p class="ayuda">Sin pilotos registrados.</p>';
+      return;
+    }
+
+    $('tabDailyPilotos').innerHTML = pilotos.map(function (p) {
+      var pct = p.facturas ? Math.round((p.entregadas || 0) / p.facturas * 100) : 0;
+      var textoAvance = p.estado === 'Sin carga' ? 'Sin carga' :
+        (p.estado === 'En carga' ? (p.facturas || 0) + ' escaneadas' : (p.entregadas || 0) + ' de ' + (p.facturas || 0) + ' entregadas');
+      var u = p.ultima;
+      var textoUltima = u ? (u.texto || (u.cliente ? u.cliente + (u.municipio ? ' (' + u.municipio + ')' : '') + (u.hora ? ' a las ' + u.hora : '') : '')) : '';
+      var icUltima = p.estado === 'Cerrado' ? 'candado' : (p.estado === 'En carga' ? 'paquete' : 'pin');
+
+      return '<div class="tarjeta-piloto-daily' + (p.estado === 'Libre' ? ' libre' : '') + '">' +
+        '<div class="fila1"><span class="nombre">' + esc(p.piloto) + '</span>' + chipEstadoDaily(p.estado) + '</div>' +
+        '<div class="avance-txt" style="margin-top:6px"><span>' + (p.placa ? esc(p.placa) + ' · ' : '') + (p.puntos || 0) + ((p.puntos || 0) === 1 ? ' punto' : ' puntos') + '</span><b>' +
+        esc(textoAvance) + '</b></div>' +
+        '<div class="avance" role="img" aria-label="' + esc(textoAvance) + '"><i style="width:' + pct + '%"></i></div>' +
+        '<div class="ultima">' + icono(icUltima, { tam: 13 }) + (textoUltima ? 'Última: ' + esc(textoUltima) : 'Sin paradas') + '</div>' +
+        (p.estado === 'Libre' ? '<div class="puede">' + icono('circuloCheck', { tam: 16, grueso: 2.4 }) + 'Puede tomar otra entrega</div>' : '') +
+        '</div>';
+    }).join('');
+  }
+
+  function graficaBarrasNivelacion(pilotos, prom, estandar) {
+    if (!pilotos.length) return '<p class="ayuda">Sin datos de pilotos.</p>';
+    var pts = pilotos.map(function (p) { return p.puntos || 0; });
+    var maxPuntos = Math.max.apply(null, [estandar || 0, prom || 0].concat(pts));
+    var maxEscala = Math.max(15, Math.ceil((maxPuntos + 2) / 5) * 5);
+    var W = 360, x0 = 100, top = 28, fila = 26, h = 14, n = pilotos.length;
+    var abajo = top + n * fila;
+    var H = abajo + 22;
+    var u = (W - x0 - 25) / maxEscala;
+
+    var s = '<svg class="grafica-nivelacion" viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="Nivelación de carga: puntos de entrega por piloto. Promedio ' + Math.round(prom) + ', estándar ' + estandar + '.">';
+
+    var pasoTick = maxEscala <= 20 ? 5 : 10;
+    for (var t = 0; t <= maxEscala; t += pasoTick) {
+      var x = x0 + t * u;
+      s += '<line x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + (top - 4) + '" y2="' + abajo + '" stroke="#e4e3df" stroke-width="1"/>' +
+        '<text x="' + x.toFixed(1) + '" y="' + (H - 4) + '" font-size="10" fill="#495057" text-anchor="middle">' + t + '</text>';
+    }
+
+    pilotos.forEach(function (p, i) {
+      var y = top + i * fila + (fila - h) / 2;
+      var puntos = p.puntos || 0;
+      var w = Math.max(0, puntos * u);
+      var partes = (p.piloto || '').split(' ');
+      var corto = partes[0] + (partes.length > 1 ? ' ' + partes[1].charAt(0) + '.' : '');
+      s += '<g class="fila-barra">' +
+        '<title>' + esc(p.piloto) + ': ' + puntos + (puntos === 1 ? ' punto' : ' puntos') + '</title>' +
+        '<text x="' + (x0 - 6) + '" y="' + (y + h - 3) + '" font-size="11.5" fill="#070607" text-anchor="end">' + esc(corto) + '</text>';
+      if (w > 0) {
+        s += '<rect x="' + x0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="' + h + '" rx="4" ry="4" fill="#524ae9"/>';
+      }
+      if (w > 20) {
+        s += '<text x="' + (x0 + w - 5).toFixed(1) + '" y="' + (y + h - 3) + '" font-size="10.5" font-weight="700" fill="#ffffff" text-anchor="end">' + puntos + '</text>';
+      } else {
+        s += '<text x="' + (x0 + w + 4).toFixed(1) + '" y="' + (y + h - 3) + '" font-size="10.5" font-weight="700" fill="#070607" text-anchor="start">' + puntos + '</text>';
+      }
+      s += '</g>';
+    });
+
+    if (estandar > 0) {
+      var xe = x0 + estandar * u;
+      s += '<line x1="' + xe.toFixed(1) + '" x2="' + xe.toFixed(1) + '" y1="' + (top - 6) + '" y2="' + abajo + '" stroke="#8f8e8a" stroke-width="2" stroke-dasharray="4 3"/>' +
+        '<text x="' + (xe + 3).toFixed(1) + '" y="' + (top - 10) + '" font-size="10" fill="#495057">Estándar ' + estandar + '</text>';
+    }
+
+    if (prom > 0) {
+      var xp = x0 + prom * u;
+      s += '<line x1="' + xp.toFixed(1) + '" x2="' + xp.toFixed(1) + '" y1="' + (top - 6) + '" y2="' + abajo + '" stroke="#070607" stroke-width="1.8"/>' +
+        '<text x="' + (xp - 3).toFixed(1) + '" y="' + (top - 10) + '" font-size="10" font-weight="700" fill="#070607" text-anchor="end">Promedio ' + Math.round(prom) + '</text>';
+    }
+
+    s += '</svg>';
+    return s;
+  }
+
+  function pintarNivelacion(t) {
+    var tarjeta = $('tabNivelacionTarjeta');
+    if (!tarjeta) return;
+    var visible = (!t.preferenciasPanel || t.preferenciasPanel.nivelacion !== false) && Boolean(t.nivelacion || t.cargaDelDia);
+    tarjeta.classList.toggle('oculto', !visible);
+    if (!visible) return;
+
+    var datos = [];
+    if (t.nivelacion && Array.isArray(t.nivelacion)) {
+      datos = t.nivelacion.slice();
+    } else if (t.cargaDelDia && Array.isArray(t.cargaDelDia.pilotos)) {
+      datos = t.cargaDelDia.pilotos.map(function (p) {
+        return { piloto: p.piloto, puntos: p.puntos || 0, facturas: p.facturas || 0, monto: p.monto || 0 };
+      });
+    }
+
+    // Orden alfabetico por nombre de piloto
+    var pilotosNivel = datos.slice().sort(function (a, b) {
+      return (a.piloto || '').localeCompare(b.piloto || '', 'es');
+    });
+
+    var cfg = t.nivelacionConfig || {};
+    var estandar = cfg.estandar != null ? cfg.estandar : 13;
+    var disp = cfg.dispersion;
+
+    var pts = pilotosNivel.map(function (p) { return p.puntos || 0; }).filter(function (n) { return n > 0; });
+    var max = pts.length ? Math.max.apply(null, pts) : 0;
+    var min = pts.length ? Math.min.apply(null, pts) : 0;
+    var suma = pts.reduce(function (a, b) { return a + b; }, 0);
+    var promCalc = pts.length ? Math.round((suma / pts.length) * 10) / 10 : 0;
+
+    var prom = disp && disp.promedio != null ? disp.promedio : promCalc;
+    var meta = disp && disp.meta != null ? disp.meta : 1.3;
+    var cociente = disp && disp.dispersion != null ? disp.dispersion : (min > 0 ? Math.round((max / min) * 10) / 10 : (pts.length === 1 ? 1 : null));
+
+    // Indicador AGREGADO sin nombres
+    if (cociente === null) {
+      $('tabNivelacionIndicador').innerHTML = '<div class="valor">-</div><div><p>Sin datos de puntos para calcular dispersión hoy.</p></div>';
+    } else {
+      var enMeta = cociente <= meta;
+      var cocTxt = Number(cociente).toFixed(1) + '×';
+      var chipMeta = enMeta
+        ? '<span class="chip ok">' + icono('check', { tam: 13, grueso: 2.8 }) + 'En meta (≤ ' + meta + ')</span>'
+        : '<span class="chip pend">' + icono('alerta', { tam: 13, grueso: 2.2 }) + 'Fuera de meta (≤ ' + meta + ')</span>';
+      $('tabNivelacionIndicador').innerHTML =
+        '<div class="valor">' + cocTxt + '</div>' +
+        '<div><p>Dispersión de hoy: <b>' + cocTxt + '</b> (máximo sobre mínimo)</p>' + chipMeta + '</div>';
+    }
+
+    // Aviso de reasignacion (carga sobre el 130% del promedio), redactado sobre la asignacion
+    if (prom > 0 && max > 1.3 * prom) {
+      $('tabNivelacionAvisoReasignar').innerHTML =
+        '<div class="cuadre alerta">' + icono('alerta', { tam: 18 }) +
+        '<div>Carga sobre el 130% del promedio (' + max + ' puntos vs promedio ' + Math.round(prom) + '): ¿reasignar puntos antes de salir?' +
+        '<small>Aviso al pasar del 130% del promedio.</small></div></div>';
+    } else {
+      $('tabNivelacionAvisoReasignar').innerHTML = '';
+    }
+
+    // Grafica de barras horizontales
+    var tienePuntos = pts.length > 0;
+    var conGrafica = tienePuntos && !(t.urlGraficos && !window.LogistikGraficos);
+    $('grafNivelacion').innerHTML = tienePuntos ? graficaBarrasNivelacion(pilotosNivel, prom, estandar) : '<p class="ayuda">Sin puntos de entrega asignados hoy.</p>';
+    $('figNivelacionGrafica').hidden = !conGrafica;
+
+    // Leyenda
+    $('tabNivelacionLeyenda').innerHTML =
+      '<span><i></i>Puntos de entrega</span>' +
+      '<span><i class="prom"></i>Promedio ' + (prom > 0 ? Math.round(prom) : '-') + '</span>' +
+      '<span><i class="est"></i>Estándar ' + estandar + '</span>';
+
+    // Tabla bajo "Ver tabla"
+    $('tabNivelacionTabla').innerHTML = tabla(
+      ['Piloto', 'Puntos', 'Facturas', 'Monto'],
+      pilotosNivel.map(function (p) {
+        return [
+          '<b>' + esc(p.piloto) + '</b>',
+          fmtKm(p.puntos || 0),
+          fmtKm(p.facturas || 0),
+          fmtDinero(p.monto || 0)
+        ];
+      }),
+      [1, 2, 3]
+    );
+    plegarTablas();
+  }
+
   function pintarEfectivo(t) {
     var e = t.efectivoAbordoPorPiloto;
     $('tabEfectivoTarjeta').classList.toggle('oculto', !Array.isArray(e));
@@ -3530,6 +4340,8 @@
       return ['<b>' + esc(f.placa) + '</b>' + (f.enRuta ? '<br><span class="chip">En ruta</span>' : ''), estado, prox, fmtKm(f.kmActual),
               f.ultimoFecha ? esc(fmtFecha(f.ultimoFecha)) + (f.ultimoPiloto ? '<br><span class="ayuda">' + esc(f.ultimoPiloto) + '</span>' : '') : '–'];
     }), [3]);
+    pintarDaily(t);
+    pintarNivelacion(t);
     pintarLiquidacion(t);
     pintarCosto(t);
     pintarEficiencia(t);
@@ -3542,12 +4354,350 @@
     pintarMotivos(t);
     pintarOtif(t);
     pintarTransportistas(t);
+    if (t.preferenciasPanel) {
+      preferenciasPanelActuales = Object.assign({}, PREFERENCIAS_PANEL_DEF, t.preferenciasPanel);
+      escribirJSON(CLAVE_PREFS_PANEL, preferenciasPanelActuales);
+    }
+    var prefs = obtenerPreferenciasPanel();
+    aplicarPreferenciasPanel(prefs);
+    if (prefs.rendimiento && t.rendimiento) {
+      pintarRendimiento(t.rendimiento);
+    } else {
+      $('tabRendimientoTarjeta').classList.add('oculto');
+    }
     $('tabRecientes').innerHTML = tabla(['Fecha', 'Piloto', 'Placa', 'Km', 'Facturas', 'Monto', 'Revisar'], t.recientes.map(function (v) {
       return [esc(fmtFecha(v.fecha)), esc(v.piloto), esc(v.placa), fmtKm(v.km), fmtKm(v.facturas), fmtDinero(v.monto),
               v.revisar ? '<span class="estado-mant proximo">' + icono('alerta', { tam: 14 }) + v.revisar + (v.revisar === 1 ? ' fila' : ' filas') + '</span>' : ''];
     }), [3, 4, 5]);
     // Al final: plegarTablas mira si cada tabla ya tiene contenido.
     pintarGraficos(t);
+  }
+
+  // ------------------------------------------------------------ Personalizar panel y Rendimiento (Tarea 28 Parte C)
+  var SECCIONES_PANEL_INFO = [
+    { clave: 'enRuta', nombre: 'En ruta' },
+    { clave: 'resumen', nombre: 'Resumen (hoy y mes)' },
+    { clave: 'mapa', nombre: 'Mapa de entregas' },
+    { clave: 'efectivoAbordo', nombre: 'Efectivo a bordo' },
+    { clave: 'pilotos', nombre: 'Pilotos' },
+    { clave: 'flota', nombre: 'Flota y mantenimiento' },
+    { clave: 'otif', nombre: 'OTIF' },
+    { clave: 'departamentos', nombre: 'Departamentos' },
+    { clave: 'liquidacion', nombre: 'Liquidación' },
+    { clave: 'formaPago', nombre: 'Forma de pago' },
+    { clave: 'costoPorFactura', nombre: 'Costo por factura' },
+    { clave: 'eficiencia', nombre: 'Eficiencia operativa' },
+    { clave: 'lagLiquidacion', nombre: 'Lag de liquidación' },
+    { clave: 'margenSubcontratista', nombre: 'Margen de subcontratista' },
+    { clave: 'mantenimientoVencido', nombre: 'Mantenimiento vencido' },
+    { clave: 'pareto', nombre: 'Pareto 80/20 de clientes' },
+    { clave: 'canales', nombre: 'Canales de venta' },
+    { clave: 'novedades', nombre: 'Novedades por responsabilidad' },
+    { clave: 'recientes', nombre: 'Últimos viajes enviados' },
+    { clave: 'transportistas', nombre: 'Transportistas subcontratados' },
+    { clave: 'rendimiento', nombre: 'Rendimiento de motoristas' }
+  ];
+  var PREFERENCIAS_PANEL_DEF = {
+    enRuta: true, resumen: true, mapa: true, efectivoAbordo: true, pilotos: true, flota: true,
+    otif: true, departamentos: true, liquidacion: true, formaPago: true, costoPorFactura: true,
+    eficiencia: true, lagLiquidacion: true, margenSubcontratista: true, mantenimientoVencido: true,
+    pareto: true, canales: true, novedades: true, recientes: true, transportistas: true, rendimiento: false
+  };
+  var CLAVE_PREFS_PANEL = 'kmCelasa.preferenciasPanel.v1';
+  var preferenciasPanelActuales = null;
+  var ultimoRendimiento = null;
+
+  function obtenerPreferenciasPanel() {
+    if (!preferenciasPanelActuales) {
+      preferenciasPanelActuales = leerJSON(CLAVE_PREFS_PANEL, null);
+      if (!preferenciasPanelActuales) {
+        preferenciasPanelActuales = Object.assign({}, PREFERENCIAS_PANEL_DEF);
+      }
+    }
+    return preferenciasPanelActuales;
+  }
+
+  function aplicarPreferenciasPanel(prefs) {
+    if (!prefs) return;
+    if ($('tabRendimientoTarjeta')) {
+      $('tabRendimientoTarjeta').classList.toggle('oculto', !prefs.rendimiento);
+    }
+  }
+
+  function abrirPersonalizarPanel() {
+    var prefs = obtenerPreferenciasPanel();
+    var cont = $('listaSwitchesSecciones');
+    if (cont) {
+      cont.innerHTML = SECCIONES_PANEL_INFO.map(function (s) {
+        var chk = prefs[s.clave] !== false;
+        if (s.clave === 'rendimiento') chk = Boolean(prefs.rendimiento);
+        return '<label class="switch-fila" for="chkSeccion_' + esc(s.clave) + '">' +
+          '<span>' + esc(s.nombre) + '</span>' +
+          '<input type="checkbox" id="chkSeccion_' + esc(s.clave) + '" data-seccion="' + esc(s.clave) + '" class="switch-input"' + (chk ? ' checked' : '') + '>' +
+          '</label>';
+      }).join('');
+    }
+    $('dlgPersonalizarPanel').classList.remove('oculto');
+  }
+
+  function cerrarPersonalizarPanel() {
+    $('dlgPersonalizarPanel').classList.add('oculto');
+  }
+
+  function guardarPersonalizarPanel() {
+    var inputs = document.querySelectorAll('#dlgPersonalizarPanel input[type="checkbox"]');
+    var prefs = {};
+    for (var i = 0; i < inputs.length; i++) {
+      prefs[inputs[i].dataset.seccion] = inputs[i].checked;
+    }
+    var s = sesionAdmin();
+    if (!s) { salirTablero('Su sesión del panel venció: escriba su PIN otra vez.'); return; }
+    $('btnGuardarPersonalizar').disabled = true;
+    servidor('guardarPreferenciasPanel', s.token, prefs).then(function (res) {
+      $('btnGuardarPersonalizar').disabled = false;
+      preferenciasPanelActuales = Object.assign({}, PREFERENCIAS_PANEL_DEF, res || prefs);
+      escribirJSON(CLAVE_PREFS_PANEL, preferenciasPanelActuales);
+      cerrarPersonalizarPanel();
+      return cargarTablero();
+    }).catch(function (err) {
+      $('btnGuardarPersonalizar').disabled = false;
+      alert('No se pudieron guardar las preferencias: ' + (err && err.message ? err.message : String(err)));
+    });
+  }
+
+  function fmtValorIndicador(val, unidad) {
+    if (val == null) return '-';
+    var num = Number(val);
+    if (isNaN(num)) return String(val);
+    if (unidad === '%') {
+      return (Math.round(num * 10) / 10) + '%';
+    }
+    if (unidad === 'min') {
+      return Math.round(num) + ' min';
+    }
+    if (unidad === 'km/gal') {
+      return (Math.round(num * 10) / 10) + ' km/gal';
+    }
+    if (unidad === 'paradas/día') {
+      return (Math.round(num * 10) / 10) + ' paradas/día';
+    }
+    if (unidad === 'facturas/día') {
+      return (Math.round(num * 10) / 10) + ' facturas/día';
+    }
+    if (unidad === 'días') {
+      return num + (num === 1 ? ' día' : ' días');
+    }
+    if (unidad === 'viajes') {
+      return num + (num === 1 ? ' viaje' : ' viajes');
+    }
+    return String(num);
+  }
+
+  function renderGraficoRendimiento() {
+    if (!ultimoRendimiento) return;
+    var rend = ultimoRendimiento;
+    var sel = $('selRendimientoIndicador');
+    var claveInd = sel ? sel.value : (rend.indicadores && rend.indicadores[0] && rend.indicadores[0].clave);
+    var indInfo = (rend.indicadores || []).find(function (i) { return i.clave === claveInd; });
+    if (!indInfo) return;
+
+    var motoristas = (rend.motoristas || []).slice().sort(function (a, b) {
+      return (a.nombre || '').localeCompare(b.nombre || '', 'es');
+    });
+
+    var graf = $('grafRendimiento');
+    if (graf) {
+      var valores = motoristas.map(function (m) {
+        var ind = (m.indicadores && m.indicadores[claveInd]) || {};
+        return ind.valor != null ? Number(ind.valor) : 0;
+      });
+      var estandarNum = Number(indInfo.estandar) || 0;
+      var maxVal = Math.max.apply(null, valores.concat([estandarNum, 1])) * 1.18;
+      if (maxVal <= 0) maxVal = 10;
+
+      var anchoSvg = 540;
+      var margenIzq = 140;
+      var margenDer = 60;
+      var margenSup = 28;
+      var altoFila = 36;
+      var anchoPlot = anchoSvg - margenIzq - margenDer;
+      var altoSvg = margenSup + motoristas.length * altoFila + 20;
+
+      var xEstandar = margenIzq + (estandarNum / maxVal) * anchoPlot;
+
+      var barrasSvg = motoristas.map(function (m, idx) {
+        var y = margenSup + idx * altoFila;
+        var ind = (m.indicadores && m.indicadores[claveInd]) || {};
+        var val = ind.valor;
+        var wBarra = val != null ? Math.max(0, (Number(val) / maxVal) * anchoPlot) : 0;
+        var textoVal = ind.pocosDatos || val == null ? 'Pocos datos' : fmtValorIndicador(val, indInfo.unidad);
+
+        return '<g class="fila-motorista">' +
+          '<text x="' + (margenIzq - 10) + '" y="' + (y + 14) + '" text-anchor="end" font-size="12" fill="var(--tinta)" font-weight="500">' + esc(m.nombre) + '</text>' +
+          '<rect class="barra-rendimiento" x="' + margenIzq + '" y="' + y + '" width="' + wBarra + '" height="20" rx="3" fill="#524ae9"/>' +
+          '<text x="' + (margenIzq + wBarra + 8) + '" y="' + (y + 15) + '" font-size="11" fill="var(--gris)" font-weight="600">' + esc(textoVal) + '</text>' +
+          '</g>';
+      }).join('');
+
+      var lineaEstandarSvg = '<g class="estandar-marca">' +
+        '<line class="linea-estandar" x1="' + xEstandar + '" y1="' + (margenSup - 6) + '" x2="' + (xEstandar + 0.5) + '" y2="' + (altoSvg - 10) + '" stroke="#b91c1c" stroke-width="1.8" stroke-dasharray="4 2"/>' +
+        '<text x="' + xEstandar + '" y="' + (margenSup - 10) + '" text-anchor="middle" font-size="10" fill="#b91c1c" font-weight="700">Estándar: ' + esc(fmtValorIndicador(estandarNum, indInfo.unidad)) + '</text>' +
+        '</g>';
+
+      var ejeBase = '<line x1="' + margenIzq + '" y1="' + (margenSup - 6) + '" x2="' + margenIzq + '" y2="' + (altoSvg - 10) + '" stroke="var(--borde-fino)" stroke-width="1"/>';
+
+      graf.innerHTML = '<svg viewBox="0 0 ' + anchoSvg + ' ' + altoSvg + '" style="width:100%;height:auto;display:block" role="img" aria-label="Comparativa de motoristas para ' + esc(indInfo.nombre) + '">' +
+        ejeBase +
+        barrasSvg +
+        lineaEstandarSvg +
+        '</svg>';
+    }
+
+    var tabEl = $('tabRendimientoTabla');
+    if (tabEl) {
+      var filas = motoristas.map(function (m) {
+        var ind = (m.indicadores && m.indicadores[claveInd]) || {};
+        var val = ind.pocosDatos || ind.valor == null ? 'Pocos datos' : fmtValorIndicador(ind.valor, indInfo.unidad);
+        var est = fmtValorIndicador(indInfo.estandar, indInfo.unidad);
+        var dif = ind.diferencia != null ? (ind.diferencia > 0 ? '+' : '') + fmtValorIndicador(ind.diferencia, indInfo.unidad) : '-';
+        return ['<b>' + esc(m.nombre) + '</b>', val, est, dif];
+      });
+      tabEl.innerHTML = tabla(['Motorista', 'Valor', 'Estándar', 'vs anterior'], filas, [1, 2, 3]);
+    }
+    plegarTablas();
+  }
+
+  function pintarRendimiento(rend) {
+    if (!rend) {
+      $('tabRendimientoTarjeta').classList.add('oculto');
+      return;
+    }
+    ultimoRendimiento = rend;
+    $('tabRendimientoTarjeta').classList.remove('oculto');
+
+    // 1. Dónde está la oportunidad
+    var opEl = $('tabRendimientoOportunidades');
+    if (opEl) {
+      if (rend.oportunidades && rend.oportunidades.length) {
+        opEl.innerHTML = '<div class="oportunidades-caja">' +
+          '<h4>' + icono('alerta', { tam: 16 }) + ' Dónde está la oportunidad</h4>' +
+          '<ul>' +
+          rend.oportunidades.map(function (op) {
+            return '<li>' + esc(op.texto) + '</li>';
+          }).join('') +
+          '</ul>' +
+          '</div>';
+      } else {
+        opEl.innerHTML = '<p class="ayuda">No se detectaron oportunidades por debajo del estándar en el periodo.</p>';
+      }
+    }
+
+    // 2. Selector de indicadores y gráfico
+    var sel = $('selRendimientoIndicador');
+    if (sel && rend.indicadores) {
+      var valActual = sel.value;
+      sel.innerHTML = rend.indicadores.map(function (i) {
+        return '<option value="' + esc(i.clave) + '">' + esc(i.nombre) + '</option>';
+      }).join('');
+      if (valActual && rend.indicadores.some(function (i) { return i.clave === valActual; })) {
+        sel.value = valActual;
+      } else if (rend.indicadores.length) {
+        sel.value = rend.indicadores[0].clave;
+      }
+    }
+    renderGraficoRendimiento();
+
+    // 3. Tarjetas por motorista propio en orden alfabético
+    var listaEl = $('tabRendimientoMotoristas');
+    if (listaEl) {
+      var motoristas = (rend.motoristas || []).slice().sort(function (a, b) {
+        return (a.nombre || '').localeCompare(b.nombre || '', 'es');
+      });
+
+      listaEl.innerHTML = motoristas.map(function (m) {
+        var header = '<div class="motorista-header">' +
+          '<h4 class="motorista-nombre">' + esc(m.nombre) + '</h4>' +
+          '<div class="motorista-meta">' +
+            (m.pocosDatos ? '<span class="chip pocos-datos">Pocos datos</span>' : '') +
+            '<span>' + m.viajes + (m.viajes === 1 ? ' viaje' : ' viajes') + ' · ' +
+            m.paradas + (m.paradas === 1 ? ' parada' : ' paradas') + ' · ' +
+            m.facturas + (m.facturas === 1 ? ' factura' : ' facturas') + '</span>' +
+          '</div>' +
+        '</div>';
+
+        var kpisHtml = (rend.indicadores || []).map(function (indInfo) {
+          var ind = (m.indicadores && m.indicadores[indInfo.clave]) || {};
+          var chipHtml = '';
+          if (ind.pocosDatos || ind.valor == null) {
+            chipHtml = '<span class="chip-estandar pocos-datos">Pocos datos</span>';
+          } else if (ind.frente === 'debajo') {
+            chipHtml = '<span class="chip-estandar debajo">' + icono('x', { tam: 12 }) + ' Bajo estándar</span>';
+          } else if (ind.frente === 'arriba' || ind.frente === 'igual') {
+            chipHtml = '<span class="chip-estandar ok">' + icono('check', { tam: 12 }) + ' Cumple estándar</span>';
+          }
+
+          var valorHtml = (ind.pocosDatos || ind.valor == null)
+            ? '<span class="pocos-datos-texto">Pocos datos</span>'
+            : esc(fmtValorIndicador(ind.valor, indInfo.unidad));
+
+          var estandarHtml = 'Estándar: ' + esc(fmtValorIndicador(indInfo.estandar, indInfo.unidad)) +
+            ' (' + (indInfo.fuenteEstandar === 'meta' ? 'meta' : 'mediana') + ')';
+
+          var tendenciaTexto = '';
+          if (ind.diferencia != null) {
+            var dif = Number(ind.diferencia);
+            var prefijo = dif > 0 ? '↑ +' : (dif < 0 ? '↓ ' : '= ');
+            tendenciaTexto = prefijo + fmtValorIndicador(dif, indInfo.unidad) + ' vs periodo anterior';
+          } else {
+            tendenciaTexto = 'Sin periodo anterior';
+          }
+          var tendenciaHtml = '<div class="indicador-tendencia">' + esc(tendenciaTexto) + '</div>';
+
+          return '<div class="kpi-indicador">' +
+            '<div class="indicador-cabecera">' +
+              '<span class="indicador-nombre">' + esc(indInfo.nombre) + '</span>' +
+              chipHtml +
+            '</div>' +
+            '<div class="indicador-valores">' +
+              '<div class="indicador-valor">' + valorHtml + '</div>' +
+              '<div class="indicador-estandar">' + estandarHtml + '</div>' +
+            '</div>' +
+            tendenciaHtml +
+          '</div>';
+        }).join('');
+
+        return '<div class="tarjeta-motorista">' +
+          header +
+          '<div class="indicadores-grid">' + kpisHtml + '</div>' +
+        '</div>';
+      }).join('');
+    }
+  }
+
+  if ($('btnTabPersonalizar')) {
+    $('btnTabPersonalizar').addEventListener('click', abrirPersonalizarPanel);
+  }
+  if ($('btnTabPersonalizarTop')) {
+    $('btnTabPersonalizarTop').addEventListener('click', abrirPersonalizarPanel);
+  }
+  if ($('btnCerrarDlgPersonalizar')) {
+    $('btnCerrarDlgPersonalizar').addEventListener('click', cerrarPersonalizarPanel);
+  }
+  if ($('btnCancelarPersonalizar')) {
+    $('btnCancelarPersonalizar').addEventListener('click', cerrarPersonalizarPanel);
+  }
+  if ($('btnGuardarPersonalizar')) {
+    $('btnGuardarPersonalizar').addEventListener('click', guardarPersonalizarPanel);
+  }
+  if ($('selRendimientoIndicador')) {
+    $('selRendimientoIndicador').addEventListener('change', function () {
+      renderGraficoRendimiento();
+    });
+  }
+  if ($('dlgPersonalizarPanel')) {
+    $('dlgPersonalizarPanel').addEventListener('click', function (e) {
+      if (e.target === $('dlgPersonalizarPanel')) cerrarPersonalizarPanel();
+    });
   }
 
   // ------------------------------------------------------------ transportistas (Task 23)
