@@ -7880,15 +7880,19 @@
     return isNaN(n) ? '$0.00' : '$' + n.toFixed(2);
   }
 
+  // Misma regla que normalizarCodigoVendedor_ de Codigo.gs ('SV147' y 'vs 147' son 'VS147'); una prueba compara ambas.
+  function normalizarCodigoVendedor(texto) {
+    var t = String(texto == null ? '' : texto).replace(/\s+/g, '').toUpperCase();
+    return /^SV\d+$/.test(t) ? 'VS' + t.slice(2) : t;
+  }
+
+  // Canal del vendedor según el mapa que manda el servidor con la sesión (config.vendedores). Sin mapa (servidor anterior) o
+  // con un código que no está en él, '' (sin canal): no se adivina por la forma del código.
   function canalDeVendedor(codigo) {
-    if (!codigo) return '';
-    var v = String(codigo).trim().toUpperCase();
-    if (config && config.vendedores && typeof config.vendedores === 'object' && v in config.vendedores) {
-      return config.vendedores[v];
-    }
-    if (/^I/i.test(v)) return 'Industria';
-    if (/^M/i.test(v)) return 'Mayoreo';
-    if (/^R/i.test(v)) return 'Retail';
+    var v = normalizarCodigoVendedor(codigo);
+    if (!v) return '';
+    var mapa = config && config.vendedores;
+    if (mapa && typeof mapa === 'object' && Object.prototype.hasOwnProperty.call(mapa, v)) return mapa[v] || '';
     return '';
   }
 
@@ -8287,9 +8291,10 @@
   if ($('btnCerrarQrEntrega')) {
     $('btnCerrarQrEntrega').addEventListener('click', function () {
       $('dlgQrEntrega').classList.add('oculto');
+      // La ✕ cancela: la factura no entra a la carga y el piloto puede volver a escanearla. Agregarla sin QR es "No trae QR".
       if (cargaFacturaPendienteQr) {
-        agregarFacturaACarga(cargaFacturaPendienteQr);
         cargaFacturaPendienteQr = null;
+        aviso('avisoCarga', 'info', 'La factura no se agregó a la carga. Puede escanearla otra vez.');
       }
     });
   }
