@@ -2137,6 +2137,7 @@
         </table>
         <div id="avisoIndustriaResumen"></div>
         <div id="avisoUbicarResumen"></div>
+        <div id="avisoUbicacionesResumen"></div>
         <div class="aviso ok" id="avisoOficinaResumen" style="margin-top:12px">La oficina recibió su plan del día</div>
       </div>
       <button class="primario" id="btnVerRutaSugerida" type="button">Ver mi ruta sugerida</button>
@@ -2233,6 +2234,7 @@
     <p class="modo-viejo"></p>
     <button class="primario" id="btnGuardarParada">Guardar parada</button>
     <p class="ayuda centro modo-nuevo">Al entregar se guarda la hora de salida.</p>
+    <p class="ayuda centro oculto" id="ayudaUbicacion">Al guardar, la app toma su ubicación una vez, para que la ruta sepa dónde está cada cliente.</p>
     <p class="modo-viejo"></p>
     <div class="fila modo-viejo">
       <button id="btnCancelarParada">Cancelar</button>
@@ -5797,6 +5799,7 @@
     $('pParada').classList.toggle('modo-punto', Boolean(pt));
     $('pParada').classList.add('pantalla-nueva');
     guardarConFaltantes = false;
+    pintarAyudaUbicacion();
     var p = i != null ? dia.paradas[i] : pt ? paradaDePunto(pt)
       : { cliente: '', direccion: '', departamento: '', municipio: '', horaLlegada: ahora(), km: '', horaSalida: '', facturas: [] };
     if (!pt) $('paradaPaso').textContent = 'Entrega';
@@ -6310,6 +6313,9 @@
       })
     };
     if (paradaPunto != null) p.punto = paradaPunto;
+    // Tarea M6: al corregir una parada se conserva la lectura que ya tenía (una sola por parada).
+    var previa = editando != null ? dia.paradas[editando] : null;
+    if (previa && previa.ubicacion && previa.ubicacion.lat != null) p.ubicacion = previa.ubicacion;
     var sugerida = paradaPunto != null ? siguientePunto() : null;
     if (editando == null) dia.paradas.push(p); else dia.paradas[editando] = p;
     if (p.departamento) escribirJSON(CLAVE_DEPTO, p.departamento);
@@ -6317,7 +6323,7 @@
     guardarBorrador();
     olvidarParadaAbierta();
     volverDeParada();
-    mandarAvance();
+    if (p.ubicacion) mandarAvance(); else ubicarParada(p);
   });
   /** Después de guardar o cancelar una parada: Mi día si el día tiene ruta (app nueva); si no, la ruta de siempre. */
   function volverDeParada() {
@@ -6335,6 +6341,78 @@
     volverDeParada();
     mandarAvance();
   });
+
+  // ------------------------------------------------------------ ubicación de la entrega (Tarea M6)
+  // Una lectura por parada, al guardarla (entregada, fallida o devuelta); nunca rastreo continuo ni en segundo plano. Nunca
+  // detiene al piloto: la parada ya quedó guardada y la pantalla cambió; la lectura llega después (o no) y se pega a la parada
+  // en el borrador del teléfono, así viaja con ella en el avance y en el envío del día aunque no haya señal. Sin permiso, sin
+  // señal o con el tiempo vencido, la parada queda con { motivo }. En la página de Apps Script (iframe de Google sin permiso de
+  // ubicación: «disabled in this document by permissions policy», verificado en Chromium) el navegador la niega en el acto:
+  // queda «no disponible», sin error ni aviso. La app instalada (GitHub Pages, https) es la que la toma.
+  // El servidor la guarda solo como ubicación del cliente (su punto de entrega), nunca como rastro del piloto.
+  var UBICACION_TIEMPO_MS = 8000;         // lo más que se espera la lectura (timeout de getCurrentPosition)
+  var UBICACION_EDAD_MAXIMA_MS = 120000;  // sirve una lectura de hasta 2 minutos (la de la parada anterior, si fue hace poco)
+  var CLAVE_UBICACION_PEDIDA = 'logistikUbicacionPedida';
+  /**
+   * Lee la ubicación una vez y llama listo(u) una sola vez: { lat, lng, precision (m), hora ISO } o { motivo: 'permiso' |
+   * 'tiempo' | 'no disponible' }. Si la lectura llega después de vencido el tiempo (el piloto tardó en dar el permiso),
+   * se la pasa a tarde(u).
+   */
+  function tomarUbicacion(listo, tarde) {
+    var hecho = false, reloj = null;
+    function fin(u) {
+      if (hecho) { if (tarde && u.lat != null) tarde(u); return; }
+      hecho = true;
+      clearTimeout(reloj);
+      listo(u);
+    }
+    if (!ubicacionPermitida()) { fin({ motivo: 'no disponible' }); return; }
+    escribirJSON(CLAVE_UBICACION_PEDIDA, true);
+    // Mientras el navegador espera que el piloto conteste el permiso, su timeout no corre: este reloj sí.
+    reloj = setTimeout(function () { fin({ motivo: 'tiempo' }); }, UBICACION_TIEMPO_MS + 500);
+    try {
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        var c = pos.coords;
+        fin({ lat: Math.round(c.latitude * 1e6) / 1e6, lng: Math.round(c.longitude * 1e6) / 1e6, precision: Math.round(c.accuracy),
+          hora: new Date(pos.timestamp || Date.now()).toISOString() });
+      }, function (e) {
+        // Negada por la página que la contiene (permissions policy del iframe de Apps Script): no es el piloto quien dijo que no.
+        // Tampoco en una página sin https («Only secure origins»).
+        var porPagina = e && /policy|secure/i.test(e.message || '');
+        fin({ motivo: e && e.code === 1 && !porPagina ? 'permiso' : e && e.code === 3 ? 'tiempo' : 'no disponible' });
+      }, { enableHighAccuracy: true, timeout: UBICACION_TIEMPO_MS, maximumAge: UBICACION_EDAD_MAXIMA_MS });
+    } catch (e) { fin({ motivo: 'no disponible' }); }
+  }
+  /**
+   * El navegador sabe leerla y la página que contiene a la app lo permite. La de Apps Script (iframe de Google sin
+   * allow="geolocation") no lo permite: ni se intenta (el intento deja un aviso de «permissions policy» en la consola).
+   */
+  function ubicacionPermitida() {
+    if (!navigator.geolocation) return false;
+    var pol = document.permissionsPolicy || document.featurePolicy;
+    try { return !pol || !pol.allowsFeature || pol.allowsFeature('geolocation'); } catch (e) { return true; }
+  }
+  /** Pega la lectura a la parada recién guardada (si sigue en el día) y manda el avance con ella. */
+  function ubicarParada(p) {
+    function poner(u) {
+      if (!dia || dia.paradas.indexOf(p) < 0) return false;
+      p.ubicacion = u;
+      guardarBorrador();
+      return true;
+    }
+    tomarUbicacion(function (u) { poner(u); mandarAvance(); }, function (u) { if (poner(u)) mandarAvance(); });
+  }
+  /** El texto que explica para qué es la ubicación, solo mientras el navegador todavía no la ha pedido. */
+  function pintarAyudaUbicacion() {
+    var el = $('ayudaUbicacion');
+    el.classList.add('oculto');
+    // En la página de Apps Script no se puede pedir: no se promete lo que no se hará.
+    if (!ubicacionPermitida()) return;
+    var pedida = Boolean(leerJSON(CLAVE_UBICACION_PEDIDA, false));
+    if (!navigator.permissions || !navigator.permissions.query) { el.classList.toggle('oculto', pedida); return; }
+    navigator.permissions.query({ name: 'geolocation' }).then(function (s) { el.classList.toggle('oculto', s.state !== 'prompt'); },
+      function () { el.classList.toggle('oculto', pedida); });
+  }
 
   // ------------------------------------------------------------ cierre
   // El servidor decide quién es subcontratado (columna Tipo de Configuración o el nombre) y manda la lista: aquí no se repite la regla.
@@ -6735,11 +6813,15 @@
   // facturas. La ruta queda en el borrador del día (dia.ruta: sobrevive a recargar la página) y no viaja al servidor. ORDEN
   // LIBRE (decisión 10 del diseño): cada punto tiene su propio estado, que sale de las paradas guardadas (una factura cargada
   // tiene estado si está en alguna parada del día); el orden es solo una sugerencia y nunca bloquea.
-  // Zona de la bodega: de aquí parte la sugerencia (etapa A, sin coordenadas).
+  // Zona de la bodega: de aquí parte la sugerencia. No tiene coordenadas (no se inventan): la primera pierna se mide por
+  // municipio y, de ahí en adelante, entre dos sitios con coordenadas se mide la distancia en línea recta.
   var ZONA_BODEGA = { departamento: 'San Salvador', municipio: 'Soyapango' };
+  var SITIO_BODEGA = { lugar: ZONA_BODEGA, lat: null, lng: null };
   // Departamentos de oeste a este: sin coordenadas, la distancia entre dos departamentos es cuántos hay entre ellos.
   var DEPARTAMENTOS_OESTE_ESTE = ['Ahuachapán', 'Santa Ana', 'Sonsonate', 'Chalatenango', 'La Libertad', 'San Salvador', 'Cuscatlán',
     'La Paz', 'Cabañas', 'San Vicente', 'Usulután', 'San Miguel', 'Morazán', 'La Unión'];
+  // Dos sitios que no se pueden comparar (uno solo tiene coordenadas y el otro solo lugar) cuentan como lejanos.
+  var SITIO_LEJANO = 1000;
   var CLAVE_RUTA_CARGA = 'kmCelasa.rutaCarga.v1';
   function guardarRutaCarga(ruta) {
     if (ruta == null) {
@@ -6762,7 +6844,7 @@
         pt.lugar = lugarDePunto(pt);
       });
       dia.ruta = { id: r.id || '', puntos: puntos, orden: [] };
-      reordenarPendientes(ultimoLugarEntregado() || ZONA_BODEGA);
+      reordenarPendientes(ultimoSitioEntregado() || SITIO_BODEGA);
     }
   }
 
@@ -6782,7 +6864,7 @@
         pt.lugar = lugarDePunto(pt);
       });
       dia.ruta = { id: (r && r.id) || '', puntos: puntos, orden: [] };
-      reordenarPendientes(ultimoLugarEntregado() || ZONA_BODEGA);
+      reordenarPendientes(ultimoSitioEntregado() || SITIO_BODEGA);
     }
     guardarBorrador();
     if (dia.nueva) {
@@ -6809,28 +6891,63 @@
     var i = DEPARTAMENTOS_OESTE_ESTE.indexOf(a.departamento), j = DEPARTAMENTOS_OESTE_ESTE.indexOf(b.departamento);
     return 2 + (i < 0 || j < 0 ? DEPARTAMENTOS_OESTE_ESTE.length : Math.abs(i - j));
   }
+  /** Coordenadas del punto ({ lat, lng }) si el servidor ya resolvió su QR de entrega; null si le falta alguna. */
+  function coordsDePunto(pt) {
+    if (pt == null || pt.lat == null || pt.lat === '' || pt.lng == null || pt.lng === '') return null;
+    var lat = Number(pt.lat), lng = Number(pt.lng);
+    return isFinite(lat) && isFinite(lng) ? { lat: lat, lng: lng } : null;
+  }
+  /** El punto como sitio para medir distancias: su lugar (municipio leído de la dirección) y sus coordenadas, lo que haya. */
+  function sitioDePunto(pt) {
+    var c = coordsDePunto(pt);
+    return { lugar: pt.lugar || null, lat: c ? c.lat : null, lng: c ? c.lng : null };
+  }
+  /** ¿Este sitio sirve para ubicar el punto en el mapa (lugar o coordenadas)? */
+  function sitioUbicable(s) { return !!(s && (s.lugar || (s.lat != null && s.lng != null))); }
+  /** Distancia en línea recta entre dos coordenadas (haversine), en kilómetros. */
+  function distanciaKm(lat1, lng1, lat2, lng2) {
+    var r = 6371, rad = Math.PI / 180;
+    var dLat = (lat2 - lat1) * rad, dLng = (lng2 - lng1) * rad;
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 2 * r * Math.asin(Math.min(1, Math.sqrt(a)));
+  }
+  /**
+   * Distancia entre dos sitios: en kilómetros si ambos traen coordenadas (línea recta, lo más parecido que hay sin red); si
+   * no, en la unidad de distanciaLugar (mismo municipio, mismo departamento, departamentos vecinos). Cuando uno solo tiene
+   * coordenadas y el otro solo lugar no hay forma de compararlos: SITIO_LEJANO.
+   */
+  function distanciaSitio(a, b) {
+    if (a && b && a.lat != null && a.lng != null && b.lat != null && b.lng != null) return distanciaKm(a.lat, a.lng, b.lat, b.lng);
+    if (a && b && a.lugar && b.lugar) return distanciaLugar(a.lugar, b.lugar);
+    return SITIO_LEJANO;
+  }
   /** Enlace del QR de entrega del punto, tal cual, solo si es una dirección web (cualquier otra cosa no se abre). */
   function qrDePunto(pt) {
     var q = [pt.qrEntrega].concat(pt.facturas.map(function (f) { return f.qrEntrega; }))
       .map(function (x) { return String(x || '').trim(); }).filter(function (x) { return /^https?:\/\/\S+$/i.test(x); })[0];
     return q || '';
   }
-  function porUbicar(pt) { return !pt.lugar && !qrDePunto(pt) && !(pt.lat != null && pt.lng != null); }
+  function porUbicar(pt) { return !sitioUbicable(sitioDePunto(pt)) && !qrDePunto(pt); }
   /**
-   * Orden sugerido (etapa A): vecino más cercano desde el origen, con la distancia de distanciaLugar (mismo municipio, mismo
-   * departamento, departamentos vecinos) y empate en el orden de la carga. Los que tienen QR de entrega pero sin municipio
-   * leído van después; los por ubicar, al final. puntos: en el orden de la carga.
+   * Orden sugerido: vecino más cercano desde el origen, con distanciaSitio (kilómetros cuando ambos traen coordenadas; si no,
+   * municipio y departamento) y empate en el orden de la carga. Los que solo tienen QR de entrega (sin lugar ni coordenadas)
+   * van después, en el orden de la carga; los por ubicar, al final. puntos: en el orden de la carga; origen: un sitio.
    */
   function ordenSugerido(puntos, origen) {
-    var conLugar = puntos.filter(function (pt) { return pt.lugar; }), orden = [], actual = origen;
-    while (conLugar.length) {
+    var candidatos = puntos.map(function (pt) { return { pt: pt, sitio: sitioDePunto(pt) }; })
+      .filter(function (x) { return sitioUbicable(x.sitio); });
+    var orden = [], actual = origen || SITIO_BODEGA;
+    while (candidatos.length) {
       var mejor = 0;
-      for (var k = 1; k < conLugar.length; k++) if (distanciaLugar(actual, conLugar[k].lugar) < distanciaLugar(actual, conLugar[mejor].lugar)) mejor = k;
-      actual = conLugar[mejor].lugar;
-      orden.push(conLugar.splice(mejor, 1)[0].id);
+      for (var k = 1; k < candidatos.length; k++) {
+        if (distanciaSitio(actual, candidatos[k].sitio) < distanciaSitio(actual, candidatos[mejor].sitio)) mejor = k;
+      }
+      actual = candidatos[mejor].sitio;
+      orden.push(candidatos.splice(mejor, 1)[0].pt.id);
     }
     var id = function (pt) { return pt.id; };
-    return orden.concat(puntos.filter(function (pt) { return !pt.lugar && !porUbicar(pt); }).map(id), puntos.filter(porUbicar).map(id));
+    return orden.concat(puntos.filter(function (pt) { return !sitioUbicable(sitioDePunto(pt)) && !porUbicar(pt); }).map(id),
+      puntos.filter(porUbicar).map(id));
   }
   /** Identidad de una factura cargada en el teléfono (como la Tarea 34): código de generación, DTE o control y cliente. */
   function claveFacturaRuta(f) {
@@ -6878,10 +6995,11 @@
     dia.ruta.orden = puntos.filter(function (pt) { return estadoPunto(pt, hechas) === 'entregada'; }).map(function (pt) { return pt.id; })
       .concat(ordenSugerido(faltan, origen));
   }
-  function ultimoLugarEntregado() {
+  /** Sitio de la última entrega guardada (lugar y coordenadas, lo que tenga): desde ahí se recalcula la sugerencia. */
+  function ultimoSitioEntregado() {
     for (var k = dia.paradas.length - 1; k >= 0; k--) {
       var pt = dia.paradas[k].punto ? puntoRuta(dia.paradas[k].punto) : null;
-      if (pt && pt.lugar) return pt.lugar;
+      if (pt && sitioUbicable(sitioDePunto(pt))) return sitioDePunto(pt);
     }
     return null;
   }
@@ -6891,7 +7009,7 @@
    */
   function alEntregarPunto(id, sugerida) {
     var pt = puntoRuta(id);
-    if (pt && pt.lugar && sugerida && sugerida.id !== id) reordenarPendientes(pt.lugar);
+    if (pt && sitioUbicable(sitioDePunto(pt)) && sugerida && sugerida.id !== id) reordenarPendientes(sitioDePunto(pt));
     if (facturasPendientes().length) delete dia.ruta.completa;
     else dia.ruta.completa = dia.ruta.completa || ahora();
   }
@@ -6923,12 +7041,17 @@
     return { cliente: pt.cliente || pt.nombre || '', direccion: pt.direccion || '', departamento: pt.lugar ? pt.lugar.departamento : '',
       municipio: pt.lugar ? pt.lugar.municipio : '', horaLlegada: ahora(), km: '', horaSalida: '', facturas: pt.facturas.map(facturaDeCarga) };
   }
-  /** Cómo llegar: el QR de entrega tal cual; si no, una búsqueda en Google Maps con la dirección (o el cliente) y el municipio. */
+  /**
+   * Cómo llegar: primero las coordenadas (el servidor resolvió el QR de entrega, o la oficina las puso a mano: se abre el
+   * punto exacto), luego el enlace del QR tal cual, y si no hay ninguna de las dos, una búsqueda en Google Maps con la
+   * dirección (o el cliente) y el municipio.
+   */
   function enlaceComoLlegar(pt) {
-    var qr = qrDePunto(pt);
-    if (qr) return qr;
-    var buscar = pt.lat != null && pt.lng != null ? pt.lat + ',' + pt.lng : '';
+    var c = coordsDePunto(pt);
+    var buscar = c ? c.lat + ',' + c.lng : '';
     if (!buscar) {
+      var qr = qrDePunto(pt);
+      if (qr) return qr;
       var dir = pt.direccion || pt.facturas.map(function (f) { return f.calle; }).filter(Boolean)[0] || '';
       var partes = [dir || pt.cliente || pt.nombre || ''];
       if (pt.lugar && claveLugar(dir).indexOf(claveLugar(pt.lugar.municipio)) < 0) partes.push(pt.lugar.municipio);
@@ -6949,7 +7072,7 @@
       '<dt>' + (pt.envio ? 'Calle' : 'Dirección') + '</dt><dd>' + (calle ? esc(calle) : 'Sin dirección') + '</dd>' +
       (pt.recibe ? '<dt>Recibe</dt><dd>' + esc(pt.recibe) + '</dd>' : '');
     var chips = (pt.canal ? '<span class="chip canal">' + esc(pt.canal) + '</span>' : '') +
-      (qrDePunto(pt) ? '<span class="chip ok">Ubicación de entrega' + icono('check', { tam: 13 }) + '</span>'
+      (coordsDePunto(pt) || qrDePunto(pt) ? '<span class="chip ok">Ubicación de entrega' + icono('check', { tam: 13 }) + '</span>'
         : porUbicar(pt) ? '<span class="chip pend">' + icono('pin', { tam: 13 }) + 'Por ubicar</span>'
         : pt.lugar ? '<span class="chip canal">' + icono('pin', { tam: 13 }) + esc(pt.lugar.municipio) + '</span>' : '');
     var cel = String(pt.cel || '').trim(), tel = cel.replace(/[^\d+]/g, '');
@@ -7037,7 +7160,7 @@
       chips = '<span class="chip">' + icono('recibo', { tam: 13 }) + plural(pt.facturas.length, 'factura', 'facturas') + '</span>' +
         (fila.parcial ? '<span class="chip pend">Faltan facturas</span>' : '') +
         (ubicar ? '<span class="chip pend">' + icono('pin', { tam: 13 }) + 'Por ubicar</span>' : '') +
-        (qrDePunto(pt) ? '<span class="chip ok">Ubicación de entrega' + icono('check', { tam: 13 }) + '</span>' : '');
+        (coordsDePunto(pt) || qrDePunto(pt) ? '<span class="chip ok">Ubicación de entrega' + icono('check', { tam: 13 }) + '</span>' : '');
     }
     var html = '<div class="parada ' + clase + '"><button type="button" class="abrir" data-punto="' + esc(pt ? pt.id : '') + '" data-parada="' +
       (fila.indice != null ? fila.indice : '') + '"><span class="titulo"><span class="n">' + n + '</span><span class="cli">' + esc(nombre || 'Sin nombre') +
@@ -7247,9 +7370,10 @@
   function mandarAvance() {
     if (!dia || !dia.iniciado || !(config.version >= 5)) return;
     escribirJSON(CLAVE_AVANCE, { id: dia.id, pendiente: true, hora: (estadoAvance() || {}).hora || '' });
-    pintarEstadoAvance();
     clearTimeout(relojAvance);
     relojAvance = setTimeout(enviarAvanceAhora, 300);
+    // Con el envío ya programado: antes se pintaba «Sin señal» durante esos 300 ms.
+    pintarEstadoAvance();
   }
   function enviarAvanceAhora() {
     relojAvance = null;
@@ -8187,6 +8311,18 @@
       $('avisoUbicarResumen').innerHTML = '<div class="cuadre alerta">' + icono('pin') + '<div>' + r.ubicar + ' punto' + (r.ubicar === 1 ? '' : 's') + ' por ubicar<small>Van al final de la ruta. Se aprenden al entregar.</small></div></div>';
     } else {
       $('avisoUbicarResumen').innerHTML = '';
+    }
+
+    var ub = ultimaRutaServidor && ultimaRutaServidor.ubicaciones;
+    if (ub && (ub.resueltos || ub.fallidos || ub.pendientes)) {
+      var detalle = ub.resueltos + ' ubicación' + (ub.resueltos === 1 ? '' : 'es') + ' resuelta' + (ub.resueltos === 1 ? '' : 's');
+      if (ub.fallidos) detalle += ', ' + ub.fallidos + ' sin leer';
+      if (ub.pendientes) detalle += ', ' + ub.pendientes + ' por resolver';
+      $('avisoUbicacionesResumen').innerHTML = (ub.fallidos || ub.pendientes)
+        ? '<div class="cuadre alerta">' + icono('pin') + '<div>QR de entrega: ' + detalle + '<small>La oficina las resuelve desde el menú.</small></div></div>'
+        : '<div class="cuadre ok">' + icono('circuloCheck') + '<div>QR de entrega: ' + detalle + '</div></div>';
+    } else {
+      $('avisoUbicacionesResumen').innerHTML = '';
     }
 
     $('vistaCargaPrincipal').classList.add('oculto');
