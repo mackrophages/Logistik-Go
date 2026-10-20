@@ -469,7 +469,7 @@
     background: var(--marino);
     border-radius: 800px;
   }
-  #tabDailyTarjeta .cuadre.ok {
+  #tabDailyTarjeta .cuadre.ok, #tabDailyTarjeta .cuadre.escaneo {
     display: flex;
     align-items: flex-start;
     gap: 8px;
@@ -482,7 +482,10 @@
     margin: 10px 0;
   }
   #tabDailyTarjeta .cuadre.ok .icono { color: var(--estado-ok); flex: none; margin-top: 2px; }
-  #tabDailyTarjeta .cuadre.ok small { display: block; font-size: 11.5px; color: var(--gris); margin-top: 2px; }
+  #tabDailyTarjeta .cuadre.ok small, #tabDailyTarjeta .cuadre.escaneo small { display: block; font-size: 11.5px; color: var(--gris); margin-top: 2px; }
+  /* Tarea V: resumen del escaneo (métrica interna, no un estado): borde fino, ícono gris. */
+  #tabDailyTarjeta .cuadre.escaneo { border-color: var(--borde-fino); }
+  #tabDailyTarjeta .cuadre.escaneo .icono { color: var(--gris); flex: none; margin-top: 2px; }
   .tarjeta-piloto-daily {
     background: var(--blanco);
     border: 1px solid var(--borde-fino);
@@ -1443,6 +1446,9 @@
   #pCombustible input.codigo { font-size: 13px; letter-spacing: 0; padding-left: 14px; padding-right: 14px; }
   #pCombustible input:focus, #pCombustible select:focus { outline: 3px solid var(--resaltado); border-color: var(--tinta); }
   #pCombustible input.autollenado { background: var(--superficie-2); border-color: var(--acento); }
+  /* Tarea V, bloque 6: la placa fija se ve como dato que puso la app, sin flecha (no se elige). */
+  #pCombustible select.autollenado:disabled { background: var(--superficie-2); border-color: var(--acento); color: var(--tinta); opacity: 1;
+    appearance: none; -webkit-appearance: none; background-image: none; }
   #pCombustible .fila input { padding-left: 14px; padding-right: 10px; font-size: 16px; }
   #pCombustible .montos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   #pCombustible .montos input { padding: 12px 12px; text-align: right; }
@@ -2091,6 +2097,7 @@
     <datalist id="listaProductosComb"><option value="DIESEL"><option value="REGULAR"><option value="SUPER"></datalist>
     <label for="combPlaca">Placa</label>
     <select id="combPlaca"></select>
+    <p class="ayuda" id="ayudaPlacaComb"></p>
     <label for="combKm">Km del odómetro</label>
     <input id="combKm" type="number" inputmode="numeric" min="0" step="1">
     <div id="combAvisoKm"></div>
@@ -2234,11 +2241,12 @@
     <input id="txtCliente" type="text" autocomplete="off" placeholder="Ej.: Ferretería El Centro">
     <label for="txtDireccion" class="modo-viejo">Dirección del cliente <span class="opc">(sale de la factura)</span></label>
     <input id="txtDireccion" class="modo-viejo" type="text" autocomplete="off" placeholder="Ej.: Barrio El Centro, Santa Rosa de Lima">
-    <label for="selDepto" class="modo-viejo">Departamento</label>
-    <select id="selDepto" class="modo-viejo"></select>
-    <label for="selMunicipio" class="modo-viejo">Municipio</label>
-    <select id="selMunicipio" class="modo-viejo"></select>
-    <div id="ayudaMunicipio" class="modo-viejo"></div>
+    <!-- Tarea V: también en la parada de un punto (app nueva): el lugar viene propuesto y el piloto lo confirma o lo corrige. -->
+    <label for="selDepto">Departamento</label>
+    <select id="selDepto"></select>
+    <label for="selMunicipio">Municipio</label>
+    <select id="selMunicipio"></select>
+    <div id="ayudaMunicipio"></div>
     <datalist id="listaMotivos">
       <option value="Cliente cerrado"><option value="No estaba quien recibe"><option value="No tenía el pago">
       <option value="Rechazó la mercadería"><option value="Dirección no encontrada"><option value="Fuera de horario de recepción">
@@ -2444,6 +2452,7 @@
         </div>
         <div class="avance" id="tabDailyAvanceBarra" role="img" aria-label="0 de 0 entregadas"><i style="width:0%"></i></div>
         <div id="tabDailyLibreAviso"></div>
+        <div id="tabDailyEscaneo"></div>
         <div id="tabDailyPilotos" style="margin-top:10px"></div>
       </div>
 
@@ -4302,6 +4311,22 @@
     return '<span class="chip-estado ' + cfg.cls + '">' + icono(cfg.ic, { tam: 13, grueso: 2.2 }) + esc(est) + '</span>';
   }
 
+  /**
+   * Tarea V, bloque 5: resumen pequeño de la verificación del piloto (métrica interna para decidir con datos): % de facturas a
+   * la primera (una lectura, sin cambios), % revisadas en el formulario, dónde se revisaron y los campos más corregidos.
+   */
+  function pintarEscaneo(e) {
+    if (!e || !e.facturas) { $('tabDailyEscaneo').innerHTML = ''; return; }
+    var pct = function (n) { return Math.round(n * 100 / e.facturas) + ' %'; };
+    var nombres = { cliente: 'cliente', direccion: 'dirección', departamento: 'departamento', municipio: 'municipio', monto: 'monto', codigo: 'código',
+      dte: 'DTE', control: 'control', vendedor: 'vendedor', formaPago: 'forma de pago', fechaFactura: 'fecha', horaFactura: 'hora' };
+    var m = e.momentos || {};
+    var campos = (e.campos || []).map(function (c) { return (nombres[c.campo] || c.campo) + ' (' + c.veces + ')'; }).join(', ');
+    $('tabDailyEscaneo').innerHTML = '<div class="cuadre escaneo">' + icono('qr') + '<div><b>Escaneo: ' + pct(e.aLaPrimera) + ' a la primera · ' +
+      pct(e.conVerificacion) + ' con verificación</b><small>' + e.facturas + ' facturas · revisadas en bodega ' + (m.bodega || 0) + ' · parada ' + (m.parada || 0) +
+      ' · reescaneo ' + (m.reescaneo || 0) + ' · ' + (e.corregidas || 0) + ' corregidas' + (campos ? ' · más corregidos: ' + esc(campos) : '') + '</small></div></div>';
+  }
+
   function pintarDaily(t) {
     var tarjeta = $('tabDailyTarjeta');
     if (!tarjeta) return;
@@ -4335,6 +4360,8 @@
     var pctTotal = cargadas > 0 ? Math.round(entregadas / cargadas * 100) : 0;
     $('tabDailyAvanceBarra').setAttribute('aria-label', entregadas + ' de ' + cargadas + ' entregadas');
     $('tabDailyAvanceBarra').innerHTML = '<i style="width:' + pctTotal + '%"></i>';
+
+    pintarEscaneo(t.cargaDelDia && t.cargaDelDia.escaneo);
 
     var libres = pilotos.filter(function (p) { return p.estado === 'Libre'; });
     $('tabDailyLibreAviso').innerHTML = libres.length ?
@@ -5903,6 +5930,12 @@
       var anterior = dia.paradas.length ? dia.paradas[dia.paradas.length - 1].departamento : '';
       ponerLugar(departamentoOficial(anterior || leerJSON(CLAVE_DEPTO, '')), '', false);
       aviso('ayudaMunicipio');
+    } else if (pt && i == null) {
+      // Tarea V: la parada nueva de un punto trae el lugar propuesto (punto conocido o dirección leída), marcado para que el piloto
+      // lo confirme o lo corrija. Sin lugar se avisa: no bloquea, pero la fila queda para la oficina.
+      ponerLugar(p.departamento, p.municipio, true);
+      aviso('ayudaMunicipio');
+      if (!p.municipio) aviso('ayudaMunicipio', 'ambar', 'No se sabe el municipio de este punto. Elíjalo si lo conoce; si no, la oficina lo revisa.');
     } else {
       ponerLugarGuardado(p.municipio !== undefined ? (p.municipio || '') : (p.direccion || ''), p.departamento);
     }
@@ -6222,6 +6255,12 @@
     var q = ev.target.closest('[data-qr]'), x = ev.target.closest('[data-quitar]'), e = ev.target.closest('[data-estado]');
     var fp = ev.target.closest('[data-pago]');
     // Mixto con formas marcables (app nueva): marcar o desmarcar una forma; solo las marcadas piden su monto.
+    var vp = ev.target.closest('[data-verificar-parada]');
+    if (vp) {
+      var fv = facturasForm[Number(vp.getAttribute('data-verificar-parada'))];
+      if (fv) abrirHojaCorregir(fv, null, { donde: 'parada', momento: 'parada', j: Number(vp.getAttribute('data-verificar-parada')) });
+      return;
+    }
     var qp = ev.target.closest('[data-quitar-parada]');
     if (qp) {
       var fq = facturasForm[Number(qp.getAttribute('data-quitar-parada'))];
@@ -6411,7 +6450,9 @@
                  fechaFactura: conFechaFactura() && !(f.cargada && !f.fechaFactura) ? f.fechaFactura || '' : undefined,
                  horaFactura: conFechaFactura() && !(f.cargada && !f.horaFactura) ? f.horaFactura || '' : undefined,
                  cargada: f.cargada ? true : undefined,
-                 cliente: f.cliente || '', direccion: f.direccion || '', auto: f.auto || {} };
+                 cliente: f.cliente || '', direccion: f.direccion || '', auto: f.auto || {},
+                 // Tarea V: métrica de la verificación y, si el piloto corrigió el código o el DTE aquí, los de bodega.
+                 verif: f.verif || undefined, codigoCarga: f.codigoCarga, dteCarga: f.dteCarga };
       })
     };
     if (paradaPunto != null) p.punto = paradaPunto;
@@ -7023,8 +7064,23 @@
   window.alTerminarCarga = alTerminarCarga;
   window.guardarRutaCarga = guardarRutaCarga;
   window.leerRutaCarga = leerRutaCarga;
-  /** Departamento y municipio del punto, leídos de su dirección (la misma regla que la parada de siempre); null si no hay. */
+  /** { departamento, municipio } oficiales (con sus tildes) si los dos son de la lista y el municipio es de ese departamento; si no, null. */
+  function lugarOficial(depto, municipio) {
+    var d = departamentoOficial(depto), c = claveLugar(municipio);
+    var m = d && c ? TERRITORIO_SV[d].filter(function (x) { return claveLugar(x) === c; })[0] : '';
+    return m ? { departamento: d, municipio: m } : null;
+  }
+  /**
+   * Departamento y municipio del punto (Tarea V): el que confirmó el piloto en una de sus facturas, el del punto de entrega
+   * conocido y, si no, el leído de su dirección (la misma regla que la parada de siempre); null si no hay.
+   */
   function lugarDePunto(pt) {
+    for (var j = 0; j < pt.facturas.length; j++) {
+      var deFactura = lugarOficial(pt.facturas[j].departamento, pt.facturas[j].municipio);
+      if (deFactura) return deFactura;
+    }
+    var conocido = lugarOficial(pt.departamento, pt.municipio);
+    if (conocido) return conocido;
     var textos = [pt.direccion, pt.envio].concat(pt.facturas.map(function (f) { return f.calle; }));
     for (var k = 0; k < textos.length; k++) {
       var r = textos[k] ? municipioEnDireccion(textos[k], '') : null;
@@ -7179,9 +7235,18 @@
   function facturaDeCarga(f) {
     var x = { control: String(f.control || ''), codigo: String(f.codigo || '').toUpperCase(), monto: f.monto == null ? '' : f.monto,
       vendedor: String(f.vendedor || '').toUpperCase(), numeroControl: f.numeroControl || '', estado: 'Exitosa', motivo: '', montoDevuelto: '',
-      formaPago: f.formaPago || '', cliente: f.cliente || '', direccion: f.calle || '', cargada: true, auto: f.formaPago ? { formaPago: true } : {} };
+      formaPago: f.formaPago || '', cliente: f.cliente || '', direccion: f.direccion || f.calle || '', cargada: true, auto: f.formaPago ? { formaPago: true } : {} };
     if (f.fechaFactura) { x.fechaFactura = f.fechaFactura; x.horaFactura = f.horaFactura || ''; }
+    // Tarea V: la métrica de verificación sigue a la factura (la del teléfono, que tiene lo revisado en bodega; si no, la del servidor).
+    var v = verifDeCarga(f);
+    if (v) x.verif = v;
     return x;
+  }
+  function verifDeCarga(f) {
+    var c = leerJSON(CLAVE_CARGA_BODEGA_ACTUAL, null), local = null;
+    if (c && Array.isArray(c.facturas)) local = c.facturas.filter(function (x) { return mismaFactura(x, f); })[0];
+    var v = (local && local.verif) || f.verif;
+    return v && typeof v === 'object' ? JSON.parse(JSON.stringify(v)) : null;
   }
   function paradaDePunto(pt) {
     return { cliente: pt.cliente || pt.nombre || '', direccion: pt.direccion || '', departamento: pt.lugar ? pt.lugar.departamento : '',
@@ -7206,7 +7271,7 @@
     return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(buscar);
   }
   function refFactura(f) {
-    return f.numeroControl ? 'DTE ···' + String(f.numeroControl).slice(-5) : f.control ? 'Control ' + f.control : 'Factura ' + String(f.codigo || '').slice(0, 8);
+    return f.numeroControl ? 'DTE ···' + String(f.numeroControl).slice(-5) : f.control ? 'Control ' + f.control : 'Factura ' + (codigoVisible(f.codigo).slice(0, 8) || 'sin código');
   }
   /** Cabecera de la parada de un punto: dónde se entrega, Cómo llegar, Llamar a quien recibe y el km anterior. */
   function pintarParadaPunto(pt) {
@@ -7253,7 +7318,10 @@
             '" data-desglose="' + esc(x) + '" type="number" inputmode="decimal" step="0.01" min="0" value="' + esc(d[x]) + '"></div>';
         }).join('') + '</div>' + cuadreMixto(f, j) + '</div>';
     }
-    if (puedeQuitarDeCarga() && !facturasConEstado()[claveFacturaRuta(f)]) html += botonesQuitar('data-quitar-parada', j);
+    // Tarea V: el formulario de verificación a un toque, también en la parada.
+    var revisar = '<button class="enlace" type="button" data-verificar-parada="' + j + '">' + icono('lapiz', { tam: 16 }) + 'Revisar datos</button>';
+    if (puedeQuitarDeCarga() && !facturasConEstado()[claveFacturaRuta(f)]) html += botonesQuitar('data-quitar-parada', j, revisar);
+    else html += '<div class="quitar-factura">' + revisar + '</div>';
     html += '<div class="estado-sel"><label for="est' + j + '">Estado</label><select id="est' + j + '" class="' + clase + '" data-estado-sel="' + j + '">' +
       estadosEntrega().map(function (x) { return '<option' + (x === e ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('') + '</select></div>';
     if (e !== 'Exitosa') {
@@ -7806,13 +7874,26 @@
   function placasPropias() {
     return config.placas.filter(function (p) { return p.tipo !== 'Subcontratada'; });
   }
-  /** La placa del día en curso; si no hay día, la de su última carga o la de su último viaje. */
+  /**
+   * La placa del día en curso; si no hay día, la de su última carga o la de su último viaje. { placa, origen } ('' si no se
+   * sabe ninguna). Tarea V, bloque 6: es fija (el piloto no la cambia; si está mal, la oficina la corrige en el Sheet).
+   */
   function placaCombustible(piloto) {
     var propias = placasPropias().map(function (p) { return p.placa; });
     var ultima = (leerJSON(CLAVE_PLACA_COMB, {}) || {})[piloto];
     var deViaje = placasPropias().filter(function (p) { return p.ultimoPiloto === piloto; })
       .sort(function (a, b) { return String(b.ultimoFecha || '') < String(a.ultimoFecha || '') ? -1 : 1; })[0];
-    return [dia && dia.placa, ultima, deViaje && deViaje.placa].filter(function (x) { return x && propias.indexOf(x) >= 0; })[0] || '';
+    return [{ placa: dia && dia.placa, origen: 'del día' }, { placa: ultima, origen: 'de su última carga de combustible' },
+      { placa: deViaje && deViaje.placa, origen: 'de su último viaje' }]
+      .filter(function (x) { return x.placa && propias.indexOf(x.placa) >= 0; })[0] || { placa: '', origen: '' };
+  }
+  /** Pone la placa fija (si se sabe); sin ninguna placa conocida, el piloto la elige de la lista. */
+  function ponerPlacaCombustible(piloto) {
+    var p = placaCombustible(piloto);
+    if (p.placa) $('combPlaca').value = p.placa;
+    $('combPlaca').disabled = Boolean(p.placa);
+    $('combPlaca').classList.toggle('autollenado', Boolean(p.placa));
+    $('ayudaPlacaComb').textContent = p.placa ? 'La placa ' + p.origen + '. Si no es esta, avise a la oficina.' : 'Elija la placa del vehículo que cargó.';
   }
   var CAMPOS_COMB = ['combCodigo', 'combControl', 'combFecha', 'combHora', 'combProducto', 'combPlaca', 'combKm', 'combGalones', 'combPrecio', 'combTotal'];
   function guardarFormComb() {
@@ -7848,8 +7929,9 @@
       $('combHora').value = ahora();
       $('combFecha').classList.add('autollenado');
       $('combHora').classList.add('autollenado');
-      $('combPlaca').value = placaCombustible(piloto);
     }
+    // Tarea V, bloque 6: también sobre un formulario guardado (antes se podía haber elegido otra).
+    ponerPlacaCombustible(piloto);
     aviso('errComb');
     aviso('combAvisoLectura');
     revisarKmComb();
@@ -8256,6 +8338,10 @@
       } else {
         html += '<span class="chip pend">' + icono('pin', { tam: 13, grueso: 2.2 }) + 'Por ubicar (se aprende al entregar)</span></div>';
       }
+      // Tarea V: qué le falta a cada factura, a simple vista (o que ya se revisó).
+      var faltan = faltaEnFactura(f);
+      if (faltan.length) html += '<div class="chips"><span class="chip pend">' + icono('alerta', { tam: 13, grueso: 2.2 }) + 'Falta: ' + esc(faltan.join(', ')) + '</span></div>';
+      else if (f.verif && f.verif.resultado) html += '<div class="chips"><span class="chip ok">' + icono('check', { tam: 13, grueso: 2.8 }) + 'Revisada</span></div>';
       html += puedeQuitarDeCarga() ? botonesQuitar('data-quitar-carga', i, botonCorregir(i)) : '<div class="quitar-factura">' + botonCorregir(i) + '</div>';
       html += '</div>';
     }
@@ -8315,14 +8401,23 @@
           nit: f.nit || '',
           canal: f.canal || '',
           vendedor: f.vendedor || '',
-          monto: Number(f.monto) || 0,
+          // Tarea V: sin monto leído va vacío (el servidor lo deja vacío y marcado), no 0.
+          monto: f.monto === '' || f.monto == null || isNaN(Number(f.monto)) ? '' : Number(f.monto),
           qrEntrega: f.qrEntrega || '',
           sinQr: Boolean(f.sinQr),
           puntoId: f.puntoId || '',
           envio: f.envio || '',
           calle: f.calle || '',
           recibe: f.recibe || '',
-          cel: f.cel || ''
+          cel: f.cel || '',
+          fechaFactura: f.fechaFactura || '',
+          horaFactura: f.horaFactura || '',
+          formaPago: f.formaPago || '',
+          direccion: f.direccion || '',
+          departamento: f.departamento || '',
+          municipio: f.municipio || '',
+          // Tarea V, bloque 5: métrica de la verificación (columna «Verificación» de «Carga del día»).
+          verif: f.verif || null
         };
       })
     };
@@ -8592,84 +8687,272 @@
     if (a.getAttribute('data-quitar-accion') === 'confirmar' && quitando) confirmarQuitar(); else cerrarHojaQuitar();
   });
   $('hojaQuitar').addEventListener('keydown', function (ev) { if (ev.key === 'Escape') cerrarHojaQuitar(); });
-  // ------------------------------------------------------------ G1 (gemba 19/10): corregir o completar una factura de la carga
-  // Lo que llenó el OCR es una propuesta: el piloto corrige a mano el cliente, el lugar de entrega (texto libre), el monto y el
-  // código de generación, o vuelve a escanear la factura y la nueva lectura completa lo que faltaba (alLeerFacturaCarga). Nada
-  // bloquea: un código sin el formato se guarda como está y se avisa (al entregarla, el servidor marca la fila para la oficina).
-  // Si la factura ya llegó al servidor (un lote), la vieja se quita por la cola de la carga (queda anulada con el motivo) y la
-  // corregida sale en el lote siguiente; con un servidor sin «quitar» (anterior al 27) solo se corrige en el teléfono.
+  // ------------------------------------------------------------ Tarea V (2.0.3): verificación de la factura (formulario de la 1.12)
+  // Ajuste del usuario (20/10, 05:12): el flujo es el de la 2.0 (escanear en bodega) y se le devuelve al piloto la verificación
+  // donde tiene tiempo. Es el formulario de la 1.12 (cliente, dirección, departamento, municipio, monto, código de generación,
+  // DTE, control, vendedor, forma de pago, fecha y hora de la factura), propio de la app nueva (no usa la parada de siempre), y
+  // se abre en tres momentos: en BODEGA desde la lista de la carga («Revisar»), en la PARADA («Revisar datos») y al REESCANEAR
+  // (la segunda lectura llega aquí, llena). Lo leído es una propuesta (naranja) y lo que falta se marca; si todo está bien, un
+  // toque confirma. Nada bloquea: un código sin el formato se guarda como está y se avisa. Viene de la hoja «Corregir» de G1
+  // (gemba 19/10): en bodega, si la factura ya llegó al servidor (un lote), la vieja se quita por la cola de la carga (queda
+  // anulada con el motivo) y la corregida sale en el lote siguiente; con un servidor anterior al 27 solo se corrige en el teléfono.
+  // Métrica interna (f.verif, viaja con la factura hasta «Carga del día»): lecturas, pantalla (rapida | verificacion), momento
+  // (bodega | parada | reescaneo), resultado (confirmada | corregida) y los campos que el piloto cambió o completó.
   var MOTIVO_CORREGIDA = 'Corregida a mano';
-  var corrigiendo = null; // { f: la factura de la carga, leidos: lo que completó un segundo escaneo }
+  var CAMPOS_VERIF = ['cliente', 'direccion', 'departamento', 'municipio', 'monto', 'codigo', 'dte', 'control', 'vendedor', 'formaPago', 'fechaFactura', 'horaFactura'];
+  var NOMBRES_VERIF = { cliente: 'cliente', direccion: 'dirección', departamento: 'departamento', municipio: 'municipio', monto: 'monto',
+    codigo: 'código de generación', dte: 'DTE', control: 'control', vendedor: 'vendedor', formaPago: 'forma de pago', fechaFactura: 'fecha de la factura',
+    horaFactura: 'hora de la factura' };
+  var corrigiendo = null; // { f, donde: carga | parada | nueva, momento, j (parada), inicial, valores, auto, lecturas }
+  var reescaneo = null;   // la próxima lectura de la carga va a este formulario ({ ctx }) o completa esta factura sin agregar ({ previa })
   /** El código que se le muestra al piloto: sin QR la factura lleva un ID interno («fac-…»), que no es un código de generación. */
-  function codigoVisible(c) { return /^fac-/.test(String(c || '')) ? '' : String(c || ''); }
+  function codigoVisible(c) { return /^fac-/i.test(String(c || '')) ? '' : String(c || ''); }
   function botonCorregir(i) {
-    return '<button class="enlace" type="button" data-corregir-carga="' + i + '">' + icono('lapiz', { tam: 16 }) + 'Corregir</button>';
+    return '<button class="enlace" type="button" data-corregir-carga="' + i + '">' + icono('lapiz', { tam: 16 }) + 'Revisar</button>';
   }
-  /** Abre la hoja con los datos de la factura f; con lectura (un segundo escaneo de la misma factura), lo que faltaba se completa. */
-  function abrirHojaCorregir(f, lectura) {
-    var v = { cliente: f.cliente || '', calle: f.calle || '', monto: Number(f.monto) ? String(f.monto) : '', codigo: codigoVisible(f.codigo) };
-    var leidos = [], auto = {};
-    if (lectura) {
-      [['cliente', 'cliente'], ['calle', 'lugar de entrega'], ['monto', 'monto'], ['codigo', 'código de generación']].forEach(function (x) {
-        var nuevo = x[0] === 'monto' ? (Number(lectura.monto) ? String(lectura.monto) : '') : x[0] === 'codigo' ? codigoVisible(lectura.codigo) : String(lectura[x[0]] || '');
-        if (!v[x[0]] && nuevo) { v[x[0]] = nuevo; auto[x[0]] = true; leidos.push(x[1]); }
-      });
+  function verifNueva() { return { lecturas: 1, pantalla: 'rapida', momento: '', resultado: '', corregidos: [] }; }
+  /** Lo que le falta a una factura de la carga (para la lista y el formulario). */
+  function faltaEnFactura(f) {
+    var falta = [];
+    if (!String(f.cliente || '').trim()) falta.push('cliente');
+    if (!Number(f.monto)) falta.push('monto');
+    if (!codigoVisible(f.codigo)) falta.push('código de generación');
+    if (!String(f.vendedor || '').trim()) falta.push('vendedor');
+    if (!f.calle && !f.direccion && !f.puntoId && !f.municipio && !f.qrEntrega) falta.push('lugar de entrega');
+    return falta;
+  }
+  /** Departamento y municipio de una factura: el que confirmó el piloto, o el que se lee de su dirección (propuesto). */
+  function lugarDeFactura(f, direccion) {
+    var ok = lugarOficial(f.departamento, f.municipio);
+    if (ok) return { departamento: ok.departamento, municipio: ok.municipio, auto: false };
+    var r = direccion ? municipioEnDireccion(direccion, '') : null;
+    return r ? { departamento: r.departamento, municipio: r.municipio, auto: true } : { departamento: '', municipio: '', auto: false };
+  }
+  /** Valores del formulario para la factura f (en la parada, el lugar es el de la parada). */
+  function valoresVerificacion(f, donde) {
+    var direccion = donde === 'parada' ? String(f.direccion || '') : String(f.calle || f.direccion || '');
+    var lugar = donde === 'parada' ? { departamento: $('selDepto').value, municipio: $('selMunicipio').value, auto: $('selMunicipio').classList.contains('autollenado') }
+      : lugarDeFactura(f, direccion);
+    var dte = String(f.numeroControl || ''), control = String(f.control || '');
+    return { cliente: String(f.cliente || ''), direccion: direccion, departamento: lugar.departamento, municipio: lugar.municipio,
+      monto: Number(f.monto) ? String(f.monto) : '', codigo: codigoVisible(f.codigo), dte: dte, control: control === dte ? '' : control,
+      vendedor: String(f.vendedor || ''), formaPago: String(f.formaPago || ''), fechaFactura: String(f.fechaFactura || ''),
+      horaFactura: String(f.horaFactura || ''), _lugarAuto: lugar.auto };
+  }
+  /** Llena lo vacío con una nueva lectura (las mismas reglas de la 1.12: lo escrito no se pisa). Devuelve los campos llenados. */
+  function completarConLectura(v, auto, lectura, donde) {
+    var nueva = valoresVerificacion(lectura, donde === 'parada' ? 'carga' : donde), leidos = [];
+    CAMPOS_VERIF.forEach(function (k) {
+      if (k === 'departamento' || k === 'municipio') return;
+      if (!v[k] && nueva[k]) { v[k] = nueva[k]; auto[k] = true; leidos.push(NOMBRES_VERIF[k]); }
+    });
+    if (!v.municipio && nueva.municipio) { v.departamento = nueva.departamento; v.municipio = nueva.municipio; auto.departamento = auto.municipio = true; leidos.push('lugar'); }
+    return leidos;
+  }
+  function opcionesLugar(lista, valor, vacio) {
+    return '<option value="">' + vacio + '</option>' + lista.map(function (x) { return '<option' + (x === valor ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('');
+  }
+  /**
+   * Abre el formulario con la factura f. opciones: { donde: 'carga' (por omisión) | 'parada' | 'nueva', momento, j (índice en
+   * la parada), lectura (una nueva lectura de la misma factura: completa lo vacío), valores (lo que el piloto ya había escrito) }.
+   */
+  function abrirHojaCorregir(f, lectura, opciones) {
+    var o = opciones || {}, donde = o.donde || 'carga';
+    var momento = o.momento || (lectura ? 'reescaneo' : donde === 'parada' ? 'parada' : 'bodega');
+    var antes = corrigiendo && corrigiendo.f === f ? corrigiendo : null;
+    var inicial = antes ? antes.inicial : valoresVerificacion(f, donde);
+    var v = o.valores ? Object.assign({}, o.valores) : Object.assign({}, inicial), auto = {};
+    // Lo que trae la lectura (en una factura que el piloto no ha revisado) es una propuesta: se ve en naranja hasta que la
+    // confirma. El lugar, solo si se leyó de la dirección (el que eligió el piloto no es propuesta).
+    var revisada = Boolean(f.verif && f.verif.resultado) && donde !== 'nueva';
+    if (!o.valores) {
+      CAMPOS_VERIF.forEach(function (k) { if (v[k] && !revisada && k !== 'departamento' && k !== 'municipio') auto[k] = true; });
+      auto.departamento = auto.municipio = Boolean(v.municipio && inicial._lugarAuto);
     }
-    corrigiendo = { f: f, leidos: leidos };
-    function campo(id, etiqueta, valor, extra, autollenado, clase) {
-      var c = [clase, autollenado ? 'autollenado' : ''].filter(Boolean).join(' ');
-      return '<label for="' + id + '">' + etiqueta + '</label><input id="' + id + '" value="' + esc(valor) + '" autocomplete="off"' + extra +
-        (c ? ' class="' + c + '"' : '') + '>';
-    }
-    var ayuda = !lectura ? 'Lo que leyó la foto es una propuesta: corrija lo que no coincida con la factura.'
-      : leidos.length ? 'Esta factura ya está en su carga. El nuevo escaneo completó: ' + leidos.join(', ') + '. Revise y toque «Guardar cambios».'
-      : 'Esta factura ya está en su carga y el nuevo escaneo no trajo nada que faltara. Corrija a mano lo que haga falta.';
-    $('hojaCorregir').querySelector('.hoja').innerHTML = '<p class="paso">Carga en bodega · ' + esc(refFactura(f)) + '</p>' +
-      '<h2 id="hojaCorregirTitulo">Corregir factura</h2><p class="ayuda">' + esc(ayuda) + '</p>' +
-      campo('txtCorrCliente', 'Cliente', v.cliente, ' type="text" maxlength="120" autocapitalize="characters"', auto.cliente) +
-      campo('txtCorrLugar', 'Lugar de entrega <span class="opc">(dirección o referencia)</span>', v.calle, ' type="text" maxlength="240" placeholder="Ej.: Barrio El Centro, frente al parque, Ilobasco"', auto.calle) +
-      campo('txtCorrMonto', 'Monto $', v.monto, ' type="number" inputmode="decimal" step="0.01" min="0"', auto.monto) +
-      campo('txtCorrCodigo', 'Código de generación', v.codigo, ' type="text" maxlength="40" autocapitalize="characters" spellcheck="false" placeholder="Sale del QR: 32 letras y números"', auto.codigo, 'codigo') +
-      '<div id="avisoHojaCorregir"></div>' +
-      '<button class="primario" type="button" data-corregir-accion="guardar">' + icono('check', { tam: 20 }) + 'Guardar cambios</button>' +
-      '<button class="enlace" type="button" data-corregir-accion="cancelar">Cancelar</button>';
+    var leidos = lectura ? completarConLectura(v, auto, lectura, donde) : [];
+    corrigiendo = { f: f, donde: donde, momento: momento, j: o.j, inicial: inicial, auto: auto,
+      lecturas: (antes ? antes.lecturas : (f.verif && f.verif.lecturas) || 1) + (lectura ? 1 : 0) };
+    pintarHojaCorregir(v, leidos, Boolean(lectura));
     $('hojaCorregir').classList.remove('oculto');
-    $('txtCorrCliente').focus();
+    var primero = $('hojaCorregir').querySelector('.falta') || $('txtCorrCliente');
+    if (primero && donde !== 'parada') primero.focus();
+  }
+  function pintarHojaCorregir(v, leidos, conLectura) {
+    var c = corrigiendo, f = c.f, auto = c.auto;
+    var falta = { cliente: !v.cliente, monto: !Number(v.monto), codigo: !v.codigo, vendedor: !v.vendedor, departamento: !v.departamento, municipio: !v.municipio,
+      dte: !v.dte && !v.codigo };
+    var faltan = Object.keys(falta).filter(function (k) { return falta[k] && k !== 'departamento'; }).map(function (k) { return k === 'municipio' ? 'departamento y municipio' : NOMBRES_VERIF[k]; });
+    function clase(k, extra) {
+      var cl = [extra, auto[k] ? 'autollenado' : '', falta[k] ? 'falta' : ''].filter(Boolean).join(' ');
+      return cl ? ' class="' + cl + '"' : '';
+    }
+    function campo(id, k, etiqueta, extra, cl) {
+      return '<label for="' + id + '">' + etiqueta + '</label><input id="' + id + '" data-verif="' + k + '" value="' + esc(v[k]) + '" autocomplete="off"' + extra + clase(k, cl) + '>';
+    }
+    function par(a, b) { return '<div class="fila"><div>' + a + '</div><div>' + b + '</div></div>'; }
+    var titulo = c.donde === 'nueva' ? 'Revise la factura' : 'Verificar factura';
+    var lugarDe = c.donde === 'carga' || c.donde === 'nueva' ? 'Carga en bodega' : 'Parada de la ruta';
+    var ayuda = conLectura ? (leidos.length ? 'La nueva lectura completó: ' + leidos.join(', ') + '.' : 'La nueva lectura no trajo nada que faltara.') + ' ' : '';
+    ayuda += 'Compare con la factura: lo naranja lo puso la lectura. Corrija lo que no coincida.';
+    var pagos = formasPago();
+    if (v.formaPago && pagos.indexOf(v.formaPago) < 0) pagos = [v.formaPago].concat(pagos);
+    $('hojaCorregir').querySelector('.hoja').innerHTML = '<p class="paso">' + lugarDe + ' · ' + esc(refFactura(f)) + '</p>' +
+      '<h2 id="hojaCorregirTitulo">' + titulo + '</h2>' +
+      (faltan.length ? '<div class="cuadre alerta">' + icono('alerta') + '<div>Falta: ' + esc(faltan.join(', ')) +
+        '<small>Complételo con la factura o vuelva a escanearla. Si no lo sabe, déjelo vacío: la oficina lo revisa.</small></div></div>'
+        : '<div class="cuadre ok">' + icono('circuloCheck') + '<div>Factura completa<small>Revise que coincida con el papel.</small></div></div>') +
+      '<p class="ayuda">' + esc(ayuda) + '</p>' +
+      campo('txtCorrCliente', 'cliente', 'Cliente', ' type="text" maxlength="120" autocapitalize="characters"') +
+      campo('txtCorrLugar', 'direccion', 'Dirección <span class="opc">(o referencia del lugar de entrega)</span>', ' type="text" maxlength="240" placeholder="Ej.: Barrio El Centro, frente al parque, Ilobasco"') +
+      par('<label for="selCorrDepto">Departamento</label><select id="selCorrDepto" data-verif="departamento"' + clase('departamento') + '>' + opcionesLugar(DEPARTAMENTOS_SV, v.departamento, 'Seleccione…') + '</select>',
+        '<label for="selCorrMunicipio">Municipio</label><select id="selCorrMunicipio" data-verif="municipio"' + clase('municipio') + (v.departamento ? '' : ' disabled') + '>' +
+        opcionesLugar(TERRITORIO_SV[v.departamento] || [], v.municipio, v.departamento ? 'Seleccione…' : 'Elija el departamento') + '</select>') +
+      par(campo('txtCorrMonto', 'monto', 'Monto $', ' type="number" inputmode="decimal" step="0.01" min="0"'),
+        campo('txtCorrVendedor', 'vendedor', 'Código de vendedor', ' type="text" maxlength="20" autocapitalize="characters" placeholder="Ej.: VS125"')) +
+      campo('txtCorrCodigo', 'codigo', 'Código de generación', ' type="text" maxlength="40" autocapitalize="characters" spellcheck="false" placeholder="Sale del QR: 32 letras y números"', 'codigo') +
+      campo('txtCorrDte', 'dte', 'Número de control DTE', ' type="text" maxlength="40" autocapitalize="characters" spellcheck="false" placeholder="Ej.: DTE-03-M001P001-000000000012345"', 'codigo') +
+      (c.inicial.control ? campo('txtCorrControl', 'control', 'Número de control', ' type="text" inputmode="numeric" maxlength="40"') : '') +
+      par(campo('txtCorrFecha', 'fechaFactura', 'Fecha de la factura', ' type="date"'), campo('txtCorrHora', 'horaFactura', 'Hora', ' type="time"')) +
+      '<label for="selCorrPago">Forma de pago <span class="opc">(condición de la factura)</span></label><select id="selCorrPago" data-verif="formaPago"' + clase('formaPago') + '>' +
+      opcionesLugar(pagos, v.formaPago, 'Sin elegir') + '</select>' +
+      '<div id="avisoHojaCorregir"></div>' +
+      '<button class="primario" type="button" data-corregir-accion="guardar">' + icono('check', { tam: 20 }) + '<span>' + esc(textoPrimarioVerif(v)) + '</span></button>' +
+      '<button class="fantasma" type="button" data-corregir-accion="escanear">' + icono('qr', { tam: 20 }) + 'Volver a escanear</button>' +
+      '<button class="enlace" type="button" data-corregir-accion="cancelar">' + (c.donde === 'nueva' ? 'No agregar' : 'Cancelar') + '</button>';
+  }
+  /** Lo que dice el formulario ahora. */
+  function valoresFormulario() {
+    var v = {};
+    $('hojaCorregir').querySelectorAll('[data-verif]').forEach(function (e) { v[e.getAttribute('data-verif')] = String(e.value || '').replace(/\s+/g, ' ').trim(); });
+    if (v.control === undefined) v.control = corrigiendo.inicial.control;
+    return v;
+  }
+  /** Igual para comparar: mayúsculas en cliente, códigos y vendedor; números como número. */
+  function normalVerif(k, x) {
+    x = String(x == null ? '' : x).trim();
+    if (k === 'monto') return x === '' ? '' : String(Number(x));
+    if (k === 'vendedor') return x.replace(/\s+/g, '').toUpperCase();
+    if (k === 'cliente' || k === 'codigo' || k === 'dte') return x.toUpperCase();
+    return x;
+  }
+  function cambiosVerif(v) {
+    return CAMPOS_VERIF.filter(function (k) { return normalVerif(k, v[k]) !== normalVerif(k, corrigiendo.inicial[k]); });
+  }
+  function textoPrimarioVerif(v) {
+    if (corrigiendo.donde === 'nueva') return 'Agregar a la carga';
+    return cambiosVerif(v).length ? 'Guardar cambios' : 'Todo bien: confirmar';
   }
   function cerrarHojaCorregir() {
     corrigiendo = null;
     $('hojaCorregir').classList.add('oculto');
   }
-  function guardarCorreccion() {
-    var f = corrigiendo.f, carga = cargaBodega;
-    var monto = $('txtCorrMonto').value.trim() === '' ? 0 : Number($('txtCorrMonto').value);
-    if (isNaN(monto) || monto < 0) { avisoIcono('avisoHojaCorregir', 'error', 'Escriba el monto solo con números (por ejemplo 64.20).'); return; }
-    var codigo = formatearCodigo($('txtCorrCodigo').value);
-    var nueva = Object.assign({}, f, { cliente: $('txtCorrCliente').value.replace(/\s+/g, ' ').trim().toUpperCase(),
-      calle: $('txtCorrLugar').value.replace(/\s+/g, ' ').trim(), monto: monto,
+  /** La factura con lo que dice el formulario (sin tocar la original). */
+  function facturaVerificada(f, v, donde) {
+    var codigo = formatearCodigo(v.codigo), vendedor = normalVerif('vendedor', v.vendedor);
+    var x = Object.assign({}, f, { cliente: normalVerif('cliente', v.cliente), monto: v.monto === '' ? '' : Number(v.monto), vendedor: vendedor,
       // Sin código (lo borró, o la foto no lo dio) la factura sigue con un ID interno, como la que entra sin QR.
-      codigo: codigo || (codigoVisible(f.codigo) ? 'fac-' + nuevoId() : f.codigo) });
+      codigo: codigo || (codigoVisible(f.codigo) ? 'fac-' + nuevoId() : f.codigo), numeroControl: normalVerif('dte', v.dte),
+      control: v.control || (String(f.control || '') === String(f.numeroControl || '') ? normalVerif('dte', v.dte) : String(f.control || '')),
+      formaPago: v.formaPago, fechaFactura: v.fechaFactura, horaFactura: v.horaFactura });
+    if (vendedor !== String(f.vendedor || '') && !f.qrEntrega) x.canal = canalDeVendedor(vendedor) || f.canal;
+    if (donde === 'parada') { x.direccion = v.direccion; return x; }
+    x.calle = v.direccion;
+    if (!f.direccion || f.direccion === f.calle) x.direccion = v.direccion;
+    x.departamento = v.municipio ? v.departamento : '';
+    x.municipio = v.municipio;
+    if (x.calle || x.municipio) x.preguntarLugar = false;
+    return x;
+  }
+  function guardarCorreccion() {
+    var c = corrigiendo, f = c.f, v = valoresFormulario();
+    if (v.monto !== '' && (isNaN(Number(v.monto)) || Number(v.monto) < 0)) { avisoIcono('avisoHojaCorregir', 'error', 'Escriba el monto solo con números (por ejemplo 64.20).'); return; }
+    var cambios = cambiosVerif(v), previa = f.verif || verifNueva();
+    var corregidos = CAMPOS_VERIF.filter(function (k) { return cambios.indexOf(k) >= 0 || (previa.corregidos || []).indexOf(k) >= 0; });
+    var verif = { lecturas: c.lecturas, pantalla: 'verificacion', momento: c.momento,
+      resultado: cambios.length || previa.resultado === 'corregida' ? 'corregida' : 'confirmada', corregidos: corregidos };
+    var nueva = facturaVerificada(f, v, c.donde);
+    nueva.verif = verif;
+    var raro = nueva.codigo && codigoVisible(nueva.codigo) && !FORMATO_CODIGO.test(nueva.codigo);
+    var avisoRaro = raro ? ' El código de generación no tiene el formato de 32 letras y números (8-4-4-4-12): quedó como lo escribió y la oficina lo revisa.' : '';
     cerrarHojaCorregir();
-    var idx = carga ? carga.facturas.indexOf(f) : -1;
-    if (idx < 0 || !['cliente', 'calle', 'monto', 'codigo'].some(function (k) { return String(nueva[k] || '') !== String(f[k] || ''); })) return;
+    if (c.donde === 'nueva') { procesarNuevaFacturaCarga(nueva); return; }
+    if (c.donde === 'parada') {
+      var j = c.j;
+      if (!facturasForm[j]) return;
+      // La carga reconoce la factura por su código y DTE de bodega aunque el piloto los corrija aquí.
+      if (nueva.codigo !== f.codigo && f.codigoCarga === undefined) nueva.codigoCarga = f.codigo;
+      if (nueva.numeroControl !== f.numeroControl && f.dteCarga === undefined) nueva.dteCarga = f.numeroControl;
+      facturasForm[j] = nueva;
+      ponerLugar(v.departamento, v.municipio, false);
+      aviso('ayudaMunicipio');
+      dibujarFacturas();
+      guardarParadaAbierta();
+      aviso('avisoLectura', raro ? 'ambar' : 'ok', (cambios.length ? 'Factura corregida.' : 'Factura confirmada.') + avisoRaro);
+      return;
+    }
+    var carga = cargaBodega, idx = carga ? carga.facturas.indexOf(f) : -1;
+    if (idx < 0) return;
+    var datos = ['cliente', 'calle', 'direccion', 'monto', 'codigo', 'numeroControl', 'control', 'vendedor', 'formaPago', 'fechaFactura', 'horaFactura', 'departamento', 'municipio'];
+    var cambio = datos.some(function (k) { return String(nueva[k] == null ? '' : nueva[k]) !== String(f[k] == null ? '' : f[k]); });
     // Otro cliente: el punto de entrega lo vuelve a decidir el servidor (por cliente), no el del nombre anterior.
     if (nueva.cliente !== f.cliente) { delete nueva.puntoId; delete nueva.puntoNombre; }
-    if (nueva.calle) nueva.preguntarLugar = false;
     var enviada = Boolean(carga.loteEnviado) || Boolean(dia && dia.ruta);
-    if (enviada && puedeQuitarDeCarga()) {
+    if (cambio && enviada && puedeQuitarDeCarga()) {
       quitarFacturaDeCarga(f, MOTIVO_CORREGIDA);
       carga.facturas.splice(idx, 0, nueva);
     } else carga.facturas[idx] = nueva;
     guardarCargaBodegaActual();
     pintarListaCargadas(idx);
-    var raro = codigo && !FORMATO_CODIGO.test(codigo);
-    aviso('avisoCarga', raro ? 'ambar' : 'ok', 'Factura corregida.' + (raro ? ' El código de generación no tiene el formato de 32 letras y números (8-4-4-4-12): ' +
-      'quedó como lo escribió y la oficina lo revisa. Si puede, corríjalo o vuelva a escanear la factura.' : ''));
+    aviso('avisoCarga', raro ? 'ambar' : 'ok', (cambio ? 'Factura corregida.' : 'Factura confirmada.') + avisoRaro);
+  }
+  /** «Volver a escanear» desde el formulario: la próxima lectura vuelve a este formulario, con lo que el piloto ya escribió. */
+  function reescanearDesdeFormulario() {
+    var c = corrigiendo;
+    reescaneo = { ctx: c, valores: valoresFormulario() };
+    $('hojaCorregir').classList.add('oculto');
+    $('fotoFacturaCarga').value = '';
+    $('fotoFacturaCarga').click();
   }
   $('hojaCorregir').addEventListener('click', function (ev) {
     var a = ev.target.closest('[data-corregir-accion]');
     if (!a || !corrigiendo) return;
-    if (a.getAttribute('data-corregir-accion') === 'guardar') guardarCorreccion(); else cerrarHojaCorregir();
+    var accion = a.getAttribute('data-corregir-accion');
+    if (accion === 'guardar') guardarCorreccion();
+    else if (accion === 'escanear') reescanearDesdeFormulario();
+    else {
+      if (corrigiendo.donde === 'nueva') aviso('avisoCarga', 'info', 'La factura no se agregó. Escanéela de nuevo cuando quiera.');
+      cerrarHojaCorregir();
+    }
+  });
+  $('hojaCorregir').addEventListener('input', function (ev) {
+    if (!corrigiendo || !ev.target.getAttribute('data-verif')) return;
+    ev.target.classList.remove('autollenado');
+    if (String(ev.target.value).trim()) ev.target.classList.remove('falta');
+    var b = $('hojaCorregir').querySelector('button.primario span');
+    if (b) b.textContent = textoPrimarioVerif(valoresFormulario());
+  });
+  $('hojaCorregir').addEventListener('change', function (ev) {
+    if (!corrigiendo) return;
+    var k = ev.target.getAttribute('data-verif');
+    if (k === 'departamento') {
+      var m = $('selCorrMunicipio');
+      m.innerHTML = opcionesLugar(TERRITORIO_SV[ev.target.value] || [], '', ev.target.value ? 'Seleccione…' : 'Elija el departamento');
+      m.disabled = !ev.target.value;
+      m.classList.remove('autollenado');
+    }
+    if (k === 'direccion') {
+      // La misma regla de la 1.12 (sugerirLugar): la dirección propone el lugar si el piloto no lo eligió.
+      var sel = $('selCorrMunicipio'), r = municipioEnDireccion(ev.target.value, $('selCorrDepto').value);
+      if (r && (!sel.value || sel.classList.contains('autollenado'))) {
+        $('selCorrDepto').value = r.departamento;
+        sel.innerHTML = opcionesLugar(TERRITORIO_SV[r.departamento], r.municipio, 'Seleccione…');
+        sel.disabled = false;
+        $('selCorrDepto').classList.add('autollenado'); sel.classList.add('autollenado');
+      }
+    }
+    if (k === 'municipio' && ev.target.value) ev.target.classList.remove('falta');
+    var b = $('hojaCorregir').querySelector('button.primario span');
+    if (b) b.textContent = textoPrimarioVerif(valoresFormulario());
   });
   $('hojaCorregir').addEventListener('keydown', function (ev) { if (ev.key === 'Escape') cerrarHojaCorregir(); });
   $('listaCargadas').addEventListener('click', function (ev) {
@@ -8783,22 +9066,50 @@
       control: q.control || datos.control || '',
       cliente: datos.cliente || '',
       nit: '',
-      monto: datos.total || 0,
+      // Tarea V: sin monto leído la celda queda vacía (y marcada), no $0 en silencio.
+      monto: datos.total == null || datos.total === '' ? '' : datos.total,
       vendedor: datos.vendedor || '',
-      canal: canalDeVendedor(datos.vendedor)
+      canal: canalDeVendedor(datos.vendedor),
+      // Tarea V: lo demás que leyó la foto viaja con la factura hasta Registros (antes se quedaba en el teléfono).
+      fechaFactura: q.fecha || datos.fechaEmision || '',
+      horaFactura: datos.horaEmision || '',
+      formaPago: datos.formaPago || '',
+      direccion: datos.direccion || '',
+      verif: verifNueva()
     };
     // El bloque de envío impreso (Envío, Calle, Recibe, Cel) solo lo trae la factura de Industria: en otra, lo que el lector
     // encuentra con esas palabras es otra cosa (el teléfono del emisor como «cel», un pedazo de la dirección como «calle»).
-    if (f.canal === 'Industria') ['envio', 'calle', 'recibe', 'cel'].forEach(function (k) { if (datos[k]) f[k] = datos[k]; });
+    // Una factura de Industria sin bloque de envío (sin «Envío») tampoco: su «calle» sería un pedazo de la dirección.
+    if (f.canal === 'Industria' && datos.envio) ['envio', 'calle', 'recibe', 'cel'].forEach(function (k) { if (datos[k]) f[k] = datos[k]; });
     else if (datos.direccion) f.calle = datos.direccion;
     if (!f.calle && f.canal !== 'Industria') f.preguntarLugar = true;
+    // Tarea V: «Volver a escanear» desde el formulario de verificación: la lectura vuelve a ese formulario y completa lo vacío.
+    var r = reescaneo;
+    reescaneo = null;
+    if (r && r.ctx) {
+      abrirHojaCorregir(r.ctx.f, f, { donde: r.ctx.donde, j: r.ctx.j, momento: 'reescaneo', valores: r.valores });
+      return;
+    }
+    // Tarea V: «Volver a escanear» de una lectura fallida o incompleta (aún no está en la carga): la segunda lectura se muestra
+    // en el formulario de verificación, completada con lo que dio la primera si es la misma factura.
+    if (r && r.previa && !facturaEnLaCarga(f)) {
+      var p = r.previa;
+      var otra = (codigoVisible(p.codigo) && codigoVisible(f.codigo) && p.codigo !== f.codigo) || (p.numeroControl && f.numeroControl && p.numeroControl !== f.numeroControl);
+      if (!otra) {
+        Object.keys(p).forEach(function (k) { if (k !== 'verif' && (f[k] === '' || f[k] == null)) f[k] = p[k]; });
+        if (!codigoVisible(f.codigo) && codigoVisible(p.codigo)) f.codigo = p.codigo;
+        f.verif.lecturas = ((p.verif && p.verif.lecturas) || 1) + 1;
+      }
+      abrirHojaCorregir(f, null, { donde: 'nueva', momento: 'reescaneo' });
+      return;
+    }
     // G1 (gemba 19/10): la misma factura otra vez no se bloquea: si la nueva lectura trae lo que le faltaba (cliente, lugar, monto
     // o código), se abre para completarla y el piloto la revisa; si no trae nada nuevo, se le dice cómo corregirla a mano.
     var ya = facturaEnLaCarga(f);
     if (ya) {
       var nuevo = (!ya.cliente && f.cliente) || (!ya.calle && f.calle) || (!Number(ya.monto) && Number(f.monto)) || (!codigoVisible(ya.codigo) && codigoVisible(f.codigo));
-      if (nuevo) abrirHojaCorregir(ya, f);
-      else aviso('avisoCarga', 'ambar', 'Esta factura ya está en su lista de carga. Si algo está mal, toque «Corregir» en la factura.');
+      if (nuevo) abrirHojaCorregir(ya, f, { donde: 'carga', momento: 'reescaneo' });
+      else aviso('avisoCarga', 'ambar', 'Esta factura ya está en su lista de carga. Si algo está mal, toque «Revisar» en la factura.');
       return;
     }
     var dudoso = !f.cliente || (datos.clienteFuente !== undefined && datos.clienteFuente !== 'etiqueta');
@@ -8826,8 +9137,11 @@
         'placeholder="Ej.: Barrio El Centro, Ilobasco">' : '') +
       '<div id="avisoHojaCliente"></div>' +
       '<button class="primario" type="button" data-cliente-accion="agregar">' + icono('check', { tam: 20 }) + 'Agregar a la carga</button>' +
+      // Tarea V, bloque 4: volver a escanear es un botón a la vista, justo debajo (antes era un enlace pequeño); la segunda lectura
+      // abre el formulario de verificación lleno.
+      (nombre ? '<button class="fantasma" type="button" data-cliente-accion="escanear">' + icono('qr', { tam: 20 }) + 'Volver a escanear</button>' : '') +
       '<button class="enlace" type="button" data-cliente-accion="' + (nombre ? 'cancelar' : 'sinLugar') + '">' +
-      (nombre ? 'No agregar (la vuelvo a escanear)' : 'Agregar sin lugar') + '</button>';
+      (nombre ? 'No agregar' : 'Agregar sin lugar') + '</button>';
     $('hojaCliente').classList.remove('oculto');
     var campo = $('txtClienteCarga') || $('txtLugarCarga');
     if (campo && !(nombre && f.cliente)) campo.focus();
@@ -8840,6 +9154,13 @@
     var b = ev.target.closest('[data-cliente-accion]');
     if (!b || !confirmando) return;
     var accion = b.getAttribute('data-cliente-accion'), x = confirmando, f = x.f;
+    if (accion === 'escanear') {
+      cerrarHojaCliente();
+      reescaneo = { previa: f };
+      $('fotoFacturaCarga').value = '';
+      $('fotoFacturaCarga').click();
+      return;
+    }
     if (accion === 'cancelar') {
       cerrarHojaCliente();
       aviso('avisoCarga', 'info', 'La factura no se agregó. Escanéela de nuevo cuando quiera.');
@@ -8851,6 +9172,12 @@
         avisoIcono('avisoHojaCliente', 'error', 'Escriba el nombre del cliente como dice la factura.');
         $('txtClienteCarga').focus();
         return;
+      }
+      // Métrica: el nombre que el piloto escribió o cambió en la pantalla rápida.
+      if (nombre.toUpperCase() !== String(f.cliente || '').toUpperCase() && f.verif && f.verif.corregidos.indexOf('cliente') < 0) {
+        f.verif.corregidos.push('cliente');
+        f.verif.resultado = 'corregida';
+        f.verif.momento = 'bodega';
       }
       f.cliente = nombre.toUpperCase();
     }
