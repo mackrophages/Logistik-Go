@@ -842,13 +842,19 @@
   }
 
   /* Línea de tiempo sutil fija bajo la barra azul (Tarea 28 Parte A) */
+  /* Fuera del flujo (absolute): si además empujara el contenido, mostrarla y ocultarla movía la
+     sección de control, el observador volvía a cambiar el estado y el panel rebotaba solo
+     (Tarea H, 19/10/2026). Cuelga del encabezado pegajoso (header), su ancestro posicionado. */
   nav.tab-franja-periodo {
     display: none;
-    position: relative;
-    width: 100%;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
     height: 44px;
     background-color: var(--superficie-tarjeta);
     border-bottom: 1px solid var(--borde-fino);
+    box-shadow: 0 6px 12px -8px rgba(15, 23, 42, .35);
     color: var(--tinta);
     box-sizing: border-box;
     font-family: var(--fuente-panel);
@@ -856,6 +862,11 @@
   }
   body.tablero-desplazado nav.tab-franja-periodo:not(.oculto) {
     display: block;
+  }
+  /* Sección apagada desde Personalizar panel. Va aparte de .oculto (que es por falta de datos) y gana con
+     !important para tapar también las tarjetas que se muestran solas al llegar datos. */
+  [data-oculto-panel] {
+    display: none !important;
   }
   .tab-franja-periodo-interior {
     max-width: 560px;
@@ -1876,6 +1887,16 @@
   .resumen-canal th:not(:first-child), .resumen-canal td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
   .resumen-canal td { padding: 10px 6px; border-top: 1px solid var(--borde-fino); color: var(--tinta); }
   #hojaDondeEntrega { position: fixed; inset: 0; z-index: 70; }
+  /* 2.0.1: quitar una factura de la carga o volver a escanearla (carga en bodega y parada de la ruta) */
+  /* 2.0.1: confirmar el nombre del cliente o el lugar de entrega de una factura de la carga (hojaCliente) */
+  #hojaQuitar, #hojaCliente, #hojaCorregir { position: fixed; inset: 0; z-index: 90; }
+  #hojaQuitar .hoja, #hojaCliente .hoja, #hojaCorregir .hoja { max-width: 540px; margin: 0 auto; }
+  #hojaQuitar .hoja .enlace, #hojaCliente .hoja .enlace, #hojaCorregir .hoja .enlace { display: block; margin: 6px auto 0; }
+  #hojaCliente .hoja input, #hojaCorregir .hoja input { margin-bottom: 10px; }
+  /* G1: la hoja de corregir tiene cuatro campos: en horizontal (844x390) se desplaza dentro de la hoja */
+  #hojaCorregir .hoja { max-height: 92vh; overflow-y: auto; }
+  .pantalla-nueva .quitar-factura { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 4px; }
+  .pantalla-nueva .quitar-factura button.enlace { display: inline-flex; align-items: center; gap: 6px; }
   .velo { position: absolute; inset: 0; background: rgba(7, 6, 7, .55); }
   .hoja { position: absolute; left: 10px; right: 10px; top: 74px; max-height: calc(100vh - 100px); overflow-y: auto; z-index: 80;
     background: var(--superficie-tarjeta); border-radius: var(--radio-l); padding: 22px 18px 20px; box-shadow: 0 18px 40px rgba(7, 6, 7, .25);
@@ -2047,17 +2068,20 @@
     </div>
   </section>
 
-  <!-- Carga de combustible: la registra el piloto propio en la bomba, escaneando la factura (DTE con QR) -->
+  <!-- Carga de combustible: la registra el piloto propio en la bomba con la foto de todo el ticket. G1 (gemba 19/10): el QR del
+       ticket solo trae el código de generación; galones y total van arriba, el precio sale de total / galones y el código es opcional. -->
   <section id="pCombustible" class="tarjeta oculto">
     <p class="paso">Combustible</p>
     <h2>Carga de combustible</h2>
-    <button class="escanear" id="btnEscanearCombustible" type="button">Escanear factura de combustible</button>
-    <p class="ayuda">Foto de la factura de la bomba, completa y con el código QR visible. La app llena lo que lea; revise y escriba lo que falte.</p>
+    <button class="escanear" id="btnEscanearCombustible" type="button">Tomar foto del ticket</button>
+    <p class="ayuda">Foto de todo el ticket, derecho y con buena luz: el QR solo trae el código, no los galones ni el total. La app llena lo que lea; revise y escriba lo que falte.</p>
     <div id="combAvisoLectura"></div>
-    <label for="combCodigo">Código de generación</label>
-    <input id="combCodigo" class="codigo" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Sale del QR">
-    <label for="combControl">Número de control</label>
-    <input id="combControl" class="codigo" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false">
+    <div class="montos">
+      <div><label for="combGalones">Galones</label><input id="combGalones" type="number" inputmode="decimal" min="0" step="0.001"></div>
+      <div><label for="combTotal">Total $</label><input id="combTotal" type="number" inputmode="decimal" min="0" step="0.01"></div>
+      <div><label for="combPrecio">Precio $</label><input id="combPrecio" type="number" inputmode="decimal" min="0" step="0.001" placeholder="Se calcula"></div>
+    </div>
+    <div id="combCuadre" class="cuadre" aria-live="polite"></div>
     <div class="fila">
       <div><label for="combFecha">Fecha</label><input id="combFecha" type="date"></div>
       <div><label for="combHora">Hora</label><input id="combHora" type="time"></div>
@@ -2070,12 +2094,10 @@
     <label for="combKm">Km del odómetro</label>
     <input id="combKm" type="number" inputmode="numeric" min="0" step="1">
     <div id="combAvisoKm"></div>
-    <div class="montos">
-      <div><label for="combGalones">Galones</label><input id="combGalones" type="number" inputmode="decimal" min="0" step="0.001"></div>
-      <div><label for="combPrecio">Precio $</label><input id="combPrecio" type="number" inputmode="decimal" min="0" step="0.01"></div>
-      <div><label for="combTotal">Total $</label><input id="combTotal" type="number" inputmode="decimal" min="0" step="0.01"></div>
-    </div>
-    <div id="combCuadre" class="cuadre" aria-live="polite"></div>
+    <label for="combCodigo">Código de generación <span class="opc">(si el ticket lo trae)</span></label>
+    <input id="combCodigo" class="codigo" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" placeholder="Sale del QR">
+    <label for="combControl">Número de control <span class="opc">(opcional)</span></label>
+    <input id="combControl" class="codigo" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false">
     <div id="errComb"></div>
     <button class="primario" id="btnGuardarCarga" type="button">Guardar carga</button>
     <button class="fantasma" id="btnVolverComb" type="button">Volver</button>
@@ -2177,6 +2199,24 @@
     </div>
   </section>
 
+  <!-- 2.0.1: confirmar o escribir el nombre del cliente de una factura de la carga, o el lugar de entrega si no trae dirección -->
+  <div id="hojaCliente" class="pantalla-nueva oculto">
+    <div class="velo"></div>
+    <div class="hoja" role="dialog" aria-modal="true" aria-labelledby="hojaClienteTitulo"></div>
+  </div>
+
+  <!-- 2.0.1: confirmar «Quitar esta factura» o «Volver a escanear» (la carga en bodega y la parada de la ruta) -->
+  <div id="hojaQuitar" class="pantalla-nueva oculto">
+    <div class="velo" data-quitar-accion="cancelar"></div>
+    <div class="hoja" role="dialog" aria-modal="true" aria-labelledby="hojaQuitarTitulo"></div>
+  </div>
+
+  <!-- G1 (gemba 19/10): corregir a mano una factura de la carga, o completarla con un segundo escaneo -->
+  <div id="hojaCorregir" class="pantalla-nueva oculto">
+    <div class="velo" data-corregir-accion="cancelar"></div>
+    <div class="hoja" role="dialog" aria-modal="true" aria-labelledby="hojaCorregirTitulo"></div>
+  </div>
+
   <!-- Formulario de parada. Con la app nueva (M4) es la parada sin escaneo de un punto de la ruta: la misma sección y las
        mismas validaciones, con la clase pantalla-nueva (se ven .modo-nuevo y se ocultan .modo-viejo). -->
   <section id="pParada" class="tarjeta pantalla-nueva oculto">
@@ -2189,8 +2229,9 @@
     </button>
     <p class="ayuda modo-viejo">Tome una foto de la factura completa, derecha y con el código QR visible. La app llena el número de control, el monto, el código de vendedor, el cliente y la dirección; revise y corrija si hace falta.</p>
     <div id="avisoLectura"></div>
-    <label for="txtCliente" class="modo-viejo">Cliente (destinatario)</label>
-    <input id="txtCliente" class="modo-viejo" type="text" autocomplete="off" placeholder="Ej.: Ferretería El Centro">
+    <!-- R2: también en la parada de un punto, como en la 1.12: el piloto ve el cliente que se leyó en bodega y lo corrige. -->
+    <label for="txtCliente">Cliente (destinatario)</label>
+    <input id="txtCliente" type="text" autocomplete="off" placeholder="Ej.: Ferretería El Centro">
     <label for="txtDireccion" class="modo-viejo">Dirección del cliente <span class="opc">(sale de la factura)</span></label>
     <input id="txtDireccion" class="modo-viejo" type="text" autocomplete="off" placeholder="Ej.: Barrio El Centro, Santa Rosa de Lima">
     <label for="selDepto" class="modo-viejo">Departamento</label>
@@ -2458,7 +2499,7 @@
           </div>
         </div>
       </div>
-      <h3 class="cap-periodo" data-titulo="Departamentos"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Departamentos (este mes)</h3><div class="tabla-scroll" id="tabDeptos" data-grafico="grafMapa"></div>
+      <h3 class="cap-periodo" data-titulo="Departamentos" id="tabDeptosTitulo"><svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Departamentos (este mes)</h3><div class="tabla-scroll" id="tabDeptos" data-grafico="grafMapa"></div>
     </div>
     <!-- Liquidación (Task 9): lo que se le liquida a Celasa por las facturas del periodo, con su desglose por forma de pago. Lo
          calcula el servidor (liquidacionDeFila_, la base de la pestaña Liquidación); sin liquidacion (servidor anterior),
@@ -2726,6 +2767,7 @@
   'use strict';
 
   var CLAVE_BORRADOR = 'kmCelasa.borrador.v1';
+  var CLAVE_DIAS_GUARDADOS = 'kmCelasa.diasGuardados.v1'; // G1: { piloto: { dia, parada } } el día en curso al cerrar sesión
   var CLAVE_PENDIENTES = 'kmCelasa.pendientes.v1';
   var CLAVE_PILOTO = 'kmCelasa.piloto.v1';
   var CLAVE_PARADA = 'kmCelasa.parada.v1';        // parada abierta (por si el teléfono recarga la página al usar la cámara)
@@ -2899,6 +2941,7 @@
     ojo: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
     paquete: '<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>' +
       '<path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+    lapiz: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
     qr: '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/>' +
       '<path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/>' +
       '<path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/>',
@@ -3649,6 +3692,7 @@
     } else {
       reintentarPendientes();
       reintentarCargas();
+      enCadenaCarga(reintentarCargasBodega); // 2.0.1: la cola de la carga (lotes y «quitar») también sale sola
     }
     // Carga de combustible abierta cuando el teléfono recargó la página (pasa al volver de la cámara): sigue ahí.
     var formComb = leerJSON(CLAVE_FORM_COMB, null);
@@ -3670,7 +3714,7 @@
   }
   function algoEnEsteTelefono() {
     return Boolean(leerJSON(CLAVE_PENDIENTES, []).length || leerJSON(CLAVE_RECHAZADOS, []).length || leerJSON(CLAVE_CARGAS, []).length ||
-      (dia && dia.iniciado));
+      (dia && dia.iniciado) || Object.keys(leerJSON(CLAVE_DIAS_GUARDADOS, {}) || {}).length);
   }
   function pintarAppNueva() {
     if (!appNuevaPublicada) return;
@@ -3693,6 +3737,7 @@
     if (!config.pilotos.length) return;
     reintentarPendientes();
     reintentarCargas();
+    enCadenaCarga(reintentarCargasBodega); // 2.0.1: la cola de la carga (lotes y «quitar») también sale sola
     if (avancePendiente()) mandarAvance();
   });
 
@@ -3750,6 +3795,7 @@
       if (!ok) { avisoIcono('errIngreso', 'error', 'PIN incorrecto.'); return; }
       aviso('errIngreso');
       escribirJSON(CLAVE_PILOTO, piloto);
+      if (retomarDiaGuardado(piloto, pin)) return;
       dia = nuevoDia(piloto, conSesion() ? '' : pin);
       pintarQuien();
       if (dia.nueva) { mostrarDia(); return; }
@@ -3795,27 +3841,34 @@
       avisoIcono('errOficina', 'error', esErrorDeRed(e) && !/Demasiados intentos/i.test(e.message) ? 'Sin señal: el panel necesita internet.' : esc(e.message));
     });
   });
-  var observadorSecciones = null;
+  var observadorSecciones = null, observadorSeccionSalida = null;
+  function marcarTableroDesplazado(desplazado) {
+    document.body.classList.toggle('tablero-desplazado', !!desplazado);
+  }
+  // Dos umbrales (histéresis): entrar a «desplazado» cuando el control grande cruza 48 px por arriba y
+  // salir solo cuando vuelve a bajar de 92 px. Con un único umbral, mostrar u ocultar la franja movía el
+  // contenido y el estado se alternaba solo (rebote del panel, Tarea H). La franja ya no ocupa flujo; esto
+  // es la segunda red.
   function iniciarObservadorSecciones() {
     if (observadorSecciones || typeof IntersectionObserver === 'undefined') return;
     var wrap = $('wrapTabSeccionesGrande');
     if (!wrap) return;
     observadorSecciones = new IntersectionObserver(function (entries) {
       for (var i = 0; i < entries.length; i++) {
-        var e = entries[i];
-        document.body.classList.toggle('tablero-desplazado', !e.isIntersecting);
+        if (!entries[i].isIntersecting) marcarTableroDesplazado(true);
       }
-    }, {
-      rootMargin: '-48px 0px 0px 0px',
-      threshold: 0
-    });
+    }, { rootMargin: '-48px 0px 0px 0px', threshold: 0 });
+    observadorSeccionSalida = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) marcarTableroDesplazado(false);
+      }
+    }, { rootMargin: '-92px 0px 0px 0px', threshold: 0 });
     observadorSecciones.observe(wrap);
+    observadorSeccionSalida.observe(wrap);
   }
   function detenerObservadorSecciones() {
-    if (observadorSecciones) {
-      observadorSecciones.disconnect();
-      observadorSecciones = null;
-    }
+    if (observadorSecciones) { observadorSecciones.disconnect(); observadorSecciones = null; }
+    if (observadorSeccionSalida) { observadorSeccionSalida.disconnect(); observadorSeccionSalida = null; }
   }
   function salirTablero(mensaje) {
     detenerObservadorSecciones();
@@ -4150,9 +4203,14 @@
   }
   function pintarLiquidacion(t) {
     var q = t.liquidacion;
-    $('tabLiq').classList.toggle('oculto', !q);
-    $('tabPagoTitulo').classList.toggle('oculto', !!q);
-    if (!q) {
+    // La tarjeta es compartida: o se ve Liquidación o la tabla de Forma de pago, nunca las dos. Con Liquidación
+    // apagada desde Personalizar panel, queda Forma de pago (si el usuario no la apagó también, cosa que resuelve
+    // aplicarPreferenciasPanel con data-oculto-panel).
+    var prefs = obtenerPreferenciasPanel();
+    var mostrarLiq = Boolean(q) && prefs.liquidacion !== false;
+    $('tabLiq').classList.toggle('oculto', !mostrarLiq);
+    $('tabPagoTitulo').classList.toggle('oculto', mostrarLiq);
+    if (!mostrarLiq) {
       $('tabPago').innerHTML = tabla(['Forma de pago', 'Facturas', 'Monto'], t.porPago.filter(function (x) { return x.facturas; }).map(function (x) {
         return [esc(x.formaPago), fmtKm(x.facturas), fmtDinero(x.monto)];
       }), [1, 2]);
@@ -4234,10 +4292,9 @@
   function pintarDaily(t) {
     var tarjeta = $('tabDailyTarjeta');
     if (!tarjeta) return;
-    var visible = (!t.preferenciasPanel || t.preferenciasPanel.daily !== false) && Boolean(t.cargaDelDia);
-    tarjeta.classList.toggle('oculto', !visible);
-    if (!visible) return;
-
+    // La tarjeta nunca se esconde sola: sin datos muestra su estado vacío explicado. Ocultarla es solo cosa de la
+    // preferencia de la oficina (aplicarPreferenciasPanel). Antes se ocultaba cuando el servidor no mandaba
+    // cargaDelDia y, como la app no pedía su sección, desaparecía sin explicación (Tarea H).
     var pilotos = (t.cargaDelDia && Array.isArray(t.cargaDelDia.pilotos)) ? t.cargaDelDia.pilotos : [];
 
     var cuenta = { 'Sin carga': 0, 'En carga': 0, 'En ruta': 0, 'Libre': 0, 'Cerrado': 0 };
@@ -4246,7 +4303,7 @@
       var est = p.estado || 'Sin carga';
       if (cuenta[est] !== undefined) cuenta[est]++;
       else cuenta['Sin carga']++;
-      cargadas += (p.facturas || 0);
+      cargadas += (p.cargadas || 0);
       entregadas += (p.entregadas || 0);
     });
 
@@ -4272,16 +4329,19 @@
       '<div><b>' + esc(libres[0].piloto) + ' está Libre</b><br><small>Ya entregó todo y regresa: puede tomar otra entrega.</small></div></div>' : '';
 
     if (!pilotos.length) {
-      $('tabDailyPilotos').innerHTML = '<p class="ayuda">Sin pilotos registrados.</p>';
+      // Sin carga de hoy (día aún no enviado, sin señal, o panel recién abierto): se explica, no se esconde.
+      $('tabDailyPilotos').innerHTML = '<p class="ayuda">Sin carga del día todavía. La app de los pilotos va enviando lo cargado en bodega.</p>';
       return;
     }
 
     $('tabDailyPilotos').innerHTML = pilotos.map(function (p) {
-      var pct = p.facturas ? Math.round((p.entregadas || 0) / p.facturas * 100) : 0;
+      var carg = p.cargadas || 0;
+      var pct = carg ? Math.round((p.entregadas || 0) / carg * 100) : 0;
       var textoAvance = p.estado === 'Sin carga' ? 'Sin carga' :
-        (p.estado === 'En carga' ? (p.facturas || 0) + ' escaneadas' : (p.entregadas || 0) + ' de ' + (p.facturas || 0) + ' entregadas');
-      var u = p.ultima;
-      var textoUltima = u ? (u.texto || (u.cliente ? u.cliente + (u.municipio ? ' (' + u.municipio + ')' : '') + (u.hora ? ' a las ' + u.hora : '') : '')) : '';
+        (p.estado === 'En carga' ? carg + (carg === 1 ? ' factura escaneada' : ' facturas escaneadas') :
+          (p.entregadas || 0) + ' de ' + carg + ' entregadas');
+      // El servidor manda «ultima» como texto (ultimaParadaPiloto_: cliente · hora, o «Sin carga del día», etc.).
+      var textoUltima = typeof p.ultima === 'string' ? p.ultima : '';
       var icUltima = p.estado === 'Cerrado' ? 'candado' : (p.estado === 'En carga' ? 'paquete' : 'pin');
 
       return '<div class="tarjeta-piloto-daily' + (p.estado === 'Libre' ? ' libre' : '') + '">' +
@@ -4289,7 +4349,7 @@
         '<div class="avance-txt" style="margin-top:6px"><span>' + (p.placa ? esc(p.placa) + ' · ' : '') + (p.puntos || 0) + ((p.puntos || 0) === 1 ? ' punto' : ' puntos') + '</span><b>' +
         esc(textoAvance) + '</b></div>' +
         '<div class="avance" role="img" aria-label="' + esc(textoAvance) + '"><i style="width:' + pct + '%"></i></div>' +
-        '<div class="ultima">' + icono(icUltima, { tam: 13 }) + (textoUltima ? 'Última: ' + esc(textoUltima) : 'Sin paradas') + '</div>' +
+        '<div class="ultima">' + icono(icUltima, { tam: 13 }) + esc(textoUltima || 'Sin paradas') + '</div>' +
         (p.estado === 'Libre' ? '<div class="puede">' + icono('circuloCheck', { tam: 16, grueso: 2.4 }) + 'Puede tomar otra entrega</div>' : '') +
         '</div>';
     }).join('');
@@ -4353,18 +4413,11 @@
   function pintarNivelacion(t) {
     var tarjeta = $('tabNivelacionTarjeta');
     if (!tarjeta) return;
-    var visible = (!t.preferenciasPanel || t.preferenciasPanel.nivelacion !== false) && Boolean(t.nivelacion || t.cargaDelDia);
-    tarjeta.classList.toggle('oculto', !visible);
-    if (!visible) return;
-
-    var datos = [];
-    if (t.nivelacion && Array.isArray(t.nivelacion)) {
-      datos = t.nivelacion.slice();
-    } else if (t.cargaDelDia && Array.isArray(t.cargaDelDia.pilotos)) {
-      datos = t.cargaDelDia.pilotos.map(function (p) {
-        return { piloto: p.piloto, puntos: p.puntos || 0, facturas: p.facturas || 0, monto: p.monto || 0 };
-      });
-    }
+    // Igual que Daily: sin datos se explica, no se esconde; ocultarla es cosa de la preferencia de la oficina.
+    // El servidor manda los pilotos del día en cargaDelDia (no hay un campo «nivelacion» aparte).
+    var datos = (t.cargaDelDia && Array.isArray(t.cargaDelDia.pilotos)) ? t.cargaDelDia.pilotos.map(function (p) {
+      return { piloto: p.piloto, puntos: p.puntos || 0, cargadas: p.cargadas || 0, monto: p.monto || 0 };
+    }) : [];
 
     // Orden alfabetico por nombre de piloto
     var pilotosNivel = datos.slice().sort(function (a, b) {
@@ -4373,17 +4426,17 @@
 
     var cfg = t.nivelacionConfig || {};
     var estandar = cfg.estandar != null ? cfg.estandar : 13;
-    var disp = cfg.dispersion;
 
     var pts = pilotosNivel.map(function (p) { return p.puntos || 0; }).filter(function (n) { return n > 0; });
     var max = pts.length ? Math.max.apply(null, pts) : 0;
     var min = pts.length ? Math.min.apply(null, pts) : 0;
     var suma = pts.reduce(function (a, b) { return a + b; }, 0);
-    var promCalc = pts.length ? Math.round((suma / pts.length) * 10) / 10 : 0;
+    var prom = pts.length ? Math.round((suma / pts.length) * 10) / 10 : 0;
 
-    var prom = disp && disp.promedio != null ? disp.promedio : promCalc;
-    var meta = disp && disp.meta != null ? disp.meta : 1.3;
-    var cociente = disp && disp.dispersion != null ? disp.dispersion : (min > 0 ? Math.round((max / min) * 10) / 10 : (pts.length === 1 ? 1 : null));
+    // La meta de Configuración viaja en nivelacionConfig.meta (Tarea C: se leía de un nivelacionConfig.dispersion que el servidor
+    // no manda y quedaba siempre en 1.3). La dispersión y el promedio se calculan aquí con los puntos de cargaDelDia.
+    var meta = cfg.meta != null ? cfg.meta : 1.3;
+    var cociente = min > 0 ? Math.round((max / min) * 10) / 10 : (pts.length === 1 ? 1 : null);
 
     // Indicador AGREGADO sin nombres
     if (cociente === null) {
@@ -4428,7 +4481,7 @@
         return [
           '<b>' + esc(p.piloto) + '</b>',
           fmtKm(p.puntos || 0),
-          fmtKm(p.facturas || 0),
+          fmtKm(p.cargadas || 0),
           fmtDinero(p.monto || 0)
         ];
       }),
@@ -4695,6 +4748,7 @@
       return '<div class="enruta"><b>' + esc(r.piloto) + '</b> · ' + esc(r.placa) + (r.fecha && r.fecha !== t.fecha ? ' · <b>desde el ' + esc(fmtFecha(r.fecha)) + '</b>' : '') +
         '<br>Salió ' + (r.horaSalida ? 'a las ' + esc(r.horaSalida) + ' ' : '') + 'con ' + fmtKm(r.kmSalida) + ' km · ahora en ' + fmtKm(r.kmActual) +
         ' km (lleva ' + fmtKm(r.kmRecorridos) + ') · ' + r.facturas + (r.facturas === 1 ? ' factura' : ' facturas') + (r.monto ? ' (' + fmtDinero(r.monto) + ')' : '') +
+        (r.cargadas != null ? ' · ' + r.cargadas + (r.cargadas === 1 ? ' cargada' : ' cargadas') : '') +
         (u ? '<br>Última parada con factura: ' + esc(u.cliente) + (u.municipio ? ' (' + esc(u.municipio) + (u.departamento ? ', ' + esc(u.departamento) : '') + ')' : '') +
           (u.hora ? ' a las ' + esc(u.hora) : '') : '<br>Todavía sin paradas con factura.') + '</div>';
     }).join('');
@@ -4754,31 +4808,37 @@
   }
 
   // ------------------------------------------------------------ Personalizar panel y Rendimiento (Tarea 28 Parte C)
+  // Única lista de secciones del panel: el diálogo de Personalizar, el pedido a obtenerTablero y el ocultado por
+  // preferencia salen de aquí. elementos: los nodos que la preferencia esconde (algunas tarjetas son compartidas:
+  // OTIF y Departamentos van juntas, Liquidación y Forma de pago también). Debe cubrir TODAS las claves de
+  // SECCIONES_PANEL de Codigo.gs: si falta una, se apaga y sigue apareciendo sin forma de volver a encenderla.
   var SECCIONES_PANEL_INFO = [
-    { clave: 'enRuta', nombre: 'En ruta' },
-    { clave: 'resumen', nombre: 'Resumen (hoy y mes)' },
-    { clave: 'mapa', nombre: 'Mapa de entregas' },
-    { clave: 'efectivoAbordo', nombre: 'Efectivo a bordo' },
-    { clave: 'pilotos', nombre: 'Pilotos' },
-    { clave: 'flota', nombre: 'Flota y mantenimiento' },
-    { clave: 'otif', nombre: 'OTIF' },
-    { clave: 'departamentos', nombre: 'Departamentos' },
-    { clave: 'liquidacion', nombre: 'Liquidación' },
-    { clave: 'formaPago', nombre: 'Forma de pago' },
-    { clave: 'costoPorFactura', nombre: 'Costo por factura' },
-    { clave: 'eficiencia', nombre: 'Eficiencia operativa' },
-    { clave: 'lagLiquidacion', nombre: 'Lag de liquidación' },
-    { clave: 'margenSubcontratista', nombre: 'Margen de subcontratista' },
-    { clave: 'mantenimientoVencido', nombre: 'Mantenimiento vencido' },
-    { clave: 'pareto', nombre: 'Pareto 80/20 de clientes' },
-    { clave: 'canales', nombre: 'Canales de venta' },
-    { clave: 'novedades', nombre: 'Novedades por responsabilidad' },
-    { clave: 'recientes', nombre: 'Últimos viajes enviados' },
-    { clave: 'transportistas', nombre: 'Transportistas subcontratados' },
-    { clave: 'rendimiento', nombre: 'Rendimiento de motoristas' }
+    { clave: 'daily', nombre: 'Carga del día', elementos: ['tabDailyTarjeta'] },
+    { clave: 'nivelacion', nombre: 'Nivelación de puntos', elementos: ['tabNivelacionTarjeta'] },
+    { clave: 'enRuta', nombre: 'En ruta', elementos: ['tabEnRutaTarjeta'] },
+    { clave: 'resumen', nombre: 'Resumen (hoy y mes)', elementos: ['tabResumenTarjeta'] },
+    { clave: 'mapa', nombre: 'Mapa de entregas', elementos: ['tabMapaTarjeta'] },
+    { clave: 'efectivoAbordo', nombre: 'Efectivo a bordo', elementos: ['tabEfectivoTarjeta'] },
+    { clave: 'pilotos', nombre: 'Pilotos', elementos: ['tabPilotosTarjeta'] },
+    { clave: 'flota', nombre: 'Flota y mantenimiento', elementos: ['tabFlotaTarjeta'] },
+    { clave: 'otif', nombre: 'OTIF', elementos: ['tabOtif'] },
+    { clave: 'departamentos', nombre: 'Departamentos', elementos: ['tabDeptosTitulo', 'tabDeptos'] },
+    { clave: 'liquidacion', nombre: 'Liquidación', elementos: ['tabLiq'] },
+    { clave: 'formaPago', nombre: 'Forma de pago', elementos: ['tabPagoTitulo', 'tabPago'] },
+    { clave: 'costoPorFactura', nombre: 'Costo por factura', elementos: ['tabCostoTarjeta'] },
+    { clave: 'eficiencia', nombre: 'Eficiencia operativa', elementos: ['tabEficienciaTarjeta'] },
+    { clave: 'lagLiquidacion', nombre: 'Lag de liquidación', elementos: ['tabLagTarjeta'] },
+    { clave: 'margenSubcontratista', nombre: 'Margen de subcontratista', elementos: ['tabMargenTarjeta'] },
+    { clave: 'mantenimientoVencido', nombre: 'Mantenimiento vencido', elementos: ['tabMantVencidoTarjeta'] },
+    { clave: 'pareto', nombre: 'Pareto 80/20 de clientes', elementos: ['tabParetoTarjeta'] },
+    { clave: 'canales', nombre: 'Canales de venta', elementos: ['tabCanalTarjeta'] },
+    { clave: 'novedades', nombre: 'Novedades por responsabilidad', elementos: ['tabMotivosTarjeta'] },
+    { clave: 'recientes', nombre: 'Últimos viajes enviados', elementos: ['tabRecientesTarjeta'] },
+    { clave: 'transportistas', nombre: 'Transportistas subcontratados', elementos: ['tabSeccionTransportistas'] },
+    { clave: 'rendimiento', nombre: 'Rendimiento de motoristas', elementos: ['tabRendimientoTarjeta'] }
   ];
   var PREFERENCIAS_PANEL_DEF = {
-    enRuta: true, resumen: true, mapa: true, efectivoAbordo: true, pilotos: true, flota: true,
+    daily: true, nivelacion: true, enRuta: true, resumen: true, mapa: true, efectivoAbordo: true, pilotos: true, flota: true,
     otif: true, departamentos: true, liquidacion: true, formaPago: true, costoPorFactura: true,
     eficiencia: true, lagLiquidacion: true, margenSubcontratista: true, mantenimientoVencido: true,
     pareto: true, canales: true, novedades: true, recientes: true, transportistas: true, rendimiento: false
@@ -4799,8 +4859,22 @@
 
   function aplicarPreferenciasPanel(prefs) {
     if (!prefs) return;
-    if ($('tabRendimientoTarjeta')) {
-      $('tabRendimientoTarjeta').classList.toggle('oculto', !prefs.rendimiento);
+    // Marca de preferencia aparte de .oculto (que es por falta de datos): así apagar una sección no se confunde con
+    // que esa sección no tenga nada que mostrar hoy. [data-oculto-panel] se oculta con !important en el CSS.
+    SECCIONES_PANEL_INFO.forEach(function (sec) {
+      var mostrar = sec.clave === 'rendimiento' ? prefs[sec.clave] === true : prefs[sec.clave] !== false;
+      (sec.elementos || []).forEach(function (sel) {
+        var el = $(sel);
+        if (!el) return;
+        if (mostrar) el.removeAttribute('data-oculto-panel');
+        else el.setAttribute('data-oculto-panel', '1');
+      });
+    });
+    // Si apagaron Transportistas mientras se estaba en esa pestaña, se vuelve a la vista general.
+    var btnTrans = $('btnTabSeccionTransportistas');
+    if ($('tabSeccionTransportistas') && $('tabSeccionTransportistas').getAttribute('data-oculto-panel') !== null &&
+        btnTrans && btnTrans.getAttribute('aria-pressed') === 'true' && typeof cambiarSeccionTablero === 'function') {
+      cambiarSeccionTablero('general');
     }
   }
 
@@ -5118,6 +5192,8 @@
     var tieneDif = dif !== 0;
     var hayRutasConDif = Boolean(tr.rutasConDiferencia);
     var signoDif = dif > 0 ? '+' : '';
+    // El servidor no manda un total de rutas: es el largo de transportistas.rutas (una sola fuente).
+    var totalRutas = (tr.rutas || []).length;
 
     $('tabTransKpis').innerHTML =
       '<div class="kpi destacado"><span>Declarado</span><b>' + fmtDinero(tr.declarado) + '</b><small>Rutas pagadas</small></div>' +
@@ -5125,11 +5201,11 @@
       '<div class="kpi' + (tieneDif ? ' sobre-limite' : '') + '"><span>Diferencia total</span><b>' + (tieneDif ? signoDif + fmtDinero(dif) : '$0.00') + '</b><small>' + (tieneDif ? 'Cobro vs declarado' : 'Sin diferencias') + '</small></div>' +
       '<div class="kpi' + (hayRutasConDif ? ' sobre-limite' : '') + '"><span>Rutas con diferencia</span><b>' + fmtKm(tr.rutasConDiferencia) + (tr.rutasConDiferencia === 1 ? ' ruta' : ' rutas') + '</b><small>' + (hayRutasConDif ? 'Por revisar' : 'Cuadradas') + '</small></div>' +
       '<div class="kpi"><span>Pendientes de pago</span><b>' + fmtKm(tr.pendientes) + (tr.pendientes === 1 ? ' ruta' : ' rutas') + '</b><small>' + fmtDinero(tr.montoPendiente) + ' por pagar</small></div>' +
-      '<div class="kpi"><span>Costo por ruta</span><b>' + (tr.costoPorRuta != null ? fmtDinero(tr.costoPorRuta) : 'Sin dato') + '</b><small>' + fmtKm(tr.totalRutas) + (tr.totalRutas === 1 ? ' ruta' : ' rutas') + '</small></div>' +
+      '<div class="kpi"><span>Costo por ruta</span><b>' + (tr.costoPorRuta != null ? fmtDinero(tr.costoPorRuta) : 'Sin dato') + '</b><small>' + fmtKm(totalRutas) + (totalRutas === 1 ? ' ruta' : ' rutas') + '</small></div>' +
       '<div class="kpi"><span>Costo por factura</span><b>' + (tr.costoPorFactura != null ? fmtDinero(tr.costoPorFactura) : 'Sin dato') + '</b><small>Entregadas</small></div>' +
       '<div class="kpi"><span>Costo por km</span><b>' + (tr.costoPorKm != null ? fmtDinero(tr.costoPorKm) : 'Sin dato') + '</b><small>Hojas de ruta</small></div>';
 
-    $('tabTransNota').textContent = (tr.totalRutas
+    $('tabTransNota').textContent = (totalRutas
       ? 'Métricas de transportistas subcontratados del periodo. Declarado vs pagado sobre rutas pagadas; en rojo si hay diferencia entre lo cobrado y lo declarado. Costos unitarios incluyen lo pagado y lo pendiente por pagar.'
       : 'En este periodo no hay rutas subcontratadas.') +
       ' Las rutas del usuario de prueba no aparecen aquí (quedan en la pestaña Pruebas).';
@@ -5289,13 +5365,13 @@
     $('btnGuardarFacTrans').disabled = true;
     aviso('errFacTrans');
     servidor('registrarPagoTransportista', s.token, {
-      idEnvio: rutaActualTrans.id,
+      id: rutaActualTrans.id,
       tipo: 'Factura',
       codigo: cod,
       control: ctl,
       emisor: $('txtTransEmisor').value.trim(),
       fechaFactura: $('txtTransFechaFac').value,
-      monto: monto
+      montoPagado: monto
     }).then(function () {
       $('dlgFacturaTrans').classList.add('oculto');
       $('btnGuardarFacTrans').disabled = false;
@@ -5359,9 +5435,9 @@
     $('btnGuardarCajaTrans').disabled = true;
     aviso('errCajaTrans');
     servidor('registrarPagoTransportista', s.token, {
-      idEnvio: rutaActualTrans.id,
+      id: rutaActualTrans.id,
       tipo: 'Caja chica',
-      monto: monto,
+      montoPagado: monto,
       fechaFactura: $('txtTransCajaFecha').value,
       concepto: concepto,
       nota: $('txtTransCajaNota').value.trim()
@@ -5808,6 +5884,8 @@
     $('txtCliente').value = p.cliente;
     $('txtDireccion').value = p.municipio !== undefined ? (p.direccion || '') : '';
     ['txtCliente', 'txtDireccion'].forEach(function (id) { $(id).classList.remove('autollenado'); });
+    // R2: el nombre de la carga lo puso la app (la lectura de bodega): se marca así hasta que el piloto lo cambie.
+    if (pt && i == null && p.cliente) $('txtCliente').classList.add('autollenado');
     if (i == null && !pt) {
       // Parada nueva: sigue en el departamento de la anterior (o del último día); el municipio lo elige el piloto.
       var anterior = dia.paradas.length ? dia.paradas[dia.paradas.length - 1].departamento : '';
@@ -6070,7 +6148,10 @@
     var campo = ev.target.getAttribute('data-campo');
     var v = ev.target.value;
     if (campo === 'control') { v = v.replace(/\D/g, ''); if (v !== ev.target.value) ev.target.value = v; }
-    if (campo === 'vendedor') { v = v.toUpperCase().replace(/\s+/g, ''); if (v !== ev.target.value) ev.target.value = v; }
+    // G1 (gemba 19/10): el código de vendedor y el de generación no se reescriben mientras el piloto escribe. Con el teclado de
+    // Android, cambiar el texto a media palabra (mayúsculas, guiones) repite letras que el piloto no escribió. Se guarda ya
+    // normalizado y el campo toma ese formato al salir (change, abajo).
+    if (campo === 'vendedor') v = v.toUpperCase().replace(/\s+/g, '');
     // «Otra» y Comentario: lo que escribe el piloto.
     if (campo === 'motivoOtra') {
       facturasForm[Number(j)].motivo = v.trim() ? 'Otra: ' + v.trim() : 'Otra';
@@ -6086,11 +6167,7 @@
       guardarParadaAbierta();
       return;
     }
-    if (campo === 'codigo') {
-      var alFinal = ev.target.selectionStart === ev.target.value.length;
-      v = formatearCodigo(v);
-      if (v !== ev.target.value && alFinal) ev.target.value = v;
-    }
+    if (campo === 'codigo') v = formatearCodigo(v);
     facturasForm[Number(j)][campo] = v;
     if (campo === 'monto') pintarSumaMixto(Number(j));
     if (facturasForm[Number(j)].auto) facturasForm[Number(j)].auto[campo] = false;
@@ -6099,7 +6176,7 @@
     guardarConFaltantes = false;
     guardarParadaAbierta();
   });
-  // Si el piloto corrigió el código en medio del texto, se le da formato al salir del campo.
+  // El código de generación y el de vendedor toman su formato al salir del campo (G1: nunca mientras el piloto escribe).
   $('listaFacturas').addEventListener('change', function (ev) {
     // Estado de una factura cargada (app nueva): Fallida o Devolución despliegan motivo, monto devuelto y comentario.
     var es = ev.target.getAttribute('data-estado-sel');
@@ -6126,12 +6203,19 @@
       return;
     }
     var j = ev.target.getAttribute('data-f');
-    if (j != null && ev.target.getAttribute('data-campo') === 'codigo') ev.target.value = facturasForm[Number(j)].codigo || '';
+    var cf = j != null ? ev.target.getAttribute('data-campo') : null;
+    if (cf === 'codigo' || cf === 'vendedor') ev.target.value = facturasForm[Number(j)][cf] || '';
   });
   $('listaFacturas').addEventListener('click', function (ev) {
     var q = ev.target.closest('[data-qr]'), x = ev.target.closest('[data-quitar]'), e = ev.target.closest('[data-estado]');
     var fp = ev.target.closest('[data-pago]');
     // Mixto con formas marcables (app nueva): marcar o desmarcar una forma; solo las marcadas piden su monto.
+    var qp = ev.target.closest('[data-quitar-parada]');
+    if (qp) {
+      var fq = facturasForm[Number(qp.getAttribute('data-quitar-parada'))];
+      if (fq) abrirHojaQuitar({ f: fq, donde: 'parada', accion: qp.getAttribute('data-accion') });
+      return;
+    }
     var mk = ev.target.closest('[data-marca]');
     if (mk) {
       var par = mk.getAttribute('data-marca').split('|'), fm = facturasForm[Number(par[0])];
@@ -6195,10 +6279,11 @@
     var errores = [];
     var k = num($('txtKmParada').value);
     var prev = kmUltimaParada(editando == null ? null : editando);
-    // La parada de un punto de la ruta (app nueva) ya trae el cliente; el municipio, si se leyó de la dirección. Sin él no se
-    // bloquea al piloto en la calle: el punto queda por ubicar.
+    // El cliente se pide siempre, como en la 1.12 (R2): en la parada de un punto viene de la carga y el piloto lo confirma o lo
+    // corrige. El municipio no: en la parada de un punto viene si se leyó de la dirección; sin él no se bloquea al piloto en la
+    // calle (el punto queda por ubicar).
+    if (!$('txtCliente').value.trim()) errores.push('Escriba el cliente o lugar.');
     if (paradaPunto == null) {
-      if (!$('txtCliente').value.trim()) errores.push('Escriba el cliente o lugar.');
       if (!$('selDepto').value) errores.push('Elija el departamento.');
       else if (!$('selMunicipio').value) errores.push('Elija el municipio.');
     }
@@ -6228,18 +6313,22 @@
       // Una factura cargada en bodega ya pasó por el lector y por el servidor (registrarCarga): en la calle solo se piden su
       // estado y su forma de pago (lo que le falte ya quedó marcado en la carga para la oficina).
       if (!f.cargada) {
-        if (!f.control) errores.push(n + 'escriba el número de control.');
-        else if (!/^\d{4,9}$/.test(f.control)) errores.push(n + 'el número de control solo lleva números.');
+        // G1 (gemba 19/10, decisión 10: nada bloquea al piloto): sin control o sin monto la factura no atrapa la parada. Se avisa con
+        // «Guardar así» y el servidor marca la fila para la oficina («factura sin número de control», «falta el monto»).
+        if (!f.control) porCompletar.push(n + 'falta el número de control.');
+        else if (!/^\d{4,9}$/.test(f.control)) porCompletar.push(n + 'el número de control tiene ' + f.control.length + ' dígitos (normalmente 6).');
         else if (vistosControl[f.control]) errores.push(n + 'el control ' + f.control + ' está repetido en esta parada.');
-        if (f.monto === '' || f.monto == null) errores.push(n + 'escriba el monto (total a pagar).');
+        if (f.monto === '' || f.monto == null) porCompletar.push(n + 'falta el monto (total a pagar).');
         else if (isNaN(Number(f.monto)) || Number(f.monto) < 0) errores.push(n + 'el monto no es válido.');
+        // G1: un código con letras de más o incompleto no atrapa al piloto: se avisa con lo que falta completar («Guardar así»)
+        // y el servidor marca la fila para la oficina («código de generación incompleto o mal escrito»).
         if (f.codigo && !FORMATO_CODIGO.test(f.codigo)) {
-          errores.push(n + (f.codigo.replace(/-/g, '').length > 32 ? 'al código de generación le sobran letras o números' : 'el código de generación está incompleto') +
-            ': son 32 (8-4-4-4-12). Si no se puede leer completo, bórrelo y toque «Guardar parada»: se guarda sin código y la oficina lo completa.');
+          porCompletar.push(n + (f.codigo.replace(/-/g, '').length > 32 ? 'al código de generación le sobran letras o números' : 'el código de generación está incompleto') +
+            ' (son 32: 8-4-4-4-12).');
         }
         else if (f.codigo && vistosCodigo[f.codigo]) errores.push(n + 'esta factura ya se escaneó en esta parada.');
       }
-      if (f.vendedor && !FORMATO_VENDEDOR.test(f.vendedor)) errores.push(n + 'el código de vendedor se escribe como VS125.');
+      if (f.vendedor && !FORMATO_VENDEDOR.test(f.vendedor)) errores.push(n + 'el código de vendedor se escribe como VS125 (si no se lee, bórrelo: se guarda sin él y la oficina lo completa).');
       if (estadoDe(f) !== 'Exitosa' && !String(f.motivo || '').trim()) {
         errores.push(n + (motivosRechazo().length ? 'elija' : 'escriba') + ' el motivo de la ' + (estadoDe(f) === 'Fallida' ? 'entrega fallida' : 'devolución') + '.');
       }
@@ -6284,8 +6373,8 @@
     if (errores.length) { guardarConFaltantes = false; aviso('errParada', 'error', errores.join('<br>')); return; }
     // Lo que la foto no dio y el piloto no escribió: se pide confirmar; la fila queda marcada para la oficina.
     if (porCompletar.length && !guardarConFaltantes) {
-      aviso('errParada', 'ambar', porCompletar.join('<br>') + '<br>Escríbalo en la factura de arriba. Si la factura no lo trae o no se puede leer, toque «Guardar así»: ' +
-        'la fila quedará marcada en Registros para que la oficina lo complete.' +
+      aviso('errParada', 'ambar', porCompletar.join('<br>') + '<br>Complételo o corríjalo en la factura de arriba. Si la factura no lo trae o no se puede leer, toque «Guardar así»: ' +
+        'la fila quedará marcada en Registros para que la oficina lo revise.' +
         '<br><button class="chico" type="button" id="btnGuardarAsi">Guardar así</button>');
       $('btnGuardarAsi').addEventListener('click', function () { guardarConFaltantes = true; $('btnGuardarParada').click(); });
       return;
@@ -6593,6 +6682,10 @@
   });
   function terminarEnvio(r, envio) {
     try { localStorage.removeItem(CLAVE_BORRADOR); localStorage.removeItem(CLAVE_AVANCE); } catch (e) {}
+    // 2.0.1: la carga en bodega y su ruta se cierran con el día (la cola de envío de la carga no se toca: sale sola).
+    try { localStorage.removeItem(CLAVE_CARGA_BODEGA_ACTUAL); localStorage.removeItem(CLAVE_RUTA_CARGA); } catch (e) {}
+    cargaBodega = null;
+    ultimaRutaServidor = null;
     var km = envio.kmRegreso - envio.kmSalida;
     var html;
     if (r.pendiente && r.sinSesion) {
@@ -6664,8 +6757,20 @@
   // ------------------------------------------------------------ cerrar sesión del piloto
   // Solo en este teléfono: borra la sesión y el día a medias, sin llamar al servidor (no es cerrarSesiones() de la
   // oficina, que cierra las de todos). Los días sin enviar se quedan: se envían cuando ese piloto escriba su PIN.
+  // G1 (gemba 19/10): cerrar sesión nunca borra lo registrado. El día en curso (y la parada a medio llenar) se guarda en este
+  // teléfono a nombre de su piloto (CLAVE_DIAS_GUARDADOS) y vuelve cuando ese piloto entra otra vez con su PIN. Antes se pedía
+  // confirmar y se borraba: el piloto con una factura incompleta quedaba atrapado entre perder el día o no poder salir.
   $('btnCerrarSesion').addEventListener('click', function () {
-    if (dia && dia.iniciado && !confirm('Tiene una ruta en curso. Si cierra la sesión, se borra lo registrado hoy que no ha enviado. ¿Cerrar sesión?')) return;
+    var guardoDia = false;
+    if (dia && dia.iniciado) {
+      if (pantallaActual() === 'pParada') guardarParadaAbierta();
+      if (pantallaActual() === 'pCierre') leerCierre();
+      var guardados = leerJSON(CLAVE_DIAS_GUARDADOS, {}) || {};
+      var parada = leerJSON(CLAVE_PARADA, null);
+      guardados[dia.piloto] = { dia: dia, parada: parada && parada.diaId === dia.id ? parada : null };
+      escribirJSON(CLAVE_DIAS_GUARDADOS, guardados);
+      guardoDia = true;
+    }
     var s = leerJSON(CLAVE_SESION, null);
     if (dia) delete pinEnMemoria[dia.piloto];
     if (s) delete pinEnMemoria[s.piloto];
@@ -6675,9 +6780,26 @@
     mantId = null; // el mantenimiento a medio llenar queda guardado a nombre de su piloto; el siguiente empieza en blanco
     pintarQuien();
     aviso('mensajeGlobal');
+    if (guardoDia) avisoIcono('mensajeGlobal', 'info', 'Su día quedó guardado en este teléfono. Cuando entre otra vez con su PIN, sigue donde lo dejó.');
     limpiarPin();
     mostrar('pIngreso');
   });
+  /** G1: el día que el piloto dejó guardado al cerrar sesión vuelve como día en curso (con su parada a medias). true si había uno. */
+  function retomarDiaGuardado(piloto, pin) {
+    var guardados = leerJSON(CLAVE_DIAS_GUARDADOS, {}) || {}, g = guardados[piloto];
+    if (!g || !g.dia) return false;
+    delete guardados[piloto];
+    escribirJSON(CLAVE_DIAS_GUARDADOS, guardados);
+    dia = g.dia;
+    if (!conSesion() && pin) dia.pin = pin;
+    guardarBorrador();
+    if (g.parada) escribirJSON(CLAVE_PARADA, g.parada);
+    pintarQuien();
+    pintarRuta();
+    if (!recuperarParadaAbierta()) { if (dia.nueva) mostrarDia(); else mostrar('pRuta'); }
+    if (avancePendiente()) mandarAvance();
+    return true;
+  }
 
   // ------------------------------------------------------------ app nueva del motorista (M2: Mi día y Salida)
   // Detrás del interruptor «App nueva» de Configuración (servidor 24), que viaja solo en la configuración con sesión y solo
@@ -6832,7 +6954,17 @@
     }
   }
   function leerRutaCarga() {
-    return leerJSON(CLAVE_RUTA_CARGA, null);
+    var r = leerJSON(CLAVE_RUTA_CARGA, null);
+    return r && !Array.isArray(r) && !esDeEsteDia(r) ? null : r;
+  }
+  /**
+   * 2.0.1: la carga en bodega y su ruta guardadas en el teléfono son de un día (el registro del día, dia.id): al día
+   * siguiente o en «Otro viaje hoy» no se reusan. Las que guardó la 2.0 no traen el día: se reconocen por piloto y fecha.
+   */
+  function esDeEsteDia(x, piloto) {
+    if (!x || !dia) return false;
+    if (x.dia) return x.dia === dia.id;
+    return (!x.piloto || x.piloto === (piloto || dia.piloto)) && (!x.fecha || x.fecha === dia.fecha);
   }
 
   function asegurarRutaDeCarga() {
@@ -6851,10 +6983,11 @@
 
   var reordenando = false;
   function alTerminarCarga(ruta) {
+    dia = dia || { piloto: pilotoConSesion(), iniciado: true, paradas: [] };
     if (ruta != null) {
+      if (!Array.isArray(ruta)) ruta.dia = dia.id || ''; // 2.0.1: la ruta es de este día (esDeEsteDia)
       guardarRutaCarga(ruta);
     }
-    dia = dia || { piloto: pilotoConSesion(), iniciado: true, paradas: [] };
     dia.iniciado = true;
     dia.fase = 'ruta';
     var r = ruta != null ? ruta : leerRutaCarga();
@@ -7108,6 +7241,7 @@
             '" data-desglose="' + esc(x) + '" type="number" inputmode="decimal" step="0.01" min="0" value="' + esc(d[x]) + '"></div>';
         }).join('') + '</div>' + cuadreMixto(f, j) + '</div>';
     }
+    if (puedeQuitarDeCarga() && !facturasConEstado()[claveFacturaRuta(f)]) html += botonesQuitar('data-quitar-parada', j);
     html += '<div class="estado-sel"><label for="est' + j + '">Estado</label><select id="est' + j + '" class="' + clase + '" data-estado-sel="' + j + '">' +
       estadosEntrega().map(function (x) { return '<option' + (x === e ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('') + '</select></div>';
     if (e !== 'Exitosa') {
@@ -7687,11 +7821,14 @@
     }).join('');
     var g = leerJSON(CLAVE_FORM_COMB, null);
     CAMPOS_COMB.forEach(function (id) { $(id).value = ''; $(id).classList.remove('autollenado'); });
+    $('combPrecio').removeAttribute('data-calculado');
     if (g && g.piloto === piloto && g.id) {
       // Lo que quedó escrito (sin terminar, o la app se recargó): sigue ahí, con el mismo ID para no duplicar.
       combId = g.id;
       CAMPOS_COMB.forEach(function (id) { $(id).value = (g.campos || {})[id] || ''; });
       (g.auto || []).forEach(function (id) { if ($(id)) $(id).classList.add('autollenado'); });
+      // El precio que había calculado la app (igual a total / galones) se sigue recalculando.
+      if ($('combPrecio').classList.contains('autollenado') && num($('combPrecio').value) === precioCalculado()) $('combPrecio').setAttribute('data-calculado', '1');
     } else {
       combId = nuevoId();
       // Fecha y hora de ahora mientras no se lea la factura (la lectura las reemplaza; lo que escriba el piloto, no).
@@ -7724,17 +7861,34 @@
     $(id).addEventListener('input', function () {
       $(id).classList.remove('autollenado'); // lo escrito por el piloto no lo reemplaza otra lectura
       aviso('errComb');
-      if (id === 'combCodigo') {
-        var f = formatearCodigo($(id).value);
-        if (f !== $(id).value) $(id).value = f;
-      }
       if (id === 'combPlaca' || id === 'combKm') revisarKmComb();
+      if (id === 'combPrecio') $(id).removeAttribute('data-calculado');
+      if (id === 'combGalones' || id === 'combTotal') ponerPrecioCalculado();
       if (id === 'combGalones' || id === 'combPrecio' || id === 'combTotal') pintarCuadre();
       guardarFormComb();
     });
   });
   $('combPlaca').addEventListener('change', function () { revisarKmComb(); guardarFormComb(); });
-
+  // G1: el código toma su formato al salir del campo, nunca mientras el piloto escribe (el teclado de Android repite letras).
+  $('combCodigo').addEventListener('change', function () { $('combCodigo').value = formatearCodigo($('combCodigo').value); guardarFormComb(); });
+  /**
+   * G1 (gemba 19/10): el precio por galón sale de total / galones mientras el piloto no lo escriba (muchos tickets no lo traen a
+   * la vista y antes era obligatorio). Queda como autollenado: si el piloto lo escribe, manda lo suyo y el cuadre lo compara.
+   */
+  function precioCalculado() {
+    var g = num($('combGalones').value), t = num($('combTotal').value);
+    return g > 0 && t > 0 ? Math.round(t / g * 1000) / 1000 : null;
+  }
+  // Solo el precio vacío o el que calculó la app se recalcula: el que leyó el OCR del ticket o escribió el piloto se queda, para
+  // que el cuadre (galones x precio contra el total) siga sirviendo de control.
+  function ponerPrecioCalculado() {
+    var el = $('combPrecio');
+    if (el.value.trim() && el.getAttribute('data-calculado') !== '1') return;
+    var p = precioCalculado();
+    el.value = p == null ? '' : String(p);
+    el.classList.toggle('autollenado', p != null);
+    el.setAttribute('data-calculado', p == null ? '' : '1');
+  }
   /** Km de referencia de la placa: el último de los viajes o de su última carga, el más alto. */
   function kmReferenciaComb(placa) {
     var p = datosPlaca(placa);
@@ -7777,6 +7931,7 @@
       if (el.value.trim() && !el.classList.contains('autollenado')) return;
       el.value = valor;
       el.classList.add('autollenado');
+      el.removeAttribute('data-calculado');
       leidos.push(nombre);
     }
     poner('combCodigo', qr.codigo || datos.codigo, 'código de generación');
@@ -7787,10 +7942,14 @@
     poner('combGalones', datos.galones, 'galones');
     poner('combPrecio', datos.precio, 'precio');
     poner('combTotal', datos.total, 'total');
-    var faltan = [['combCodigo', 'código de generación'], ['combControl', 'número de control'], ['combGalones', 'galones'], ['combPrecio', 'precio'],
-                  ['combTotal', 'total']].filter(function (x) { return !$(x[0]).value.trim(); }).map(function (x) { return x[1]; });
-    var texto = (motivo ? motivo + ' ' : '') + (leidos.length ? 'Se leyó: ' + leidos.join(', ') + '.' : 'No se pudo leer la factura: tome la foto más cerca, con buena luz.') +
-      (faltan.length ? ' Escriba: ' + faltan.join(', ') + '.' : ' Revise que todo coincida con la factura.');
+    ponerPrecioCalculado();
+    // G1: lo que hace falta para guardar son los galones y el total; el código y el control son opcionales (la oficina los revisa).
+    var faltan = [['combGalones', 'galones'], ['combTotal', 'total']].filter(function (x) { return !$(x[0]).value.trim(); }).map(function (x) { return x[1]; });
+    // Lo único que trae el QR del ticket es el código y la fecha.
+    var soloQr = leidos.indexOf('código de generación') >= 0 && leidos.every(function (x) { return x === 'código de generación' || x === 'fecha'; });
+    var texto = (motivo ? motivo + ' ' : '') + (soloQr ? 'Solo se leyó el código del QR: el QR del ticket no trae los galones ni el total. Tome la foto de todo el ticket o escriba los galones y el total.'
+      : (leidos.length ? 'Se leyó: ' + leidos.join(', ') + '.' : 'No se pudo leer el ticket: tome la foto de todo el ticket, más cerca y con buena luz.') +
+      (faltan.length ? ' Escriba: ' + faltan.join(', ') + '.' : ' Revise que todo coincida con el ticket.'));
     aviso('combAvisoLectura', tipoMotivo || (faltan.length ? 'ambar' : 'ok'), esc(texto));
     pintarCuadre();
   }
@@ -7855,18 +8014,19 @@
     var piloto = pilotoConSesion();
     var c = { id: combId, fecha: $('combFecha').value, hora: $('combHora').value, placa: $('combPlaca').value, producto: $('combProducto').value.trim(),
               precio: num($('combPrecio').value), galones: num($('combGalones').value), total: num($('combTotal').value),
-              codigo: $('combCodigo').value.trim().toUpperCase(), control: $('combControl').value.trim(), km: num($('combKm').value) };
+              codigo: formatearCodigo($('combCodigo').value), control: $('combControl').value.trim(), km: num($('combKm').value) };
+    // G1: sin precio escrito, el de total / galones. Sin código o con un código raro se guarda igual: el servidor lo marca en Revisar.
+    if (c.precio == null) c.precio = precioCalculado();
     var errores = [];
     if (!piloto) errores.push('Su sesión terminó: vuelva a entrar con su PIN.');
-    if (!c.codigo) errores.push('Escanee la factura o escriba el código de generación.');
-    else if (!FORMATO_CODIGO.test(c.codigo)) errores.push('El código de generación está incompleto: revíselo o escanee el QR otra vez.');
     if (!c.fecha) errores.push('Escriba la fecha de la factura.');
     else if (c.fecha > hoyISO()) errores.push('La fecha no puede ser de un día que no ha llegado.');
     if (!c.placa) errores.push('Elija la placa.');
     if (c.km == null || c.km <= 0 || Math.floor(c.km) !== c.km) errores.push('Escriba el km del odómetro (solo números enteros).');
-    [['galones', 'los galones'], ['precio', 'el precio'], ['total', 'el total']].forEach(function (x) {
+    [['galones', 'los galones'], ['total', 'el total']].forEach(function (x) {
       if (c[x[0]] == null || c[x[0]] <= 0) errores.push('Escriba ' + x[1] + '.');
     });
+    if (c.precio != null && c.precio <= 0) errores.push('El precio debe ser mayor que cero (o bórrelo: se calcula del total).');
     if (errores.length) { aviso('errComb', 'error', errores.map(esc).join('<br>')); return; }
     var pendiente = Object.assign({ piloto: piloto }, c);
     $('btnGuardarCarga').disabled = true;
@@ -7996,6 +8156,17 @@
   var CLAVE_CARGA_BODEGA_ACTUAL = 'kmCelasa.cargaBodegaActual.v1';
   var CLAVE_CARGA_BODEGA_PENDIENTE = 'kmCelasa.cargaBodegaPendiente.v1';
   var cargaBodega = null;
+  // 2.0.1: lo que va al servidor de la carga (lotes, cola sin señal y «quitar») sale de a uno y en orden: un «quitar» nunca
+  // se cruza con el lote que trae la misma factura vuelta a escanear.
+  var cadenaCarga = Promise.resolve();
+  function enCadenaCarga(fn) {
+    var p = cadenaCarga.then(fn);
+    cadenaCarga = p.then(function () {}, function () {});
+    return p;
+  }
+  function hayQuitarEnCola() {
+    return leerJSON(CLAVE_CARGA_BODEGA_PENDIENTE, []).some(function (x) { return x && x.fn === 'quitarFacturaCarga'; });
+  }
   var cargaFacturaPendienteQr = null;
   var cargaFacturaPendienteDonde = null;
   var ultimaRutaServidor = null;
@@ -8091,6 +8262,7 @@
       } else {
         html += '<span class="chip pend">' + icono('pin', { tam: 13, grueso: 2.2 }) + 'Por ubicar (se aprende al entregar)</span></div>';
       }
+      html += puedeQuitarDeCarga() ? botonesQuitar('data-quitar-carga', i, botonCorregir(i)) : '<div class="quitar-factura">' + botonCorregir(i) + '</div>';
       html += '</div>';
     }
     $('listaCargadas').innerHTML = html;
@@ -8104,16 +8276,20 @@
     var piloto = pilotoConSesion();
     if (!piloto) return;
     cargaBodega = leerJSON(CLAVE_CARGA_BODEGA_ACTUAL, null);
-    if (!cargaBodega || cargaBodega.piloto !== piloto) {
+    if (!esDeEsteDia(cargaBodega, piloto)) {
+      // 2.0.1: la carga de otro día (o de otro viaje) no se reusa; lo que quedó en la cola de envío sigue ahí y sale solo.
       cargaBodega = {
-        id: 'carga-' + hoyISO() + '-' + nuevoId(),
-        fecha: hoyISO(),
+        id: 'carga-' + ((dia && dia.fecha) || hoyISO()) + '-' + nuevoId(),
+        fecha: (dia && dia.fecha) || hoyISO(),
+        dia: dia ? dia.id : '',
         placa: (dia && dia.placa) || $('selPlaca').value || '',
         piloto: piloto,
         facturas: [],
         loteEnviado: 0
       };
       guardarCargaBodegaActual();
+      ultimaRutaServidor = null;
+      guardarRutaCarga(null);
     }
     $('vistaCargaPrincipal').classList.remove('oculto');
     $('vistaResumenCarga').classList.add('oculto');
@@ -8122,7 +8298,7 @@
     aviso('avisoCarga');
     pintarListaCargadas();
     mostrar('pCarga');
-    reintentarCargasBodega();
+    enCadenaCarga(reintentarCargasBodega);
   }
 
 
@@ -8160,7 +8336,15 @@
 
     var piloto = cargaBodega.piloto || pilotoConSesion();
     var c = credencial(piloto);
-    return servidor('registrarCarga', conSesion() ? { piloto: piloto, token: c.token } : { piloto: piloto, pin: c.pin || dia.pin }, payload)
+    var cred = conSesion() ? { piloto: piloto, token: c.token } : { piloto: piloto, pin: c.pin || dia.pin };
+    return enCadenaCarga(function () {
+      if (!hayQuitarEnCola()) return servidor('registrarCarga', cred, payload);
+      // 2.0.1: con un «quitar» sin enviar, ese va primero; si sigue sin salir, este lote espera detrás en la cola.
+      return reintentarCargasBodega().then(function () {
+        if (hayQuitarEnCola()) throw new Error('Hay facturas por quitar sin enviar.');
+        return servidor('registrarCarga', cred, payload);
+      });
+    })
       .then(function (r) {
         if (r && r.puntos) ultimaRutaServidor = r;
         var avisos = [];
@@ -8193,8 +8377,12 @@
     var cola = leerJSON(CLAVE_CARGA_BODEGA_PENDIENTE, []);
     if (!cola || !cola.length) return Promise.resolve();
     var item = cola[0];
-    return servidor('registrarCarga', item.cred, item.payload).then(function (r) {
-      if (r && r.puntos) ultimaRutaServidor = r;
+    return servidor(item.fn || 'registrarCarga', item.cred, item.payload).then(function (r) {
+      if (item.fn === 'quitarFacturaCarga') {
+        // La respuesta de un lote anterior pudo traer la factura quitada: se saca de la ruta que se va a mostrar.
+        quitarDeRuta(ultimaRutaServidor, item.payload);
+        if (r && r.ok === false && r.error) aviso('avisoCarga', 'ambar', esc(r.error));
+      } else if (r && r.puntos) ultimaRutaServidor = r;
       var nuevaCola = leerJSON(CLAVE_CARGA_BODEGA_PENDIENTE, []);
       nuevaCola.shift();
       escribirJSON(CLAVE_CARGA_BODEGA_PENDIENTE, nuevaCola);
@@ -8204,14 +8392,19 @@
     });
   }
 
-  function agregarFacturaACarga(factura) {
-    if (!cargaBodega) abrirCargaBodega();
-    var existe = cargaBodega.facturas.some(function (f) {
+  /** La factura ya está en la carga del teléfono (mismo código de generación o mismo número de control DTE). */
+  function facturaEnLaCarga(factura) {
+    return cargaBodega && factura ? cargaBodega.facturas.filter(function (f) {
       if (factura.codigo && f.codigo && factura.codigo === f.codigo) return true;
       if (factura.numeroControl && f.numeroControl && factura.numeroControl === f.numeroControl) return true;
       return false;
-    });
-    if (existe) {
+    })[0] || null : null;
+  }
+  function yaEnLaCarga(factura) { return Boolean(facturaEnLaCarga(factura)); }
+
+  function agregarFacturaACarga(factura) {
+    if (!cargaBodega) abrirCargaBodega();
+    if (yaEnLaCarga(factura)) {
       aviso('avisoCarga', 'ambar', 'Esta factura ya está en su lista de carga.');
       return;
     }
@@ -8243,7 +8436,7 @@
       return '<button class="opcion" type="button" data-punto="' + esc(p.id) + '">' +
         icono('pin', { tam: 22 }) +
         '<span>' + esc(p.nombre || p.direccion || 'Punto conocido') +
-        '<small>' + esc(p.direccion || '') + (p.usos ? ' · usado ' + p.usos + ' veces' : '') + '</small></span></button>';
+        '<small>' + esc(p.direccion || '') + (p.veces ? ' · usado ' + p.veces + ' veces' : '') + '</small></span></button>';
     }).join('');
     html += '<button class="opcion otro" type="button" data-punto="__nuevo__">' +
       icono('pin', { tam: 22 }) +
@@ -8263,15 +8456,19 @@
     var c = credencial(piloto);
     if (f.cliente && canal !== 'Industria') {
       return servidor('consultarPuntosCliente', conSesion() ? { piloto: piloto, token: c.token } : { piloto: piloto, pin: c.pin || dia.pin }, { cliente: f.cliente, nit: f.nit })
-        .then(function (puntos) {
-          if (Array.isArray(puntos) && puntos.length > 1) {
+        .then(function (r) {
+          // El servidor responde { ok, puntos } (Tarea C: se leía como si fuera la lista y nunca se preguntaba dónde se entrega).
+          var puntos = (r && r.puntos) || [];
+          if (puntos.length > 1) {
             pedirDondeSeEntrega(f, puntos);
           } else {
-            if (puntos && puntos.length === 1) {
+            if (puntos.length === 1) {
               f.puntoId = puntos[0].id;
               f.puntoNombre = puntos[0].nombre;
             }
-            agregarFacturaACarga(f);
+            // 2.0.1: cliente sin punto conocido y factura sin dirección: el piloto puede escribir el lugar (opcional).
+            if (f.preguntarLugar && !f.puntoId) abrirHojaCliente(f, 'lugar');
+            else agregarFacturaACarga(f);
           }
           return f;
         }).catch(function () {
@@ -8283,6 +8480,214 @@
       return Promise.resolve(f);
     }
   }
+
+  // ------------------------------------------------------------ 2.0.1: quitar una factura de la carga (mal leída)
+  // En la lista de la carga y en la parada de la ruta (si la factura todavía no tiene estado guardado): «Volver a escanear»
+  // (la quita y abre la cámara de la carga) o «Quitar esta factura», con confirmación. El servidor (27, quitarFacturaCarga)
+  // la deja «Anulada» con el motivo en «Carga del día» (no se borra). Va por la cola de la carga: sin señal se envía sola.
+  var MOTIVOS_QUITAR = ['Mal leída', 'No va en este camión', 'Repetida'];
+  var MOTIVO_ESCANEAR = 'Volver a escanear (mal leída)';
+  var quitando = null; // { f, donde: 'carga' | 'parada', accion: 'escanear' | 'quitar', motivo }
+  function puedeQuitarDeCarga() { return Boolean(config && config.version >= 27); }
+  function botonesQuitar(atributo, j, antes) {
+    return '<div class="quitar-factura">' + (antes || '') + '<button class="enlace" type="button" ' + atributo + '="' + j + '" data-accion="escanear">' +
+      icono('qr', { tam: 16 }) + 'Volver a escanear</button><button class="enlace" type="button" ' + atributo + '="' + j + '" data-accion="quitar">' +
+      icono('x', { tam: 16 }) + 'Quitar esta factura</button></div>';
+  }
+  /** La misma factura: por código de generación, DTE o la clave de la ruta (control y cliente cuando no hay ninguno). */
+  function mismaFactura(a, b) {
+    var cod = function (x) { return String(x.codigo || '').trim().toUpperCase(); };
+    if (cod(a) && cod(a) === cod(b)) return true;
+    if (a.numeroControl && String(a.numeroControl).toUpperCase() === String(b.numeroControl || '').toUpperCase()) return true;
+    return claveFacturaRuta(a) !== '' && claveFacturaRuta(a) === claveFacturaRuta(b);
+  }
+  /** Saca la factura de una ruta ({ puntos, orden }); un punto que se queda sin facturas sale de la ruta. Cambia la ruta. */
+  function quitarDeRuta(ruta, f) {
+    if (!ruta || !Array.isArray(ruta.puntos)) return ruta;
+    var vacios = [];
+    ruta.puntos.forEach(function (pt) {
+      pt.facturas = (pt.facturas || []).filter(function (x) { return !mismaFactura(x, f); });
+      if (!pt.facturas.length) vacios.push(pt.id);
+    });
+    ruta.puntos = ruta.puntos.filter(function (pt) { return pt.facturas.length; });
+    if (Array.isArray(ruta.orden)) ruta.orden = ruta.orden.filter(function (id) { return vacios.indexOf(id) < 0; });
+    return ruta;
+  }
+  /**
+   * Quita la factura del teléfono (la carga, la ruta guardada y la del día) y deja el «quitar» en la cola de la carga, que
+   * sale en orden con los lotes. Si la carga nunca llegó a enviarse, no hace falta avisar al servidor.
+   */
+  function quitarFacturaDeCarga(f, motivo) {
+    var cargaGuardada = leerJSON(CLAVE_CARGA_BODEGA_ACTUAL, null);
+    var carga = cargaBodega || (esDeEsteDia(cargaGuardada) ? cargaGuardada : null);
+    var enviada = Boolean(carga && carga.loteEnviado) || Boolean(dia && dia.ruta);
+    if (carga && Array.isArray(carga.facturas)) {
+      carga.facturas = carga.facturas.filter(function (x) { return !mismaFactura(x, f); });
+      escribirJSON(CLAVE_CARGA_BODEGA_ACTUAL, carga);
+    }
+    quitarDeRuta(ultimaRutaServidor, f);
+    var guardada = leerRutaCarga();
+    if (guardada) guardarRutaCarga(quitarDeRuta(guardada, f));
+    if (dia && dia.ruta) { quitarDeRuta(dia.ruta, f); guardarBorrador(); }
+    if (!enviada) return Promise.resolve(null);
+    var piloto = (carga && carga.piloto) || pilotoConSesion(), c = credencial(piloto);
+    var cola = leerJSON(CLAVE_CARGA_BODEGA_PENDIENTE, []);
+    cola.push({ fn: 'quitarFacturaCarga', cred: { piloto: piloto, token: c.token, pin: c.pin || (dia && dia.pin) },
+      payload: { id: (carga && carga.id) || (dia && dia.ruta && dia.ruta.id) || '', fecha: (carga && carga.fecha) || (dia && dia.fecha) || hoyISO(),
+        codigo: f.codigo || '', numeroControl: f.numeroControl || '', control: f.control || '', cliente: f.cliente || '', motivo: motivo } });
+    escribirJSON(CLAVE_CARGA_BODEGA_PENDIENTE, cola);
+    return enCadenaCarga(reintentarCargasBodega).then(function () {
+      if (hayQuitarEnCola()) aviso('avisoCarga', 'info', 'Sin señal: la factura ya salió de su carga en el teléfono y la oficina lo verá al volver la señal.');
+    });
+  }
+  function pintarHojaQuitar() {
+    var q = quitando, f = q.f, escanear = q.accion === 'escanear';
+    var monto = f.monto === '' || f.monto == null || !Number(f.monto) ? '' : '<dt>Monto</dt><dd>' + dinero(f.monto) + '</dd>';
+    $('hojaQuitar').querySelector('.hoja').innerHTML = '<p class="paso">' + (q.donde === 'carga' ? 'Carga en bodega' : 'Parada de la ruta') + '</p>' +
+      '<h2 id="hojaQuitarTitulo">' + (escanear ? '¿Volver a escanear esta factura?' : '¿Quitar esta factura?') + '</h2>' +
+      '<dl class="bloque"><dt>Cliente</dt><dd>' + esc(f.cliente || 'Sin nombre') + '</dd><dt>Factura</dt><dd>' + esc(refFactura(f)) + '</dd>' + monto + '</dl>' +
+      (escanear ? '' : '<p class="ayuda">¿Por qué la quita?</p><div class="pildoras" role="group" aria-label="Motivo">' + MOTIVOS_QUITAR.map(function (m) {
+        var sel = q.motivo === m;
+        return '<button type="button" data-motivo="' + esc(m) + '" aria-pressed="' + sel + '"' + (sel ? ' class="sel"' : '') + '>' + esc(m) + '</button>';
+      }).join('') + '</div>') +
+      '<p class="ayuda">' + (escanear ? 'Sale de la carga y se abre la cámara para leerla de nuevo.' : 'Sale de la carga' + (dia && dia.ruta ? ' y de la ruta.' : '.')) +
+      ' La oficina la ve anulada con el motivo: no se borra.</p>' +
+      '<button class="primario" type="button" data-quitar-accion="confirmar">' + icono(escanear ? 'qr' : 'x', { tam: 20 }) +
+      (escanear ? 'Quitar y escanear de nuevo' : 'Quitar esta factura') + '</button>' +
+      '<button class="enlace" type="button" data-quitar-accion="cancelar">Cancelar</button>';
+  }
+  function abrirHojaQuitar(q) {
+    quitando = q;
+    q.motivo = q.accion === 'escanear' ? MOTIVO_ESCANEAR : MOTIVOS_QUITAR[0];
+    pintarHojaQuitar();
+    $('hojaQuitar').classList.remove('oculto');
+    $('hojaQuitar').querySelector('.primario').focus();
+  }
+  function cerrarHojaQuitar() {
+    quitando = null;
+    $('hojaQuitar').classList.add('oculto');
+  }
+  function confirmarQuitar() {
+    var q = quitando, escanear = q.accion === 'escanear';
+    cerrarHojaQuitar();
+    if (q.donde === 'parada') facturasForm = facturasForm.filter(function (x) { return !mismaFactura(x, q.f); });
+    quitarFacturaDeCarga(q.f, q.motivo);
+    if (escanear) {
+      // Se vuelve a la carga y la cámara se abre en el mismo toque (el teléfono no la abre si no viene de un toque).
+      if (q.donde === 'parada') { olvidarParadaAbierta(); abrirCargaBodega(); } else pintarListaCargadas();
+      aviso('avisoCarga', 'info', 'Factura quitada de la carga: escanéela de nuevo.' + (q.donde === 'parada' ? ' Al terminar, toque «Terminar carga» para ver la ruta.' : ''));
+      $('fotoFacturaCarga').value = '';
+      $('fotoFacturaCarga').click();
+      return;
+    }
+    if (q.donde === 'carga') {
+      pintarListaCargadas();
+      aviso('avisoCarga', 'ok', 'Factura quitada de la carga.');
+      return;
+    }
+    var pt = paradaPunto != null ? puntoRuta(paradaPunto) : null;
+    if (!pt) { olvidarParadaAbierta(); mostrarDia(); return; }
+    pintarParadaPunto(pt);
+    dibujarFacturas();
+    guardarParadaAbierta();
+  }
+  $('hojaQuitar').addEventListener('click', function (ev) {
+    var m = ev.target.closest('[data-motivo]'), a = ev.target.closest('[data-quitar-accion]');
+    if (m && quitando) { quitando.motivo = m.getAttribute('data-motivo'); pintarHojaQuitar(); return; }
+    if (!a) return;
+    if (a.getAttribute('data-quitar-accion') === 'confirmar' && quitando) confirmarQuitar(); else cerrarHojaQuitar();
+  });
+  $('hojaQuitar').addEventListener('keydown', function (ev) { if (ev.key === 'Escape') cerrarHojaQuitar(); });
+  // ------------------------------------------------------------ G1 (gemba 19/10): corregir o completar una factura de la carga
+  // Lo que llenó el OCR es una propuesta: el piloto corrige a mano el cliente, el lugar de entrega (texto libre), el monto y el
+  // código de generación, o vuelve a escanear la factura y la nueva lectura completa lo que faltaba (alLeerFacturaCarga). Nada
+  // bloquea: un código sin el formato se guarda como está y se avisa (al entregarla, el servidor marca la fila para la oficina).
+  // Si la factura ya llegó al servidor (un lote), la vieja se quita por la cola de la carga (queda anulada con el motivo) y la
+  // corregida sale en el lote siguiente; con un servidor sin «quitar» (anterior al 27) solo se corrige en el teléfono.
+  var MOTIVO_CORREGIDA = 'Corregida a mano';
+  var corrigiendo = null; // { f: la factura de la carga, leidos: lo que completó un segundo escaneo }
+  /** El código que se le muestra al piloto: sin QR la factura lleva un ID interno («fac-…»), que no es un código de generación. */
+  function codigoVisible(c) { return /^fac-/.test(String(c || '')) ? '' : String(c || ''); }
+  function botonCorregir(i) {
+    return '<button class="enlace" type="button" data-corregir-carga="' + i + '">' + icono('lapiz', { tam: 16 }) + 'Corregir</button>';
+  }
+  /** Abre la hoja con los datos de la factura f; con lectura (un segundo escaneo de la misma factura), lo que faltaba se completa. */
+  function abrirHojaCorregir(f, lectura) {
+    var v = { cliente: f.cliente || '', calle: f.calle || '', monto: Number(f.monto) ? String(f.monto) : '', codigo: codigoVisible(f.codigo) };
+    var leidos = [], auto = {};
+    if (lectura) {
+      [['cliente', 'cliente'], ['calle', 'lugar de entrega'], ['monto', 'monto'], ['codigo', 'código de generación']].forEach(function (x) {
+        var nuevo = x[0] === 'monto' ? (Number(lectura.monto) ? String(lectura.monto) : '') : x[0] === 'codigo' ? codigoVisible(lectura.codigo) : String(lectura[x[0]] || '');
+        if (!v[x[0]] && nuevo) { v[x[0]] = nuevo; auto[x[0]] = true; leidos.push(x[1]); }
+      });
+    }
+    corrigiendo = { f: f, leidos: leidos };
+    function campo(id, etiqueta, valor, extra, autollenado, clase) {
+      var c = [clase, autollenado ? 'autollenado' : ''].filter(Boolean).join(' ');
+      return '<label for="' + id + '">' + etiqueta + '</label><input id="' + id + '" value="' + esc(valor) + '" autocomplete="off"' + extra +
+        (c ? ' class="' + c + '"' : '') + '>';
+    }
+    var ayuda = !lectura ? 'Lo que leyó la foto es una propuesta: corrija lo que no coincida con la factura.'
+      : leidos.length ? 'Esta factura ya está en su carga. El nuevo escaneo completó: ' + leidos.join(', ') + '. Revise y toque «Guardar cambios».'
+      : 'Esta factura ya está en su carga y el nuevo escaneo no trajo nada que faltara. Corrija a mano lo que haga falta.';
+    $('hojaCorregir').querySelector('.hoja').innerHTML = '<p class="paso">Carga en bodega · ' + esc(refFactura(f)) + '</p>' +
+      '<h2 id="hojaCorregirTitulo">Corregir factura</h2><p class="ayuda">' + esc(ayuda) + '</p>' +
+      campo('txtCorrCliente', 'Cliente', v.cliente, ' type="text" maxlength="120" autocapitalize="characters"', auto.cliente) +
+      campo('txtCorrLugar', 'Lugar de entrega <span class="opc">(dirección o referencia)</span>', v.calle, ' type="text" maxlength="240" placeholder="Ej.: Barrio El Centro, frente al parque, Ilobasco"', auto.calle) +
+      campo('txtCorrMonto', 'Monto $', v.monto, ' type="number" inputmode="decimal" step="0.01" min="0"', auto.monto) +
+      campo('txtCorrCodigo', 'Código de generación', v.codigo, ' type="text" maxlength="40" autocapitalize="characters" spellcheck="false" placeholder="Sale del QR: 32 letras y números"', auto.codigo, 'codigo') +
+      '<div id="avisoHojaCorregir"></div>' +
+      '<button class="primario" type="button" data-corregir-accion="guardar">' + icono('check', { tam: 20 }) + 'Guardar cambios</button>' +
+      '<button class="enlace" type="button" data-corregir-accion="cancelar">Cancelar</button>';
+    $('hojaCorregir').classList.remove('oculto');
+    $('txtCorrCliente').focus();
+  }
+  function cerrarHojaCorregir() {
+    corrigiendo = null;
+    $('hojaCorregir').classList.add('oculto');
+  }
+  function guardarCorreccion() {
+    var f = corrigiendo.f, carga = cargaBodega;
+    var monto = $('txtCorrMonto').value.trim() === '' ? 0 : Number($('txtCorrMonto').value);
+    if (isNaN(monto) || monto < 0) { avisoIcono('avisoHojaCorregir', 'error', 'Escriba el monto solo con números (por ejemplo 64.20).'); return; }
+    var codigo = formatearCodigo($('txtCorrCodigo').value);
+    var nueva = Object.assign({}, f, { cliente: $('txtCorrCliente').value.replace(/\s+/g, ' ').trim().toUpperCase(),
+      calle: $('txtCorrLugar').value.replace(/\s+/g, ' ').trim(), monto: monto,
+      // Sin código (lo borró, o la foto no lo dio) la factura sigue con un ID interno, como la que entra sin QR.
+      codigo: codigo || (codigoVisible(f.codigo) ? 'fac-' + nuevoId() : f.codigo) });
+    cerrarHojaCorregir();
+    var idx = carga ? carga.facturas.indexOf(f) : -1;
+    if (idx < 0 || !['cliente', 'calle', 'monto', 'codigo'].some(function (k) { return String(nueva[k] || '') !== String(f[k] || ''); })) return;
+    // Otro cliente: el punto de entrega lo vuelve a decidir el servidor (por cliente), no el del nombre anterior.
+    if (nueva.cliente !== f.cliente) { delete nueva.puntoId; delete nueva.puntoNombre; }
+    if (nueva.calle) nueva.preguntarLugar = false;
+    var enviada = Boolean(carga.loteEnviado) || Boolean(dia && dia.ruta);
+    if (enviada && puedeQuitarDeCarga()) {
+      quitarFacturaDeCarga(f, MOTIVO_CORREGIDA);
+      carga.facturas.splice(idx, 0, nueva);
+    } else carga.facturas[idx] = nueva;
+    guardarCargaBodegaActual();
+    pintarListaCargadas(idx);
+    var raro = codigo && !FORMATO_CODIGO.test(codigo);
+    aviso('avisoCarga', raro ? 'ambar' : 'ok', 'Factura corregida.' + (raro ? ' El código de generación no tiene el formato de 32 letras y números (8-4-4-4-12): ' +
+      'quedó como lo escribió y la oficina lo revisa. Si puede, corríjalo o vuelva a escanear la factura.' : ''));
+  }
+  $('hojaCorregir').addEventListener('click', function (ev) {
+    var a = ev.target.closest('[data-corregir-accion]');
+    if (!a || !corrigiendo) return;
+    if (a.getAttribute('data-corregir-accion') === 'guardar') guardarCorreccion(); else cerrarHojaCorregir();
+  });
+  $('hojaCorregir').addEventListener('keydown', function (ev) { if (ev.key === 'Escape') cerrarHojaCorregir(); });
+  $('listaCargadas').addEventListener('click', function (ev) {
+    var cc = ev.target.closest('[data-corregir-carga]');
+    if (cc && cargaBodega && cargaBodega.facturas[Number(cc.getAttribute('data-corregir-carga'))]) {
+      abrirHojaCorregir(cargaBodega.facturas[Number(cc.getAttribute('data-corregir-carga'))]);
+      return;
+    }
+    var b = ev.target.closest('[data-quitar-carga]');
+    var f = b && cargaBodega ? cargaBodega.facturas[Number(b.getAttribute('data-quitar-carga'))] : null;
+    if (f) abrirHojaQuitar({ f: f, donde: 'carga', accion: b.getAttribute('data-accion') });
+  });
 
   function mostrarVistaResumenCarga() {
     var r = resumenCargaBodega();
@@ -8336,64 +8741,145 @@
       $('fotoFacturaCarga').click();
     });
   }
+  // 2.0.1: la factura entra a la carga cuando ya se leyó. Antes entraba sin nombre mientras se leía y, si el lote salía antes
+  // que la lectura (cada 10 facturas, o al terminar), el nombre no llegaba nunca al servidor: «Sin nombre». Mientras se lee,
+  // el aviso de lectura de siempre (#escaner, con «Cancelar»). Si el nombre no salió de su etiqueta o no se pudo leer, el
+  // piloto lo confirma o lo escribe (hojaCliente); nunca se guarda «Sin nombre» en silencio.
   if ($('fotoFacturaCarga')) {
     $('fotoFacturaCarga').addEventListener('change', function (ev) {
       var archivo = ev.target.files && ev.target.files[0];
       if (!archivo) return;
-      var url = URL.createObjectURL(archivo);
+      var lectura = ++lecturaActual, textoQr = '', url = URL.createObjectURL(archivo);
+      function vigente() { return lectura === lecturaActual; }
+      function terminar(datos, motivo) {
+        if (!vigente()) return;
+        lecturaActual++;
+        clearTimeout(reloj);
+        try { URL.revokeObjectURL(url); } catch (e) {}
+        procesando('');
+        if (datos) alLeerFacturaCarga(datos, leerQR(textoQr), motivo || '');
+      }
+      var reloj = setTimeout(function () { terminar({}, 'La lectura tardó demasiado.'); }, 60000);
+      cancelarLectura = function () { terminar({}, 'Lectura cancelada.'); };
+      procesando('Buscando el código QR…');
       var img = new Image();
       img.onerror = function () {
+        terminar(null);
         aviso('avisoCarga', 'error', 'No se pudo abrir la foto de la factura.');
       };
       img.onload = function () {
         var ancho = img.naturalWidth, alto = img.naturalHeight;
         buscarQR(img, ancho, alto).then(function (qr) {
-          var textoQr = qr || '';
-          var q = leerQR(textoQr);
-          var facturaInmediata = {
-            codigo: q.codigo || ('fac-' + nuevoId()),
-            numeroControl: q.control || '',
-            control: q.control || '',
-            cliente: '',
-            nit: '',
-            monto: 0,
-            vendedor: '',
-            canal: ''
-          };
-          procesarNuevaFacturaCarga(facturaInmediata);
-
-          var foto = fotoReducida(img, ancho, alto);
+          if (!vigente()) return;
+          textoQr = qr || '';
+          // G1: una factura que ya está en la carga también se lee: el segundo escaneo completa lo que faltó (alLeerFacturaCarga).
+          procesando('Leyendo cliente, monto y DTE…');
           var piloto = pilotoConSesion();
           var c = credencial(piloto);
-          servidor('leerFactura', foto, textoQr, conSesion() ? (c.token || c.pin || '') : dia.pin, piloto, { carga: true, bloqueEnvio: true })
-            .then(function (datos) {
-              if (datos) {
-                if (datos.cliente) facturaInmediata.cliente = datos.cliente;
-                if (datos.total) facturaInmediata.monto = datos.total;
-                if (datos.numeroControl && !facturaInmediata.numeroControl) facturaInmediata.numeroControl = datos.numeroControl;
-                if (datos.control && !facturaInmediata.control) facturaInmediata.control = datos.control;
-                if (datos.vendedor) {
-                  facturaInmediata.vendedor = datos.vendedor;
-                  var can = canalDeVendedor(datos.vendedor);
-                  if (can) facturaInmediata.canal = can;
-                }
-                if (datos.envio) facturaInmediata.envio = datos.envio;
-                if (datos.calle) facturaInmediata.calle = datos.calle;
-                if (datos.recibe) facturaInmediata.recibe = datos.recibe;
-                if (datos.cel) facturaInmediata.cel = datos.cel;
-                guardarCargaBodegaActual();
-                pintarListaCargadas();
-              }
-            }).catch(function () {
-              // Sin señal o falla OCR
+          return servidor('leerFactura', fotoReducida(img, ancho, alto), textoQr, conSesion() ? (c.token || c.pin || '') : dia.pin, piloto,
+            { carga: true, bloqueEnvio: true })
+            .then(function (datos) { terminar(datos || {}); }, function (e) {
+              terminar({}, esErrorDeRed(e) ? 'Sin señal: no se pudo leer la factura.' : 'No se pudo leer la factura (' + esc(e && e.message) + ').');
             });
-        }).catch(function (e) {
+        }).catch(function () {
+          terminar(null);
           aviso('avisoCarga', 'error', 'No se pudo leer el código QR de la factura.');
         });
       };
       img.src = url;
     });
   }
+
+  /**
+   * 2.0.1: arma la factura de la carga con lo leído (o con nada, si la lectura falló: motivo) y la pasa a la carga, o pide
+   * antes al piloto el nombre del cliente si no salió de su etiqueta (datos.clienteFuente, servidor 27; con un servidor anterior,
+   * solo si no hay nombre). La dirección leída va como «calle» (el lugar del punto nuevo); en Industria «calle» es la del bloque
+   * de envío impreso, como antes. Sin dirección, al agregarla se ofrece escribir el lugar si el cliente no tiene punto conocido.
+   */
+  function alLeerFacturaCarga(datos, q, motivo) {
+    var f = {
+      codigo: q.codigo || datos.codigo || ('fac-' + nuevoId()),
+      numeroControl: q.control || datos.numeroControl || '',
+      control: q.control || datos.control || '',
+      cliente: datos.cliente || '',
+      nit: '',
+      monto: datos.total || 0,
+      vendedor: datos.vendedor || '',
+      canal: canalDeVendedor(datos.vendedor)
+    };
+    // El bloque de envío impreso (Envío, Calle, Recibe, Cel) solo lo trae la factura de Industria: en otra, lo que el lector
+    // encuentra con esas palabras es otra cosa (el teléfono del emisor como «cel», un pedazo de la dirección como «calle»).
+    if (f.canal === 'Industria') ['envio', 'calle', 'recibe', 'cel'].forEach(function (k) { if (datos[k]) f[k] = datos[k]; });
+    else if (datos.direccion) f.calle = datos.direccion;
+    if (!f.calle && f.canal !== 'Industria') f.preguntarLugar = true;
+    // G1 (gemba 19/10): la misma factura otra vez no se bloquea: si la nueva lectura trae lo que le faltaba (cliente, lugar, monto
+    // o código), se abre para completarla y el piloto la revisa; si no trae nada nuevo, se le dice cómo corregirla a mano.
+    var ya = facturaEnLaCarga(f);
+    if (ya) {
+      var nuevo = (!ya.cliente && f.cliente) || (!ya.calle && f.calle) || (!Number(ya.monto) && Number(f.monto)) || (!codigoVisible(ya.codigo) && codigoVisible(f.codigo));
+      if (nuevo) abrirHojaCorregir(ya, f);
+      else aviso('avisoCarga', 'ambar', 'Esta factura ya está en su lista de carga. Si algo está mal, toque «Corregir» en la factura.');
+      return;
+    }
+    var dudoso = !f.cliente || (datos.clienteFuente !== undefined && datos.clienteFuente !== 'etiqueta');
+    if (dudoso || motivo) abrirHojaCliente(f, 'nombre', motivo);
+    else procesarNuevaFacturaCarga(f);
+  }
+
+  // Hoja para confirmar o escribir el nombre del cliente (modo 'nombre') o el lugar de entrega (modo 'lugar').
+  var confirmando = null; // { f, modo, motivo }
+  function abrirHojaCliente(f, modo, motivo) {
+    confirmando = { f: f, modo: modo, motivo: motivo || '' };
+    var nombre = modo === 'nombre', pideLugar = Boolean(f.preguntarLugar);
+    var monto = Number(f.monto) ? '<dt>Monto</dt><dd>' + dinero(f.monto) + '</dd>' : '';
+    var ayuda = !nombre ? 'La factura no trae dirección y el cliente no tiene un punto conocido. Si sabe dónde se entrega, escríbalo.'
+      : motivo ? esc(motivo) + ' Escriba el nombre del cliente como dice la factura.'
+      : f.cliente ? 'El nombre no se leyó con seguridad. Revíselo con la factura y corríjalo si hace falta.'
+      : 'No se pudo leer el nombre del cliente. Escríbalo como dice la factura.';
+    $('hojaCliente').querySelector('.hoja').innerHTML = '<p class="paso">Carga en bodega · factura ' + ((cargaBodega ? cargaBodega.facturas.length : 0) + 1) + '</p>' +
+      '<h2 id="hojaClienteTitulo">' + (!nombre ? 'Lugar de entrega' : f.cliente ? '¿Es este el cliente?' : '¿Quién es el cliente?') + '</h2>' +
+      '<dl class="bloque">' + (nombre ? '' : '<dt>Cliente</dt><dd>' + esc(f.cliente) + '</dd>') + '<dt>Factura</dt><dd>' + esc(refFactura(f)) + '</dd>' + monto + '</dl>' +
+      '<p class="ayuda">' + ayuda + '</p>' +
+      (nombre ? '<label for="txtClienteCarga">Cliente</label><input id="txtClienteCarga" type="text" autocomplete="off" autocapitalize="characters" maxlength="120" value="' +
+        esc(f.cliente) + '"' + (f.cliente ? ' class="autollenado"' : '') + '>' : '') +
+      (pideLugar ? '<label for="txtLugarCarga">Lugar de entrega (opcional)</label><input id="txtLugarCarga" type="text" autocomplete="off" maxlength="120" ' +
+        'placeholder="Ej.: Barrio El Centro, Ilobasco">' : '') +
+      '<div id="avisoHojaCliente"></div>' +
+      '<button class="primario" type="button" data-cliente-accion="agregar">' + icono('check', { tam: 20 }) + 'Agregar a la carga</button>' +
+      '<button class="enlace" type="button" data-cliente-accion="' + (nombre ? 'cancelar' : 'sinLugar') + '">' +
+      (nombre ? 'No agregar (la vuelvo a escanear)' : 'Agregar sin lugar') + '</button>';
+    $('hojaCliente').classList.remove('oculto');
+    var campo = $('txtClienteCarga') || $('txtLugarCarga');
+    if (campo && !(nombre && f.cliente)) campo.focus();
+  }
+  function cerrarHojaCliente() {
+    confirmando = null;
+    $('hojaCliente').classList.add('oculto');
+  }
+  $('hojaCliente').addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-cliente-accion]');
+    if (!b || !confirmando) return;
+    var accion = b.getAttribute('data-cliente-accion'), x = confirmando, f = x.f;
+    if (accion === 'cancelar') {
+      cerrarHojaCliente();
+      aviso('avisoCarga', 'info', 'La factura no se agregó. Escanéela de nuevo cuando quiera.');
+      return;
+    }
+    if (x.modo === 'nombre') {
+      var nombre = $('txtClienteCarga').value.replace(/\s+/g, ' ').trim();
+      if ((nombre.match(/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g) || []).length < 3) {
+        avisoIcono('avisoHojaCliente', 'error', 'Escriba el nombre del cliente como dice la factura.');
+        $('txtClienteCarga').focus();
+        return;
+      }
+      f.cliente = nombre.toUpperCase();
+    }
+    var lugar = accion === 'agregar' && $('txtLugarCarga') ? $('txtLugarCarga').value.replace(/\s+/g, ' ').trim() : '';
+    if ($('txtLugarCarga')) f.preguntarLugar = false;
+    if (lugar) f.calle = lugar;
+    cerrarHojaCliente();
+    if (x.modo === 'nombre') procesarNuevaFacturaCarga(f); else agregarFacturaACarga(f);
+  });
 
   if ($('btnTerminarCarga')) {
     $('btnTerminarCarga').addEventListener('click', function () {
