@@ -356,7 +356,7 @@
     border-radius: 20px !important;
   }
   #pTablero .kpi.otif b {
-    color: #ffffff !important;
+    color: var(--blanco) !important;
     font-family: var(--fuente-display) !important;
     font-size: 44px !important;
     line-height: 1 !important;
@@ -476,7 +476,7 @@
     padding: 10px 14px;
     border-radius: var(--radio-m);
     border: 1.5px solid var(--estado-ok);
-    background: #f1faf6;
+    background: var(--superficie-2);
     color: var(--tinta);
     font-size: 13px;
     margin: 10px 0;
@@ -492,7 +492,7 @@
   }
   .tarjeta-piloto-daily.libre {
     border: 2px solid var(--estado-ok);
-    background: #f1faf6;
+    background: var(--superficie-2);
   }
   .tarjeta-piloto-daily .fila1 {
     display: flex;
@@ -563,7 +563,7 @@
     font-size: 13px;
     font-weight: 700;
     margin-top: 6px;
-    color: #1f6e5a;
+    color: var(--tinta);
   }
   #tabNivelacionTarjeta .indicador {
     display: flex;
@@ -614,7 +614,7 @@
     padding: 10px 14px;
     border-radius: var(--radio-m);
     border: 1.5px solid var(--estado-alerta);
-    background: #fdfaf0;
+    background: var(--superficie-2);
     color: var(--tinta);
     font-size: 13px;
     margin: 8px 0;
@@ -664,7 +664,7 @@
   #tabNivelacionTarjeta .leyenda i.est {
     width: 16px;
     height: 0;
-    border-top: 2px dashed #8f8e8a;
+    border-top: 2px dashed var(--gris);
     border-radius: 0;
     background: none;
   }
@@ -682,7 +682,7 @@
     font-size: 13px;
     font-weight: 600;
     color: var(--marino);
-    background: #e8eef5;
+    background: var(--superficie-2);
     border-radius: var(--radio-m);
     padding: 10px 14px;
     margin: 12px 0 8px;
@@ -692,7 +692,7 @@
   body.en-tablero header .quien,
   body:has(#pTablero:not(.oculto)) header .quien {
     background: var(--marino);
-    color: #fff;
+    color: var(--blanco);
     padding: 0;
   }
   .quien-tablero {
@@ -716,7 +716,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #fff;
+    color: var(--blanco);
     flex: 1 1 auto;
     min-width: 0;
   }
@@ -763,7 +763,7 @@
     border-radius: 9999px;
     border: 1px solid rgba(255, 255, 255, .3);
     background: rgba(255, 255, 255, .1);
-    color: #fff;
+    color: var(--blanco);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -813,7 +813,7 @@
     border-radius: 9999px;
     border: 1px solid rgba(255, 255, 255, .3);
     background: transparent;
-    color: #fff;
+    color: var(--blanco);
     font-family: var(--fuente-panel);
     font-weight: 600;
     font-size: 13px;
@@ -831,9 +831,9 @@
     flex: none;
   }
   .btn-seccion-compacto[aria-pressed="true"] {
-    background: #fff;
+    background: var(--blanco);
     color: var(--marino);
-    border-color: #fff;
+    border-color: var(--blanco);
   }
   @media (max-width: 480px) {
     .btn-seccion-compacto .txt-seccion {
@@ -998,7 +998,7 @@
   }
   .linea-tiempo-compacta button.dia-compacto[aria-pressed="true"] {
     background: var(--resaltado) !important;
-    border-color: #d0ce6b;
+    border-color: var(--estado-alerta);
     font-weight: 700;
     color: var(--tinta);
   }
@@ -1057,7 +1057,7 @@
   }
   .btn-seccion-grande[aria-pressed="true"] {
     background: var(--marino);
-    color: #fff;
+    color: var(--blanco);
     border-color: var(--marino);
   }
 
@@ -1319,7 +1319,7 @@
     gap: 6px;
   }
   .chip.pocos-datos, .chip-estandar.pocos-datos {
-    background: #e2e2df;
+    background: var(--superficie-pagina);
     color: var(--gris);
     border: 1px solid var(--borde-fino);
   }
@@ -1367,7 +1367,7 @@
   }
   .chip-estandar.debajo {
     background: var(--estado-error);
-    color: #fff;
+    color: var(--blanco);
   }
   .chip-estandar.alerta {
     background: var(--estado-alerta);
@@ -3389,14 +3389,12 @@
     dibujarFacturas();
   }
 
-  $('fotoFactura').addEventListener('change', function (ev) {
-    var archivo = ev.target.files && ev.target.files[0];
-    if (!archivo) return;
-    var destino = escaneoDestino;
-    var j = destino == null ? facturaLibre() : destino;
-    var lectura = ++lecturaActual;
-    var textoQr = '';
-    var url = URL.createObjectURL(archivo);
+  /**
+   * Ciclo compartido de lectura de foto (parada, combustible y carga en bodega): turno vigente, reloj de 60 s,
+   * botón Cancelar, liberación del blob URL y búsqueda local del QR antes de llamar a opciones.alTenerQr(img, ancho, alto, textoQr, terminar, vigente).
+   */
+  function leerFotoConQr(archivo, opciones) {
+    var lectura = ++lecturaActual, textoQr = '', url = URL.createObjectURL(archivo);
     function vigente() { return lectura === lecturaActual; }
     function terminar(datos, motivo, tipo) {
       if (!vigente()) return;
@@ -3404,19 +3402,41 @@
       clearTimeout(reloj);
       try { URL.revokeObjectURL(url); } catch (e) {}
       procesando('');
-      aplicarLectura(j, datos || {}, textoQr, motivo, tipo);
-      guardarParadaAbierta();
+      opciones.alTerminar(datos, textoQr, motivo, tipo);
     }
     var reloj = setTimeout(function () { terminar({}, 'La lectura tardó demasiado.', 'ambar'); }, 60000);
     cancelarLectura = function () { terminar({}, 'Lectura cancelada.', 'info'); };
     procesando('Buscando el código QR…');
     var img = new Image();
-    img.onerror = function () { terminar({}, 'No se pudo abrir la foto.', 'error'); };
+    img.onerror = function () {
+      if (opciones.alErrorImagen) opciones.alErrorImagen(terminar);
+      else terminar({}, 'No se pudo abrir la foto.', 'error');
+    };
     img.onload = function () {
       var ancho = img.naturalWidth, alto = img.naturalHeight;
       buscarQR(img, ancho, alto).then(function (qr) {
         if (!vigente()) return;
         textoQr = qr || '';
+        return opciones.alTenerQr(img, ancho, alto, textoQr, terminar);
+      }).catch(function (e) {
+        if (opciones.alErrorQr) opciones.alErrorQr(e, terminar);
+        else terminar({}, 'No se pudo procesar la foto (' + esc(e && e.message ? e.message : e) + ').', 'error');
+      });
+    };
+    img.src = url;
+  }
+
+  $('fotoFactura').addEventListener('change', function (ev) {
+    var archivo = ev.target.files && ev.target.files[0];
+    if (!archivo) return;
+    var destino = escaneoDestino;
+    var j = destino == null ? facturaLibre() : destino;
+    leerFotoConQr(archivo, {
+      alTerminar: function (datos, textoQr, motivo, tipo) {
+        aplicarLectura(j, datos || {}, textoQr, motivo, tipo);
+        guardarParadaAbierta();
+      },
+      alTenerQr: function (img, ancho, alto, textoQr, terminar) {
         // "Escanear el QR de cerca" (una foto anterior ya comprobó el control; hay monto y falta un código seguro): basta
         // el QR y no se manda la foto. Si ninguna foto leyó todavía el control (escrita a mano, sin señal, cancelada),
         // sí se lee la foto, para comprobar que es la misma factura.
@@ -3438,11 +3458,8 @@
           if (esErrorDeRed(e) && !/Demasiados intentos/i.test(e.message)) terminar({}, 'Sin señal: no se pudo leer el texto de la factura.', 'ambar');
           else terminar({}, 'No se pudo leer el texto de la factura (' + esc(e.message) + ').', 'ambar');
         });
-      }).catch(function (e) {
-        terminar({}, 'No se pudo procesar la foto (' + esc(e && e.message ? e.message : e) + ').', 'error');
-      });
-    };
-    img.src = url;
+      }
+    });
   });
   $('btnCancelarLectura').addEventListener('click', function () { if (cancelarLectura) cancelarLectura(); });
   $('btnEscanearFactura').addEventListener('click', function () { escanearFactura(null); });
@@ -3966,11 +3983,7 @@
     var prefs = obtenerPreferenciasPanel();
     var secciones = [];
     SECCIONES_PANEL_INFO.forEach(function (sec) {
-      if (sec.clave === 'rendimiento') {
-        if (prefs && prefs.rendimiento === true) secciones.push('rendimiento');
-      } else if (!prefs || prefs[sec.clave] !== false) {
-        secciones.push(sec.clave);
-      }
+      if (seccionVisiblePanel(sec, prefs)) secciones.push(sec.clave);
     });
     var opciones = { secciones: secciones };
     return servidor('obtenerTablero', s.token, filtro, opciones).then(function (t) {
@@ -4835,17 +4848,17 @@
     { clave: 'novedades', nombre: 'Novedades por responsabilidad', elementos: ['tabMotivosTarjeta'] },
     { clave: 'recientes', nombre: 'Últimos viajes enviados', elementos: ['tabRecientesTarjeta'] },
     { clave: 'transportistas', nombre: 'Transportistas subcontratados', elementos: ['tabSeccionTransportistas'] },
-    { clave: 'rendimiento', nombre: 'Rendimiento de motoristas', elementos: ['tabRendimientoTarjeta'] }
+    { clave: 'rendimiento', nombre: 'Rendimiento de motoristas', elementos: ['tabRendimientoTarjeta'], visible: false }
   ];
-  var PREFERENCIAS_PANEL_DEF = {
-    daily: true, nivelacion: true, enRuta: true, resumen: true, mapa: true, efectivoAbordo: true, pilotos: true, flota: true,
-    otif: true, departamentos: true, liquidacion: true, formaPago: true, costoPorFactura: true,
-    eficiencia: true, lagLiquidacion: true, margenSubcontratista: true, mantenimientoVencido: true,
-    pareto: true, canales: true, novedades: true, recientes: true, transportistas: true, rendimiento: false
-  };
+  var PREFERENCIAS_PANEL_DEF = {};
+  SECCIONES_PANEL_INFO.forEach(function (s) { PREFERENCIAS_PANEL_DEF[s.clave] = s.visible !== false; });
   var CLAVE_PREFS_PANEL = 'kmCelasa.preferenciasPanel.v1';
   var preferenciasPanelActuales = null;
   var ultimoRendimiento = null;
+
+  function seccionVisiblePanel(sec, prefs) {
+    return sec.visible === false ? Boolean(prefs && prefs[sec.clave] === true) : (!prefs || prefs[sec.clave] !== false);
+  }
 
   function obtenerPreferenciasPanel() {
     if (!preferenciasPanelActuales) {
@@ -4862,7 +4875,7 @@
     // Marca de preferencia aparte de .oculto (que es por falta de datos): así apagar una sección no se confunde con
     // que esa sección no tenga nada que mostrar hoy. [data-oculto-panel] se oculta con !important en el CSS.
     SECCIONES_PANEL_INFO.forEach(function (sec) {
-      var mostrar = sec.clave === 'rendimiento' ? prefs[sec.clave] === true : prefs[sec.clave] !== false;
+      var mostrar = seccionVisiblePanel(sec, prefs);
       (sec.elementos || []).forEach(function (sel) {
         var el = $(sel);
         if (!el) return;
@@ -4883,8 +4896,7 @@
     var cont = $('listaSwitchesSecciones');
     if (cont) {
       cont.innerHTML = SECCIONES_PANEL_INFO.map(function (s) {
-        var chk = prefs[s.clave] !== false;
-        if (s.clave === 'rendimiento') chk = Boolean(prefs.rendimiento);
+        var chk = seccionVisiblePanel(s, prefs);
         return '<label class="switch-fila" for="chkSeccion_' + esc(s.clave) + '">' +
           '<span>' + esc(s.nombre) + '</span>' +
           '<input type="checkbox" role="switch" aria-checked="' + (chk ? 'true' : 'false') + '" id="chkSeccion_' + esc(s.clave) + '" data-seccion="' + esc(s.clave) + '" class="switch-input"' + (chk ? ' checked' : '') + '>' +
@@ -7961,27 +7973,12 @@
   $('fotoCombustible').addEventListener('change', function (ev) {
     var archivo = ev.target.files && ev.target.files[0];
     if (!archivo) return;
-    var lectura = ++lecturaActual, textoQr = '', url = URL.createObjectURL(archivo);
-    function vigente() { return lectura === lecturaActual; }
-    function terminar(datos, motivo, tipo) {
-      if (!vigente()) return;
-      lecturaActual++;
-      clearTimeout(reloj);
-      try { URL.revokeObjectURL(url); } catch (e) {}
-      procesando('');
-      aplicarLecturaComb(datos || {}, textoQr, motivo, tipo);
-      guardarFormComb();
-    }
-    var reloj = setTimeout(function () { terminar({}, 'La lectura tardó demasiado.', 'ambar'); }, 60000);
-    cancelarLectura = function () { terminar({}, 'Lectura cancelada.', 'info'); };
-    procesando('Buscando el código QR…');
-    var img = new Image();
-    img.onerror = function () { terminar({}, 'No se pudo abrir la foto.', 'error'); };
-    img.onload = function () {
-      var ancho = img.naturalWidth, alto = img.naturalHeight;
-      buscarQR(img, ancho, alto).then(function (qr) {
-        if (!vigente()) return;
-        textoQr = qr || '';
+    leerFotoConQr(archivo, {
+      alTerminar: function (datos, textoQr, motivo, tipo) {
+        aplicarLecturaComb(datos || {}, textoQr, motivo, tipo);
+        guardarFormComb();
+      },
+      alTenerQr: function (img, ancho, alto, textoQr, terminar) {
         var foto = fotoReducida(img, ancho, alto), piloto = pilotoConSesion();
         procesando('Leyendo galones, precio y total…');
         return conPin(piloto, function () {
@@ -7991,11 +7988,8 @@
           if (esErrorDeRed(e) && !/Demasiados intentos/i.test(e.message)) terminar({}, 'Sin señal: no se pudo leer el texto de la factura.', 'ambar');
           else terminar({}, 'No se pudo leer el texto de la factura (' + e.message + ').', 'ambar');
         });
-      }).catch(function (e) {
-        terminar({}, 'No se pudo procesar la foto (' + (e && e.message ? e.message : e) + ').', 'error');
-      });
-    };
-    img.src = url;
+      }
+    });
   });
 
   /** Manda una carga ({ piloto, ...carga }) con la credencial actual del piloto; si la sesión venció, pide el PIN. */
@@ -8749,29 +8743,19 @@
     $('fotoFacturaCarga').addEventListener('change', function (ev) {
       var archivo = ev.target.files && ev.target.files[0];
       if (!archivo) return;
-      var lectura = ++lecturaActual, textoQr = '', url = URL.createObjectURL(archivo);
-      function vigente() { return lectura === lecturaActual; }
-      function terminar(datos, motivo) {
-        if (!vigente()) return;
-        lecturaActual++;
-        clearTimeout(reloj);
-        try { URL.revokeObjectURL(url); } catch (e) {}
-        procesando('');
-        if (datos) alLeerFacturaCarga(datos, leerQR(textoQr), motivo || '');
-      }
-      var reloj = setTimeout(function () { terminar({}, 'La lectura tardó demasiado.'); }, 60000);
-      cancelarLectura = function () { terminar({}, 'Lectura cancelada.'); };
-      procesando('Buscando el código QR…');
-      var img = new Image();
-      img.onerror = function () {
-        terminar(null);
-        aviso('avisoCarga', 'error', 'No se pudo abrir la foto de la factura.');
-      };
-      img.onload = function () {
-        var ancho = img.naturalWidth, alto = img.naturalHeight;
-        buscarQR(img, ancho, alto).then(function (qr) {
-          if (!vigente()) return;
-          textoQr = qr || '';
+      leerFotoConQr(archivo, {
+        alTerminar: function (datos, textoQr, motivo) {
+          if (datos) alLeerFacturaCarga(datos, leerQR(textoQr), motivo || '');
+        },
+        alErrorImagen: function (terminar) {
+          terminar(null);
+          aviso('avisoCarga', 'error', 'No se pudo abrir la foto de la factura.');
+        },
+        alErrorQr: function (e, terminar) {
+          terminar(null);
+          aviso('avisoCarga', 'error', 'No se pudo leer el código QR de la factura.');
+        },
+        alTenerQr: function (img, ancho, alto, textoQr, terminar) {
           // G1: una factura que ya está en la carga también se lee: el segundo escaneo completa lo que faltó (alLeerFacturaCarga).
           procesando('Leyendo cliente, monto y DTE…');
           var piloto = pilotoConSesion();
@@ -8781,12 +8765,8 @@
             .then(function (datos) { terminar(datos || {}); }, function (e) {
               terminar({}, esErrorDeRed(e) ? 'Sin señal: no se pudo leer la factura.' : 'No se pudo leer la factura (' + esc(e && e.message) + ').');
             });
-        }).catch(function () {
-          terminar(null);
-          aviso('avisoCarga', 'error', 'No se pudo leer el código QR de la factura.');
-        });
-      };
-      img.src = url;
+        }
+      });
     });
   }
 
