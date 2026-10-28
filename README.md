@@ -2,6 +2,8 @@
 
 App de los pilotos de Logistik S.A.: bitácora de rutas, kilometraje, entregas y mantenimiento de las unidades.
 
+**Autor y titular:** Miguel Edgardo Alvarado García.
+
 **Dirección:** https://mackrophages.github.io/Logistik-Go/
 
 ## Instalarla en el teléfono
@@ -19,5 +21,10 @@ Solo la pantalla de la app. Los datos se guardan en un Google Sheet privado, a t
 este repositorio no contiene datos de pilotos, clientes ni facturas.
 
 Los archivos se generan desde el repositorio privado con `node herramientas/construir-web.js`; no se editan aquí.
+
+## Licencia
+
+Copyright (c) 2026 Miguel Edgardo Alvarado García. Todos los derechos reservados (ver `LICENCIA.md`). Que el código
+se pueda ver aquí no da permiso para copiarlo, modificarlo ni usarlo en otra parte.
 
 `jsQR.min.js`: [jsQR](https://github.com/cozmo/jsQR) 1.4.0, licencia Apache 2.0 (`LICENCIA-jsQR.txt`).
